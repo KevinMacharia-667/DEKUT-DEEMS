@@ -118,6 +118,9 @@ export default function EventDetailPage() {
           <div className="event-detail-badges">
             {event.category && <span className="badge badge-accent">{event.category}</span>}
             {!event.is_published && <span className="badge badge-gold">Draft</span>}
+            {event.tags && event.tags.split(',').map((tag) => (
+              <span key={tag.trim()} className="badge badge-muted">{tag.trim()}</span>
+            ))}
           </div>
           <h1>{event.title}</h1>
           <p className="event-detail-organizer">

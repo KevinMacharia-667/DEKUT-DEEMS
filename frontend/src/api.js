@@ -129,3 +129,27 @@ export async function getAttendees(eventId) {
 export async function getMyRsvps() {
   return request('/users/me/rsvps');
 }
+
+// ── Interests ─────────────────────────────────────────────────────────
+
+export async function getMyInterests() {
+  return request('/users/me/interests');
+}
+
+export async function updateMyInterests(interests) {
+  return request('/users/me/interests', {
+    method: 'PUT',
+    body: JSON.stringify({ interests }),
+  });
+}
+
+// ── Recommendations ───────────────────────────────────────────────────
+
+/**
+ * Get personalised event recommendations for the logged-in user.
+ * strategy: 'ml' (TF-IDF) or 'baseline' (rule-based) — the toggle exists
+ * so the two engines can be compared live during the project demo.
+ */
+export async function getRecommendations({ strategy = 'ml', k = 5 } = {}) {
+  return request(`/recommendations?strategy=${strategy}&k=${k}`);
+}

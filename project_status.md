@@ -12,12 +12,13 @@
 
 | Layer | Files | Status |
 |---|---|---|
-| **Models** | [user.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/models/user.py), [event.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/models/event.py), [rsvp.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/models/rsvp.py) | ✅ Complete — User, Event, RSVP with relationships & cascades |
-| **Schemas** | [user.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/schemas/user.py), [event.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/schemas/event.py), [rsvp.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/schemas/rsvp.py), [token.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/schemas/token.py) | ✅ Complete — Pydantic v2 request/response models |
-| **Routers** | [auth.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/routers/auth.py), [events.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/routers/events.py), [rsvps.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/routers/rsvps.py), [users.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/routers/users.py) | ✅ Complete — Full CRUD + pagination + filtering |
+| **Models** | [user.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/models/user.py), [event.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/models/event.py), [rsvp.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/models/rsvp.py), [user_interest.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/models/user_interest.py) | ✅ Complete — User, Event, RSVP, and UserInterests with relationships & cascades |
+| **Schemas** | [user.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/schemas/user.py), [event.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/schemas/event.py), [rsvp.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/schemas/rsvp.py), [token.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/schemas/token.py), [user_interest.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/schemas/user_interest.py) | ✅ Complete — Pydantic v2 request/response models |
+| **Routers** | [auth.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/routers/auth.py), [events.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/routers/events.py), [rsvps.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/routers/rsvps.py), [users.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/routers/users.py) | ✅ Complete — Full CRUD + pagination + filtering + recommendations |
 | **Auth** | [services/auth.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/services/auth.py), [dependencies.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/dependencies.py) | ✅ Complete — JWT + bcrypt + role-based guards |
 | **DB** | [database.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/database.py), [config.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/config.py) | ✅ Complete — SQLite for dev, config for Supabase/Postgres |
 | **Migrations** | [alembic/](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/alembic) | ✅ Set up |
+| **ML Engine** | [engine.py](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/ml/engine.py) | ✅ Complete — TF-IDF + Cosine Similarity matching engine |
 
 ### Frontend (React 19 + Vite 8 + React Router 7)
 
@@ -30,9 +31,10 @@
 | **Dashboard** | [DashboardPage.jsx](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/frontend/src/pages/DashboardPage.jsx) | ✅ Protected user dashboard |
 | **Navigation** | [Navbar.jsx](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/frontend/src/components/Navbar.jsx) | ✅ Responsive navbar with auth awareness |
 | **Route guards** | [ProtectedRoute.jsx](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/frontend/src/components/ProtectedRoute.jsx) | ✅ Role-based protected routes |
-| **API client** | [api.js](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/frontend/src/api.js) | ✅ Full client (auth, events, RSVPs) with Vite proxy |
+| **API client** | [api.js](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/frontend/src/api.js) | ✅ Full client (auth, events, RSVPs, recommendations) with Vite proxy |
 | **Notifications** | [Toast.jsx](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/frontend/src/components/Toast.jsx) | ✅ Toast component |
 | **Styling** | [index.css](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/frontend/src/index.css) + per-component CSS | ✅ Vanilla CSS (no Tailwind despite README mention) |
+| **Recommendations UI** | [DashboardPage.jsx](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/frontend/src/pages/DashboardPage.jsx) | ✅ Displays personalized event recommendations in real time as interest tags are updated |
 
 ---
 
@@ -40,7 +42,6 @@
 
 | Feature | Notes |
 |---|---|
-| 🔴 **ML Recommendation Engine** | README mentions a `/ml` directory — it does **not exist** in the workspace. No TF-IDF or cosine similarity code. |
 | 🔴 **Event edit/update UI** | Backend `PATCH /events/{id}` exists, but there's no `EditEventPage` on the frontend. |
 | 🟡 **Search & filter UI** | Backend supports `?search=` and `?category=`, but need to verify the frontend exposes these controls. |
 | 🟡 **Admin panel / user management** | Backend has `users/` router but no admin-facing UI for managing roles/users. |
@@ -68,16 +69,12 @@ graph LR
         E --> G[Dependencies / Auth]
         E --> H[Models]
         H --> I[(SQLite / Postgres)]
+        E --> J["ML Engine (TF-IDF)"]
     end
-
-    subgraph Missing ["Not Yet Built"]
-        J["ML Engine (TF-IDF)"]
-    end
-    E -.-> J
 ```
 
 ---
 
 ## Summary
 
-You've completed the **core full-stack CRUD application** — auth, events, RSVPs, routing, and role-based access are all wired up. The biggest remaining piece is the **ML recommendation engine**, followed by polish items like an edit-event UI, image uploads, search/filter controls, testing, and the Supabase/Postgres migration.
+You've completed the **core full-stack CRUD application** along with the **ML recommendation engine** fully wired end-to-end (auth, events, RSVPs, user interests, recommendations, and custom styling are all fully operational). The remaining items are polish pieces like an edit-event UI, image uploads, search/filter controls, testing, and the Supabase/Postgres migration.

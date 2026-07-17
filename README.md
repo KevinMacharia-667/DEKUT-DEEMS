@@ -8,10 +8,15 @@ A campus event management platform with a recommendation engine built as a final
 - `/ml`: Recommendation engine module using `scikit-learn` for TF-IDF & cosine similarity
 
 ## Current Stage
-We are currently at **STAGE 1: Project Setup**.
-- Backend has a `/health` endpoint.
-- Frontend has a beautiful placeholder landing page with Tailwind CSS.
-- ML directory has a placeholder readme.
+**STAGE 5 COMPLETE: Recommendation Engine (baseline + ML).**
+- Stages 1-4 done: auth (JWT + roles), events CRUD, RSVPs, full React frontend.
+- Stage 5 Part A done: event category/tags, user_interests model + /me/interests endpoints, seed script with ground truth.
+- Stage 5 Parts B & C done: rule-based baseline (app/ml/baseline.py), TF-IDF engine with explanations (app/ml/engine.py), GET /recommendations?strategy=ml|baseline endpoint, "Recommended for you" section with strategy toggle on the Dashboard, and evaluate.py (precision@5/@10 comparison for the report).
+- Next: search/filter UI polish, edit-event page, tests, then Stage 6 (PWA) and Stage 7 (deploy + Supabase).
+
+### Evaluating the recommendation engines
+From the backend directory (after seeding): `python seed.py` then `python evaluate.py`
+prints the baseline-vs-ML precision table used in Chapter 4 of the report.
 
 ## Running the Project
 

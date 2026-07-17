@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import Base, engine
-from app.routers import auth, events, rsvps, users
+from app.routers import auth, events, recommendations, rsvps, users
 
 # Create all tables on startup (for dev; use Alembic in production)
 # Import models so Base.metadata knows about them
@@ -36,6 +36,7 @@ app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(events.router)
 app.include_router(rsvps.router)
+app.include_router(recommendations.router)
 
 
 # ── System Endpoints ──────────────────────────────────────────────────

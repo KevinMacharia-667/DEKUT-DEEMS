@@ -10,6 +10,7 @@ from sqlalchemy import func as sa_func
 from sqlalchemy.orm import Session
 
 from app.dependencies import get_current_user, get_db
+from app.ml.engine import recommend_events
 from app.models.event import Event
 from app.models.rsvp import RSVP
 from app.models.user import User
@@ -40,6 +41,7 @@ def _event_to_response(event: Event) -> EventResponse:
         end_time=event.end_time,
         max_attendees=event.max_attendees,
         image_url=event.image_url,
+        tags=event.tags,
         organizer=UserBrief.model_validate(event.organizer),
         is_published=event.is_published,
         rsvp_count=rsvp_count,
@@ -122,6 +124,28 @@ def list_events(
         page=page,
         per_page=per_page,
     )
+
+
+@router.get(
+    "/recommendations",
+    response_model=list[EventResponse],
+    summary="Get personalized event recommendations",
+)
+def get_recommendations(
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[Session, Depends(get_db)],
+    top_n: int = Query(5, ge=1, le=20, description="Number of recommendations to return"),
+):
+    """
+    Get a list of recommended events based on the user's saved interests using TF-IDF and Cosine Similarity.
+    """
+    # Fetch all published events
+    all_events = db.query(Event).filter(Event.is_published.is_(True)).all()
+
+    # Generate recommendations
+    recommended = recommend_events(current_user.interests, all_events, top_n=top_n)
+
+    return [_event_to_response(e) for e in recommended]
 
 
 @router.get(

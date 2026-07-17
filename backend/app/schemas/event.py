@@ -24,6 +24,7 @@ class EventCreate(BaseModel):
     end_time: datetime | None = None
     max_attendees: int | None = Field(None, ge=1)
     image_url: str | None = Field(None, max_length=500)
+    tags: str | None = Field(None, max_length=500, description="Comma-separated tags")
 
 
 class EventUpdate(BaseModel):
@@ -37,6 +38,7 @@ class EventUpdate(BaseModel):
     end_time: datetime | None = None
     max_attendees: int | None = Field(None, ge=1)
     image_url: str | None = Field(None, max_length=500)
+    tags: str | None = Field(None, max_length=500, description="Comma-separated tags")
     is_published: bool | None = None
 
 
@@ -55,6 +57,7 @@ class EventResponse(BaseModel):
     end_time: datetime | None
     max_attendees: int | None
     image_url: str | None
+    tags: str | None
     organizer: UserBrief
     is_published: bool
     rsvp_count: int = 0

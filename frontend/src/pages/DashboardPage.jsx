@@ -1,8 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { getEvents, getMyRsvps, getEvent } from '../api';
+import { getEvents, getMyRsvps, getEvent, getMyInterests, updateMyInterests } from '../api';
+import RecommendedEvents from '../components/RecommendedEvents';
 import './DashboardPage.css';
+
+/**
+ * Predefined interest tags matching the event categories and common
+ * sub-topics. Users can also add free-text tags beyond these.
+ */
+const INTEREST_OPTIONS = [
+  'academic', 'social', 'sports', 'workshop', 'cultural', 'tech', 'career',
+  'entrepreneurship', 'python', 'javascript', 'ai', 'data science',
+  'cybersecurity', 'networking', 'design', 'music', 'film', 'debate',
+  'research', 'volunteering', 'leadership', 'health', 'fitness',
+];
 
 function formatDate(dateStr) {
   if (!dateStr) return '';
@@ -16,6 +28,12 @@ export default function DashboardPage() {
   const [myRsvps, setMyRsvps] = useState([]);
   const [rsvpEvents, setRsvpEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Interest tags state
+  const [selectedTags, setSelectedTags] = useState(new Set());
+  const [customTag, setCustomTag] = useState('');
+  const [savingInterests, setSavingInterests] = useState(false);
+  const [interestsSaved, setInterestsSaved] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -36,6 +54,10 @@ export default function DashboardPage() {
           rsvps.map((r) => getEvent(r.event_id).catch(() => null))
         );
         setRsvpEvents(eventDetails.filter(Boolean));
+
+        // Fetch existing interests
+        const interests = await getMyInterests();
+        setSelectedTags(new Set(interests.map((i) => i.interest_tag)));
       } catch {
         // Silently handle errors
       } finally {
@@ -44,6 +66,48 @@ export default function DashboardPage() {
     }
     fetchData();
   }, [user]);
+
+  // Save interests to backend
+  const saveInterests = useCallback(async (tags) => {
+    setSavingInterests(true);
+    setInterestsSaved(false);
+    try {
+      const interests = [...tags].map((tag) => ({ tag, weight: 1.0 }));
+      await updateMyInterests(interests);
+      setInterestsSaved(true);
+      setTimeout(() => setInterestsSaved(false), 2000);
+    } catch {
+      // Silently handle
+    } finally {
+      setSavingInterests(false);
+    }
+  }, []);
+
+  function toggleTag(tag) {
+    setSelectedTags((prev) => {
+      const next = new Set(prev);
+      if (next.has(tag)) {
+        next.delete(tag);
+      } else {
+        next.add(tag);
+      }
+      saveInterests(next);
+      return next;
+    });
+  }
+
+  function addCustomTag(e) {
+    e.preventDefault();
+    const tag = customTag.trim().toLowerCase();
+    if (!tag) return;
+    setSelectedTags((prev) => {
+      const next = new Set(prev);
+      next.add(tag);
+      saveInterests(next);
+      return next;
+    });
+    setCustomTag('');
+  }
 
   if (loading) {
     return <div className="page"><div className="loading-page"><div className="spinner" /></div></div>;
@@ -59,27 +123,81 @@ export default function DashboardPage() {
           <p>Your events and activity at a glance</p>
         </div>
 
+        <RecommendedEvents k={5} />
+
         <div className="dashboard-grid animate-fade-in">
           {/* Profile sidebar */}
-          <div className="glass-card profile-card">
-            <div className="profile-avatar">
-              {user?.full_name?.[0]?.toUpperCase() || user?.username?.[0]?.toUpperCase() || '?'}
-            </div>
-            <div className="profile-name">
-              {user?.full_name || user?.username}
-            </div>
-            <div className="profile-email">{user?.email}</div>
-            <span className="badge badge-accent profile-role">{user?.role}</span>
+          <div>
+            <div className="glass-card profile-card">
+              <div className="profile-avatar">
+                {user?.full_name?.[0]?.toUpperCase() || user?.username?.[0]?.toUpperCase() || '?'}
+              </div>
+              <div className="profile-name">
+                {user?.full_name || user?.username}
+              </div>
+              <div className="profile-email">{user?.email}</div>
+              <span className="badge badge-accent profile-role">{user?.role}</span>
 
-            <div className="profile-stats">
-              <div>
-                <div className="profile-stat-value">{myEvents.length}</div>
-                <div className="profile-stat-label">Events</div>
+              <div className="profile-stats">
+                <div>
+                  <div className="profile-stat-value">{myEvents.length}</div>
+                  <div className="profile-stat-label">Events</div>
+                </div>
+                <div>
+                  <div className="profile-stat-value">{confirmedRsvps.length}</div>
+                  <div className="profile-stat-label">Attending</div>
+                </div>
               </div>
-              <div>
-                <div className="profile-stat-value">{confirmedRsvps.length}</div>
-                <div className="profile-stat-label">Attending</div>
+            </div>
+
+            {/* My Interests */}
+            <div className="glass-card interests-card">
+              <div className="interests-header">
+                <h3>My Interests</h3>
+                {savingInterests && <span className="spinner interests-spinner" />}
+                {interestsSaved && <span className="interests-saved">✓ Saved</span>}
               </div>
+              <p className="interests-hint">
+                Select topics you&apos;re interested in. We&apos;ll recommend matching events.
+              </p>
+
+              <div className="interests-chips">
+                {INTEREST_OPTIONS.map((tag) => (
+                  <button
+                    key={tag}
+                    className={`interest-chip${selectedTags.has(tag) ? ' active' : ''}`}
+                    onClick={() => toggleTag(tag)}
+                    type="button"
+                  >
+                    {tag}
+                  </button>
+                ))}
+                {/* Show custom tags not in the predefined list */}
+                {[...selectedTags]
+                  .filter((t) => !INTEREST_OPTIONS.includes(t))
+                  .map((tag) => (
+                    <button
+                      key={tag}
+                      className="interest-chip active custom"
+                      onClick={() => toggleTag(tag)}
+                      type="button"
+                    >
+                      {tag} ×
+                    </button>
+                  ))}
+              </div>
+
+              <form className="interests-add" onSubmit={addCustomTag}>
+                <input
+                  className="form-input"
+                  type="text"
+                  placeholder="Add custom tag…"
+                  value={customTag}
+                  onChange={(e) => setCustomTag(e.target.value)}
+                  maxLength={50}
+                />
+                <button type="submit" className="btn btn-secondary btn-sm">Add</button>
+              </form>
             </div>
           </div>
 

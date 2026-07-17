@@ -146,3 +146,120 @@
     position: static;
   }
 }
+
+/* ── Interests Card ──────────────────────────────────────────────── */
+
+.interests-card {
+  padding: var(--space-lg);
+  margin-top: var(--space-md);
+}
+
+.interests-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xs);
+}
+
+.interests-header h3 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.interests-spinner {
+  width: 16px;
+  height: 16px;
+}
+
+.interests-saved {
+  font-size: 0.8rem;
+  color: var(--accent);
+  font-weight: 500;
+  animation: fadeIn var(--transition-fast) ease;
+}
+
+.interests-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-md);
+}
+
+.interests-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: var(--space-md);
+}
+
+.interest-chip {
+  padding: 5px 12px;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-transform: lowercase;
+}
+
+.interest-chip:hover {
+  border-color: var(--accent-border);
+  color: var(--accent-light);
+  background: var(--accent-bg);
+}
+
+.interest-chip.active {
+  background: var(--accent-bg-hover);
+  border-color: var(--accent);
+  color: var(--accent-light);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.15);
+}
+
+.interest-chip.custom {
+  background: var(--gold-bg);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: var(--gold-light);
+}
+
+.interests-add {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.interests-add .form-input {
+  flex: 1;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+}
+
+/* ── Recommendations ────────────────────────────────────────────── */
+
+.recommendations-section {
+  position: relative;
+}
+
+.recommendations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.recommendation-empty-card {
+  border: 1px dashed var(--border);
+  background: rgba(255, 255, 255, 0.01);
+  backdrop-filter: blur(10px);
+}
+
+.spinner-sm {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+  display: inline-block;
+  margin-left: var(--space-xs);
+}
+
+

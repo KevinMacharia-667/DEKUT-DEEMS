@@ -33,6 +33,9 @@ class Event(Base):
     end_time: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     max_attendees: Mapped[int | None] = mapped_column(Integer)
     image_url: Mapped[str | None] = mapped_column(String(500))
+    tags: Mapped[str | None] = mapped_column(
+        String(500)  # Comma-separated tags, e.g. "python,hackathon,beginner"
+    )
     organizer_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("users.id"), nullable=False
     )

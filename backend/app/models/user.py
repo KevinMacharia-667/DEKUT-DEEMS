@@ -45,6 +45,12 @@ class User(Base):
     rsvps = relationship(
         "RSVP", back_populates="user", lazy="selectin"
     )
+    interests = relationship(
+        "UserInterest",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+    )
 
     def __repr__(self) -> str:
         return f"<User {self.username} ({self.role})>"

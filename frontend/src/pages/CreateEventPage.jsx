@@ -14,6 +14,7 @@ export default function CreateEventPage() {
     title: '',
     description: '',
     category: '',
+    tags: '',
     location: '',
     start_time: '',
     end_time: '',
@@ -40,6 +41,7 @@ export default function CreateEventPage() {
         title: form.title,
         description: form.description || null,
         category: form.category || null,
+        tags: form.tags.trim() || null,
         location: form.location || null,
         start_time: new Date(form.start_time).toISOString(),
         end_time: form.end_time ? new Date(form.end_time).toISOString() : null,
@@ -128,6 +130,21 @@ export default function CreateEventPage() {
                 maxLength={200}
               />
             </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label" htmlFor="event-tags">Tags</label>
+            <input
+              id="event-tags"
+              className="form-input"
+              type="text"
+              name="tags"
+              placeholder="e.g. python, hackathon, beginner (comma-separated)"
+              value={form.tags}
+              onChange={handleChange}
+              maxLength={500}
+            />
+            <span className="form-hint">Separate tags with commas. Helps with event recommendations.</span>
           </div>
 
           <div className="create-event-row">
