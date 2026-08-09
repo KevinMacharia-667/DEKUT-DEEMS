@@ -17,7 +17,7 @@
 
 .strategy-toggle {
   display: inline-flex;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--border);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -25,29 +25,29 @@
 .strategy-toggle button {
   padding: 0.35rem 0.9rem;
   border: none;
-  background: #fff;
-  color: #334155;
+  background: var(--bg);
+  color: var(--text);
   font-size: 0.85rem;
   cursor: pointer;
   transition: background 0.15s ease;
 }
 
 .strategy-toggle button + button {
-  border-left: 1px solid #cbd5e1;
+  border-left: 1px solid var(--border);
 }
 
 .strategy-toggle button.active {
-  background: #1e3a8a;
-  color: #fff;
+  background: var(--primary-dark);
+  color: var(--bg);
 }
 
 .recommended-status {
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 0.95rem;
 }
 
 .recommended-status.error {
-  color: #b91c1c;
+  color: var(--link-hover);
 }
 
 .recommended-grid {
@@ -68,13 +68,13 @@
   flex-wrap: wrap;
   margin-top: 0.4rem;
   font-size: 0.8rem;
-  color: #475569;
+  color: var(--text-muted);
 }
 
 .score-badge {
-  background: #eff6ff;
-  color: #1e3a8a;
-  border: 1px solid #bfdbfe;
+  background: var(--primary-tint);
+  color: var(--primary-dark);
+  border: 1px solid var(--border);
   border-radius: 999px;
   padding: 0.1rem 0.6rem;
   font-weight: 600;

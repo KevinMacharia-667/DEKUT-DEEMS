@@ -35,13 +35,13 @@
 
 .toast-error {
   background: rgba(239, 68, 68, 0.12);
-  color: #f87171;
+  color: var(--link-hover);
   border-color: rgba(239, 68, 68, 0.25);
 }
 
 .toast-info {
   background: rgba(59, 130, 246, 0.12);
-  color: #60a5fa;
+  color: var(--primary-dark);
   border-color: rgba(59, 130, 246, 0.25);
 }
 

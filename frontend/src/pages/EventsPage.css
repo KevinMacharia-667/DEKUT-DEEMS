@@ -18,50 +18,76 @@
   margin: 0 auto var(--space-xl);
 }
 
-/* Search bar */
-.events-search {
+/* Search & Filter Form */
+.events-search-form {
   display: flex;
   gap: var(--space-sm);
-  max-width: 500px;
+  max-width: 700px;
   margin: 0 auto var(--space-xl);
+  align-items: center;
 }
 
-.events-search .form-input {
+.events-search-form .search-input {
+  flex: 2;
+}
+
+.events-search-form .custom-dropdown {
   flex: 1;
+  min-width: 180px;
+  position: relative;
 }
 
-/* Category filters */
-.events-categories {
+.events-search-form .filter-btn {
+  width: 100%;
   display: flex;
-  gap: var(--space-sm);
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-bottom: var(--space-xl);
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-glass);
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
 }
 
-.category-chip {
-  padding: 6px 16px;
+.events-search-form .filter-btn .chevron {
   font-size: 0.8rem;
-  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
   border: 1px solid var(--border-light);
-  border-radius: var(--radius-full);
-  background: var(--bg-glass);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown-item {
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
   color: var(--text-secondary);
+  text-align: left;
+  font-size: 0.95rem;
   cursor: pointer;
   transition: all var(--transition-fast);
-  font-family: var(--font-body);
 }
 
-.category-chip:hover {
-  border-color: var(--accent-border);
-  color: var(--accent-light);
-  background: var(--accent-bg);
+.dropdown-item:hover {
+  background: var(--bg-glass);
+  color: var(--text-primary);
 }
 
-.category-chip.active {
+.dropdown-item.active {
   background: var(--accent-bg-hover);
-  border-color: var(--accent);
   color: var(--accent-light);
+  font-weight: 500;
 }
 
 /* Events grid */
@@ -95,7 +121,7 @@
     grid-template-columns: 1fr;
   }
 
-  .events-search {
+  .events-search-form {
     flex-direction: column;
   }
 }

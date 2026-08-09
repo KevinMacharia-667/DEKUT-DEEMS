@@ -6,6 +6,7 @@ import RegisterPage from './pages/RegisterPage';
 import EventsPage from './pages/EventsPage';
 import EventDetailPage from './pages/EventDetailPage';
 import CreateEventPage from './pages/CreateEventPage';
+import EditEventPage from './pages/EditEventPage';
 import DashboardPage from './pages/DashboardPage';
 
 export default function App() {
@@ -26,6 +27,14 @@ export default function App() {
           element={
             <ProtectedRoute roles={['organizer', 'admin']}>
               <CreateEventPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/events/:id/edit"
+          element={
+            <ProtectedRoute roles={['organizer', 'admin']}>
+              <EditEventPage />
             </ProtectedRoute>
           }
         />

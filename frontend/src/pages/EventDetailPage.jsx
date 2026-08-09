@@ -187,9 +187,17 @@ export default function EventDetailPage() {
             </button>
           )}
           {(isOwner || isAdmin) && (
-            <button className="btn btn-danger" onClick={handleDelete}>
-              Delete Event
-            </button>
+            <>
+              <button 
+                className="btn btn-secondary" 
+                onClick={() => navigate(`/events/${id}/edit`)}
+              >
+                Edit Event
+              </button>
+              <button className="btn btn-danger" onClick={handleDelete}>
+                Delete Event
+              </button>
+            </>
           )}
         </div>
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { getEvents } from '../api';
 import EventCard from '../components/EventCard';
 import './EventsPage.css';
@@ -12,7 +12,19 @@ export default function EventsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const dropdownRef = useRef(null);
   const perPage = 12;
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsCategoryOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -54,32 +66,47 @@ export default function EventsPage() {
             Discover what&apos;s happening at Dedan Kimathi University of Technology
           </p>
 
-          {/* Search */}
-          <form className="events-search" onSubmit={handleSearch}>
+          {/* Search and Filter */}
+          <form className="events-search-form" onSubmit={handleSearch}>
             <input
-              className="form-input"
+              className="form-input search-input"
               type="text"
               placeholder="Search events..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
+            <div className="custom-dropdown" ref={dropdownRef}>
+              <button
+                type="button"
+                className="form-input filter-btn"
+                onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+              >
+                {activeCategory === 'All' ? 'All Categories' : activeCategory}
+                <span className="chevron">▼</span>
+              </button>
+              
+              {isCategoryOpen && (
+                <div className="dropdown-menu animate-fade-in">
+                  {CATEGORIES.map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      className={`dropdown-item ${activeCategory === cat ? 'active' : ''}`}
+                      onClick={() => {
+                        handleCategoryClick(cat);
+                        setIsCategoryOpen(false);
+                      }}
+                    >
+                      {cat === 'All' ? 'All Categories' : cat}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             <button type="submit" className="btn btn-primary">
               Search
             </button>
           </form>
-
-          {/* Category chips */}
-          <div className="events-categories">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat}
-                className={`category-chip${activeCategory === cat ? ' active' : ''}`}
-                onClick={() => handleCategoryClick(cat)}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
         </div>
 
         {/* Content */}

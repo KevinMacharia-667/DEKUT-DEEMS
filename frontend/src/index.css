@@ -6,44 +6,16 @@
 /* ── CSS Custom Properties ────────────────────────────────────────── */
 
 :root {
-  /* Background */
-  --bg-primary: #0a0e17;
-  --bg-secondary: #111827;
-  --bg-card: rgba(17, 24, 39, 0.7);
-  --bg-card-hover: rgba(17, 24, 39, 0.9);
-  --bg-glass: rgba(255, 255, 255, 0.03);
-  --bg-input: rgba(255, 255, 255, 0.05);
-  --bg-input-focus: rgba(255, 255, 255, 0.08);
-
-  /* Accent — Emerald */
-  --accent: #10b981;
-  --accent-light: #34d399;
-  --accent-dark: #059669;
-  --accent-bg: rgba(16, 185, 129, 0.1);
-  --accent-bg-hover: rgba(16, 185, 129, 0.18);
-  --accent-border: rgba(16, 185, 129, 0.3);
-
-  /* Gold highlights */
-  --gold: #f59e0b;
-  --gold-light: #fbbf24;
-  --gold-bg: rgba(245, 158, 11, 0.1);
-
-  /* Text */
-  --text-primary: #f3f4f6;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
-  --text-inverse: #0a0e17;
-
-  /* Borders */
-  --border: rgba(255, 255, 255, 0.06);
-  --border-light: rgba(255, 255, 255, 0.1);
-  --border-accent: rgba(16, 185, 129, 0.25);
-
-  /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.45);
-  --shadow-glow: 0 0 30px rgba(16, 185, 129, 0.15);
+  --primary: #34B233;        /* vibrant green — fills, large elements */
+  --primary-dark: #1E7A1E;   /* small-text buttons, green text links, hover */
+  --primary-tint: #E9F9E7;   /* light green backgrounds, selected states */
+  --accent-gold: #EAB308;    /* highlights: score badges, "NEW", logo */
+  --link-hover: #C8102E;     /* red hover for hyperlinks (university-style) */
+  --bg: #FFFFFF;
+  --surface: #F7FAF7;
+  --text: #0F172A;
+  --text-muted: #64748B;
+  --border: #D8E5D8;
 
   /* Radii */
   --radius-sm: 6px;
@@ -70,12 +42,6 @@
   --transition-fast: 150ms ease;
   --transition-base: 250ms ease;
   --transition-slow: 400ms ease;
-
-  /* Status */
-  --success: #10b981;
-  --error: #ef4444;
-  --warning: #f59e0b;
-  --info: #3b82f6;
 }
 
 /* ── Reset ────────────────────────────────────────────────────────── */
@@ -97,26 +63,14 @@ html {
 
 body {
   font-family: var(--font-body);
-  color: var(--text-primary);
-  background: var(--bg-primary);
+  color: var(--text);
+  background: var(--bg);
   line-height: 1.6;
   min-height: 100vh;
   overflow-x: hidden;
 }
 
 /* Subtle animated gradient background */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(16, 185, 129, 0.06) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 80% 80%, rgba(245, 158, 11, 0.04) 0%, transparent 50%),
-    radial-gradient(ellipse 50% 40% at 50% 50%, rgba(59, 130, 246, 0.03) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 0;
-}
-
 #root {
   position: relative;
   z-index: 1;
@@ -130,7 +84,7 @@ body::before {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text);
   line-height: 1.25;
   letter-spacing: -0.02em;
 }
@@ -140,14 +94,17 @@ h2 { font-size: 1.75rem; }
 h3 { font-size: 1.375rem; }
 h4 { font-size: 1.125rem; }
 
-p { color: var(--text-secondary); }
+p { color: var(--text-muted); }
 
 a {
-  color: var(--accent-light);
+  color: var(--primary-dark);
   text-decoration: none;
   transition: color var(--transition-fast);
 }
-a:hover { color: var(--accent); }
+a:hover {
+  color: var(--link-hover);
+  text-decoration: underline;
+}
 
 /* ── Buttons ──────────────────────────────────────────────────────── */
 
@@ -174,28 +131,28 @@ a:hover { color: var(--accent); }
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-  color: var(--text-inverse);
-  border-color: var(--accent);
-  box-shadow: var(--shadow-sm), 0 0 20px rgba(16, 185, 129, 0.15);
+  background: var(--primary);
+  color: var(--text);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-sm);
 }
 .btn-primary:hover {
-  background: linear-gradient(135deg, var(--accent-light), var(--accent));
-  box-shadow: var(--shadow-md), 0 0 30px rgba(16, 185, 129, 0.25);
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
   transform: translateY(-1px);
-  color: var(--text-inverse);
+  color: #FFFFFF;
 }
 
 .btn-secondary {
-  background: var(--bg-glass);
-  color: var(--text-primary);
-  border-color: var(--border-light);
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border);
   backdrop-filter: blur(10px);
 }
 .btn-secondary:hover {
-  background: var(--accent-bg);
-  border-color: var(--accent-border);
-  color: var(--accent-light);
+  background: var(--primary-tint);
+  border-color: var(--primary);
+  color: var(--primary-tint);
 }
 
 .btn-danger {
@@ -210,12 +167,12 @@ a:hover { color: var(--accent); }
 
 .btn-ghost {
   background: transparent;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   border-color: transparent;
 }
 .btn-ghost:hover {
-  color: var(--text-primary);
-  background: var(--bg-glass);
+  color: var(--text);
+  background: var(--surface);
 }
 
 .btn-sm {
@@ -245,7 +202,7 @@ a:hover { color: var(--accent); }
 .form-label {
   font-size: 0.85rem;
   font-weight: 500;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   letter-spacing: 0.02em;
 }
 
@@ -256,9 +213,9 @@ a:hover { color: var(--accent); }
   padding: 10px 14px;
   font-family: var(--font-body);
   font-size: 0.9rem;
-  color: var(--text-primary);
-  background: var(--bg-input);
-  border: 1px solid var(--border-light);
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--radius-md);
   outline: none;
   transition: all var(--transition-fast);
@@ -267,8 +224,8 @@ a:hover { color: var(--accent); }
 .form-input:focus,
 .form-select:focus,
 .form-textarea:focus {
-  background: var(--bg-input-focus);
-  border-color: var(--accent-border);
+  background: var(--bg);
+  border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
 }
 
@@ -293,7 +250,7 @@ a:hover { color: var(--accent); }
 
 .form-error {
   font-size: 0.8rem;
-  color: var(--error);
+  color: var(--link-hover);
 }
 
 .form-hint {
@@ -305,7 +262,7 @@ a:hover { color: var(--accent); }
 /* ── Cards (Glassmorphism) ────────────────────────────────────────── */
 
 .glass-card {
-  background: var(--bg-card);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   backdrop-filter: blur(20px);
@@ -314,7 +271,7 @@ a:hover { color: var(--accent); }
 }
 
 .glass-card:hover {
-  border-color: var(--border-light);
+  border-color: var(--border);
   box-shadow: var(--shadow-md);
 }
 
@@ -332,14 +289,14 @@ a:hover { color: var(--accent); }
 }
 
 .badge-accent {
-  background: var(--accent-bg);
-  color: var(--accent-light);
-  border: 1px solid var(--accent-border);
+  background: var(--primary-tint);
+  color: var(--primary-tint);
+  border: 1px solid var(--primary);
 }
 
 .badge-gold {
-  background: var(--gold-bg);
-  color: var(--gold-light);
+  background: rgba(234, 179, 8, 0.1);
+  color: var(--accent-gold);
   border: 1px solid rgba(245, 158, 11, 0.25);
 }
 
@@ -370,7 +327,7 @@ a:hover { color: var(--accent); }
 
 .page-header h1 {
   margin-bottom: var(--space-md);
-  background: linear-gradient(135deg, var(--text-primary), var(--accent-light));
+  background: linear-gradient(135deg, var(--text), var(--primary-tint));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -446,8 +403,8 @@ a:hover { color: var(--accent); }
 .spinner {
   width: 24px;
   height: 24px;
-  border: 2.5px solid var(--border-light);
-  border-top-color: var(--accent);
+  border: 2.5px solid var(--border);
+  border-top-color: var(--primary);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
@@ -477,7 +434,7 @@ a:hover { color: var(--accent); }
 }
 
 .empty-state h3 {
-  color: var(--text-secondary);
+  color: var(--text-muted);
   font-weight: 500;
 }
 
