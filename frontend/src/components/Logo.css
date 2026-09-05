@@ -1,0 +1,80 @@
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  line-height: 1;
+}
+
+.logo-stacked {
+  flex-direction: column;
+  gap: 12px;
+  text-align: center;
+}
+
+.logo-mark {
+  flex-shrink: 0;
+  display: block;
+  filter: drop-shadow(0 2px 4px rgba(15, 90, 15, 0.18));
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.logo-stacked .logo-text {
+  align-items: center;
+}
+
+.logo-wordmark {
+  font-family: var(--font-heading, system-ui, sans-serif);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  display: inline-flex;
+  gap: 0.32em;
+  align-items: baseline;
+}
+
+.logo-word-dekut {
+  color: var(--primary-dark);
+}
+
+.logo-word-deems {
+  color: #B8860B; /* darkened gold — passes AA on white */
+}
+
+.logo-tagline {
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.01em;
+}
+
+/* Hero lockup used on the home and auth pages */
+.logo-hero {
+  margin-bottom: var(--space-md, 16px);
+}
+
+.logo-hero .logo-wordmark {
+  letter-spacing: 0.01em;
+}
+
+/* Light variant for use on the green navbar / dark surfaces */
+.logo-on-dark .logo-word-dekut {
+  color: #FFFFFF;
+}
+
+.logo-on-dark .logo-word-deems {
+  color: #FFD956;
+}
+
+.logo-on-dark .logo-tagline {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.logo-on-dark .logo-mark {
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.25));
+}

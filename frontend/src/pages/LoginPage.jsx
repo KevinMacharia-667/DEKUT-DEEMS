@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/Toast';
 import './LoginPage.css';
+import Logo from '../components/Logo';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -37,8 +38,9 @@ export default function LoginPage() {
     <div className="auth-page">
       <div className="glass-card auth-card">
         <div className="auth-header">
+          <Logo size={72} showWordmark stacked className="logo-hero" />
           <h1>Welcome back</h1>
-          <p>Sign in to your DeKUT Events account</p>
+          <p>Sign in to your DeKUT DEEMS account</p>
         </div>
 
         <form className="auth-form" onSubmit={handleSubmit}>

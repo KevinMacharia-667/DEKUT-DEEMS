@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { getEvents } from '../api';
 import EventCard from '../components/EventCard';
+import Logo from '../components/Logo';
 import './EventsPage.css';
 
 const CATEGORIES = ['All', 'Academic', 'Social', 'Sports', 'Workshop', 'Cultural', 'Tech', 'Career'];
@@ -61,6 +62,7 @@ export default function EventsPage() {
       <div className="container">
         {/* Hero */}
         <div className="events-hero animate-fade-in">
+          <Logo size={104} showWordmark stacked className="logo-hero" tagline="Dedan Kimathi University of Technology" />
           <h1>Campus Events</h1>
           <p>
             Discover what&apos;s happening at Dedan Kimathi University of Technology

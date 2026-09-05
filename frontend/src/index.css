@@ -44,6 +44,46 @@
   --transition-slow: 400ms ease;
 }
 
+/* ── Legacy alias layer ───────────────────────────────────────────────
+   The rebrand renamed the palette tokens, but component stylesheets
+   still reference the original names in 70+ places. These aliases map
+   the old names onto the current palette so every rule resolves.
+   ─────────────────────────────────────────────────────────────────── */
+:root {
+  /* text */
+  --text-primary: var(--text);
+  --text-secondary: #3F5140;
+  --text-inverse: #FFFFFF;
+
+  /* accents */
+  --accent: var(--primary);
+  --accent-dark: var(--primary-dark);
+  --accent-light: var(--primary-dark);
+  --accent-bg: var(--primary-tint);
+  --accent-bg-hover: #D6F3D2;
+  --accent-border: var(--primary);
+
+  /* gold */
+  --gold: #B8860B;
+  --gold-light: #8A6508;
+  --gold-bg: #FDF6DC;
+
+  /* surfaces */
+  --bg-secondary: var(--surface);
+  --bg-card: #FFFFFF;
+  --bg-card-hover: var(--surface);
+  --bg-glass: #FFFFFF;
+  --bg-input: #FFFFFF;
+  --border-light: var(--border);
+
+  /* elevation */
+  --shadow-sm: 0 1px 2px rgba(15, 42, 15, 0.06);
+  --shadow-md: 0 4px 10px rgba(15, 42, 15, 0.08);
+  --shadow-lg: 0 10px 24px rgba(15, 42, 15, 0.10);
+  --shadow-glow: 0 0 0 3px rgba(52, 178, 51, 0.15);
+}
+
+
 /* ── Reset ────────────────────────────────────────────────────────── */
 
 *,
@@ -152,7 +192,7 @@ a:hover {
 .btn-secondary:hover {
   background: var(--primary-tint);
   border-color: var(--primary);
-  color: var(--primary-tint);
+  color: var(--primary-dark);
 }
 
 .btn-danger {
@@ -290,14 +330,14 @@ a:hover {
 
 .badge-accent {
   background: var(--primary-tint);
-  color: var(--primary-tint);
+  color: var(--primary-dark);
   border: 1px solid var(--primary);
 }
 
 .badge-gold {
-  background: rgba(234, 179, 8, 0.1);
-  color: var(--accent-gold);
-  border: 1px solid rgba(245, 158, 11, 0.25);
+  background: #FDF3D4;
+  color: #7A5B05;
+  border: 1px solid #E5C044;
 }
 
 .badge-muted {

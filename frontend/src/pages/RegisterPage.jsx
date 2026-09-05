@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/Toast';
 import './LoginPage.css'; /* Reuses auth page styles */
+import Logo from '../components/Logo';
 
 export default function RegisterPage() {
   const { register } = useAuth();
@@ -29,7 +30,7 @@ export default function RegisterPage() {
     setError('');
     try {
       await register(form);
-      toast.success('Account created! Welcome to DeKUT Events.');
+      toast.success('Account created! Welcome to DeKUT DEEMS.');
       navigate('/events');
     } catch (err) {
       setError(err.message || 'Registration failed');
@@ -42,8 +43,9 @@ export default function RegisterPage() {
     <div className="auth-page">
       <div className="glass-card auth-card">
         <div className="auth-header">
+          <Logo size={72} showWordmark stacked className="logo-hero" />
           <h1>Create account</h1>
-          <p>Join the DeKUT Events community</p>
+          <p>Join the DeKUT DEEMS community</p>
         </div>
 
         <form className="auth-form" onSubmit={handleSubmit}>

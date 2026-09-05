@@ -5,10 +5,10 @@
   right: 0;
   height: 64px;
   z-index: 100;
-  background: rgba(10, 14, 23, 0.8);
+  background: linear-gradient(180deg, #1E7A1E 0%, #17651A 100%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
 }
 
 .navbar-inner {
@@ -28,24 +28,17 @@
   font-family: var(--font-heading);
   font-weight: 700;
   font-size: 1.25rem;
-  color: var(--text-primary);
+  color: #FFFFFF;
   text-decoration: none;
   transition: color var(--transition-fast);
 }
 
 .navbar-brand:hover {
-  color: var(--accent-light);
+  opacity: 0.92;
 }
 
 .navbar-brand-icon {
-  width: 28px;
-  height: 28px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
+  display: none; /* replaced by the Logo component's SVG mark */
 }
 
 .navbar-nav {
@@ -195,4 +188,58 @@
   .navbar-username {
     display: none;
   }
+}
+
+/* ── Green navbar overrides ───────────────────────────────────────────
+   The navbar sits on a solid brand-green bar, so its items need light
+   text rather than the light-theme defaults inherited above.
+   ─────────────────────────────────────────────────────────────────── */
+.navbar-link {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.navbar-link:hover,
+.navbar-link.active {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.navbar-link.active {
+  color: #FFD956;
+  font-weight: 600;
+}
+
+.navbar-user {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.navbar-user:hover {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.navbar-username {
+  color: #FFFFFF;
+}
+
+.navbar-avatar {
+  background: linear-gradient(135deg, #FFD956, #E5A800);
+  color: #0D4F0D;
+}
+
+.navbar-toggle,
+.navbar-toggle span {
+  color: #FFFFFF;
+  background-color: #FFFFFF;
+}
+
+.navbar .btn-ghost {
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+}
+
+.navbar .btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #FFFFFF;
 }

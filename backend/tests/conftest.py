@@ -8,7 +8,7 @@ from app.database import Base
 from app.dependencies import get_db
 from main import app
 from app.models.user import User
-from app.services.auth import get_password_hash
+from app.services.auth import hash_password
 
 # Use a temporary file-based SQLite database for tests
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test_temp.db"
@@ -25,6 +25,7 @@ def setup_test_db():
     yield
     # Drop tables and remove db file
     Base.metadata.drop_all(bind=engine)
+    engine.dispose()
     if os.path.exists("./test_temp.db"):
         os.remove("./test_temp.db")
 
@@ -56,7 +57,7 @@ def student_user(db_session):
     user = User(
         email="student@test.com",
         username="student_test",
-        hashed_password=get_password_hash("password123"),
+        hashed_password=hash_password("password123"),
         full_name="Test Student",
         role="student"
     )
@@ -70,7 +71,7 @@ def organizer_user(db_session):
     user = User(
         email="organizer@test.com",
         username="organizer_test",
-        hashed_password=get_password_hash("password123"),
+        hashed_password=hash_password("password123"),
         full_name="Test Organizer",
         role="organizer"
     )

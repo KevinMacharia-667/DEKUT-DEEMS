@@ -197,7 +197,8 @@
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--text-secondary);
-  background: var(--bg-glass);
+  border: 1px solid var(--border);
+  background: #FFFFFF;
   border: 1px solid var(--border-light);
   border-radius: var(--radius-full);
   cursor: pointer;
@@ -212,16 +213,29 @@
 }
 
 .interest-chip.active {
-  background: var(--accent-bg-hover);
-  border-color: var(--accent);
-  color: var(--accent-light);
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.15);
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+  color: #FFFFFF;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(30, 122, 30, 0.35);
+}
+
+.interest-chip.active::before {
+  content: '\2713';
+  margin-right: 5px;
+  font-weight: 700;
+}
+
+.interest-chip.active:hover {
+  background: #175E17;
+  border-color: #175E17;
+  color: #FFFFFF;
 }
 
 .interest-chip.custom {
-  background: var(--gold-bg);
-  border-color: rgba(245, 158, 11, 0.3);
-  color: var(--gold-light);
+  background: #8A6508;
+  border-color: #8A6508;
+  color: #FFFFFF;
 }
 
 .interests-add {

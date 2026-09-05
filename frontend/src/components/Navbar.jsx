@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Logo from './Logo';
 import './Navbar.css';
 
 export default function Navbar() {
@@ -33,9 +34,8 @@ export default function Navbar() {
     <nav className="navbar">
       <div className="navbar-inner">
         {/* Brand */}
-        <Link to="/events" className="navbar-brand">
-          <span className="navbar-brand-icon">🎓</span>
-          DeKUT Events
+<Link to="/events" className="navbar-brand">
+          <Logo size={34} showWordmark onDark />
         </Link>
 
         {/* Mobile toggle */}
