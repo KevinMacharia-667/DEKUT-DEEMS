@@ -1,19 +1,16 @@
 """
-Offline evaluation: rule-based baseline vs TF-IDF content-based engine.
+Offline evaluation: Rule-Based Baseline vs. TF-IDF Content ML vs. Unified Hybrid Engine.
 
-Uses the ground truth written by seed.py (seed_ground_truth.json), which
-records the events each synthetic user *should* find relevant based on
-how their interest tags were generated.
+Uses the ground truth written by seed.py (seed_ground_truth.json).
 
-Metric: precision@k — of the top-k recommendations for a user, what
-fraction are in that user's ground-truth relevant set.
+Metrics:
+1. Precision@k: fraction of top-k recommendations that are relevant.
+2. MRR (Mean Reciprocal Rank): 1 / rank of the first relevant event recommended.
 
-Run from the backend directory (after `python seed.py`):
-
+Run from the backend directory:
     python evaluate.py
 
-The printed table is intended to be pasted directly into Chapter 4 of
-the project report.
+The printed table is intended for Chapter 4 of the final project report.
 """
 
 import json
@@ -22,6 +19,7 @@ import sys
 from app.database import SessionLocal
 from app.ml.baseline import recommend_baseline
 from app.ml.engine import recommend_with_scores
+from app.ml.hybrid_engine import recommend_hybrid
 from app.models.event import Event
 from app.models.rsvp import RSVP
 from app.models.user import User
@@ -39,6 +37,13 @@ def precision_at_k(recommended_ids: list[str], relevant_ids: set[str], k: int) -
     return hits / len(top_k)
 
 
+def reciprocal_rank(recommended_ids: list[str], relevant_ids: set[str]) -> float:
+    for rank, eid in enumerate(recommended_ids, start=1):
+        if eid in relevant_ids:
+            return 1.0 / rank
+    return 0.0
+
+
 def main() -> None:
     try:
         with open(GROUND_TRUTH_FILE) as f:
@@ -49,10 +54,14 @@ def main() -> None:
     db = SessionLocal()
     try:
         all_events = db.query(Event).all()
+        all_rsvps = db.query(RSVP).all()
 
         per_user_rows = []
-        totals = {f"baseline@{k}": 0.0 for k in K_VALUES}
-        totals.update({f"ml@{k}": 0.0 for k in K_VALUES})
+        totals = {
+            "base@5": 0.0, "ml@5": 0.0, "hybrid@5": 0.0,
+            "base@10": 0.0, "ml@10": 0.0, "hybrid@10": 0.0,
+            "base_mrr": 0.0, "ml_mrr": 0.0, "hybrid_mrr": 0.0,
+        }
         evaluated = 0
 
         for username, relevant_list in ground_truth.items():
@@ -73,56 +82,79 @@ def main() -> None:
                 .all()
             )
 
-            max_k = max(K_VALUES)
+            max_k = 10
             base = recommend_baseline(interests, all_events, top_n=max_k)
             ml = recommend_with_scores(
                 interests, all_events, rsvp_events=rsvp_events, top_n=max_k
             )
+            hybrid = recommend_hybrid(
+                user=user,
+                user_interests=interests,
+                all_events=all_events,
+                all_rsvps=all_rsvps,
+                rsvp_events=rsvp_events,
+                top_n=max_k,
+            )
 
             base_ids = [str(r["event"].id) for r in base]
             ml_ids = [str(r["event"].id) for r in ml]
+            hybrid_ids = [str(r["event"].id) for r in hybrid]
 
-            row = {"user": username, "relevant": len(relevant)}
-            for k in K_VALUES:
-                row[f"baseline@{k}"] = precision_at_k(base_ids, relevant, k)
-                row[f"ml@{k}"] = precision_at_k(ml_ids, relevant, k)
-                totals[f"baseline@{k}"] += row[f"baseline@{k}"]
-                totals[f"ml@{k}"] += row[f"ml@{k}"]
+            row = {
+                "user": username,
+                "relevant": len(relevant),
+                "base@5": precision_at_k(base_ids, relevant, 5),
+                "ml@5": precision_at_k(ml_ids, relevant, 5),
+                "hybrid@5": precision_at_k(hybrid_ids, relevant, 5),
+                "base@10": precision_at_k(base_ids, relevant, 10),
+                "ml@10": precision_at_k(ml_ids, relevant, 10),
+                "hybrid@10": precision_at_k(hybrid_ids, relevant, 10),
+                "base_mrr": reciprocal_rank(base_ids, relevant),
+                "ml_mrr": reciprocal_rank(ml_ids, relevant),
+                "hybrid_mrr": reciprocal_rank(hybrid_ids, relevant),
+            }
+
+            for key in totals:
+                totals[key] += row[key]
+
             per_user_rows.append(row)
             evaluated += 1
 
         if evaluated == 0:
             sys.exit("No ground-truth users found in the database - re-run seed.py.")
 
-        # ── Print report ──────────────────────────────────────────────
+        # ── Print Comparative Report ──────────────────────────────────────────
         print()
-        print("Recommendation Engine Evaluation: Baseline (rules) vs ML (TF-IDF)")
-        print(f"Users evaluated: {evaluated} | Candidate events: {len(all_events)}")
+        print("=" * 88)
+        print("  DEKUT EVENT RECOMMENDATION ENGINE: 3-WAY COMPARATIVE ABLATION BENCHMARK")
+        print(f"  Users: {evaluated} | Candidate Events: {len(all_events)} | Total RSVPs: {len(all_rsvps)}")
+        print("=" * 88)
         print()
-        header = f"{'User':<15}{'Relevant':>9}"
-        for k in K_VALUES:
-            header += f"{'Base@' + str(k):>10}{'ML@' + str(k):>9}"
+        header = f"{'User':<16}{'Rel':>5} | {'Base@5':>7}{'ML@5':>7}{'Hyb@5':>8} | {'Base@10':>8}{'ML@10':>7}{'Hyb@10':>8} | {'Hyb MRR':>8}"
         print(header)
         print("-" * len(header))
         for row in per_user_rows:
-            line = f"{row['user']:<15}{row['relevant']:>9}"
-            for k in K_VALUES:
-                line += f"{row[f'baseline@{k}']:>10.2f}{row[f'ml@{k}']:>9.2f}"
+            line = (
+                f"{row['user']:<16}{row['relevant']:>5} | "
+                f"{row['base@5']:>7.2f}{row['ml@5']:>7.2f}{row['hybrid@5']:>8.2f} | "
+                f"{row['base@10']:>8.2f}{row['ml@10']:>7.2f}{row['hybrid@10']:>8.2f} | "
+                f"{row['hybrid_mrr']:>8.2f}"
+            )
             print(line)
         print("-" * len(header))
-        summary = f"{'MEAN':<15}{'':>9}"
-        for k in K_VALUES:
-            summary += (
-                f"{totals[f'baseline@{k}'] / evaluated:>10.2f}"
-                f"{totals[f'ml@{k}'] / evaluated:>9.2f}"
-            )
+        summary = (
+            f"{'MEAN':<16}{'':>5} | "
+            f"{totals['base@5']/evaluated:>7.2f}{totals['ml@5']/evaluated:>7.2f}{totals['hybrid@5']/evaluated:>8.2f} | "
+            f"{totals['base@10']/evaluated:>8.2f}{totals['ml@10']/evaluated:>7.2f}{totals['hybrid@10']/evaluated:>8.2f} | "
+            f"{totals['hybrid_mrr']/evaluated:>8.2f}"
+        )
         print(summary)
+        print("=" * len(header))
         print()
-        for k in K_VALUES:
-            b = totals[f"baseline@{k}"] / evaluated
-            m = totals[f"ml@{k}"] / evaluated
-            verdict = "ML wins" if m > b else ("tie" if m == b else "baseline wins")
-            print(f"precision@{k}:  baseline={b:.2f}  ml={m:.2f}  -> {verdict}")
+        print("Summary Verdicts:")
+        print(f"  Precision@5:   Baseline={totals['base@5']/evaluated:.2f} | ML (TF-IDF)={totals['ml@5']/evaluated:.2f} | Hybrid={totals['hybrid@5']/evaluated:.2f}")
+        print(f"  Precision@10:  Baseline={totals['base@10']/evaluated:.2f} | ML (TF-IDF)={totals['ml@10']/evaluated:.2f} | Hybrid={totals['hybrid@10']/evaluated:.2f}")
+        print(f"  Mean Reciprocal Rank (MRR): Baseline={totals['base_mrr']/evaluated:.2f} | ML={totals['ml_mrr']/evaluated:.2f} | Hybrid={totals['hybrid_mrr']/evaluated:.2f}")
         print()
     finally:
         db.close()

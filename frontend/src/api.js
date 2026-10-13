@@ -50,10 +50,10 @@ async function request(endpoint, options = {}) {
 
 // ── Auth ──────────────────────────────────────────────────────────────
 
-export async function registerUser({ email, username, password, full_name }) {
+export async function registerUser({ email, username, password, full_name, department }) {
   return request('/auth/register', {
     method: 'POST',
-    body: JSON.stringify({ email, username, password, full_name }),
+    body: JSON.stringify({ email, username, password, full_name, department }),
   });
 }
 

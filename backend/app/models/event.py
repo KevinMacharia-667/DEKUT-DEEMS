@@ -26,6 +26,7 @@ class Event(Base):
     category: Mapped[str | None] = mapped_column(
         String(50)  # Academic, Social, Sports, Workshop, Cultural, etc.
     )
+    department: Mapped[str | None] = mapped_column(String(100), nullable=True)
     location: Mapped[str | None] = mapped_column(String(200))
     start_time: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False

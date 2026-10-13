@@ -19,6 +19,7 @@ class EventCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=200)
     description: str | None = None
     category: str | None = Field(None, max_length=50)
+    department: str | None = Field(None, max_length=100)
     location: str | None = Field(None, max_length=200)
     start_time: datetime
     end_time: datetime | None = None
@@ -33,6 +34,7 @@ class EventUpdate(BaseModel):
     title: str | None = Field(None, min_length=1, max_length=200)
     description: str | None = None
     category: str | None = Field(None, max_length=50)
+    department: str | None = Field(None, max_length=100)
     location: str | None = Field(None, max_length=200)
     start_time: datetime | None = None
     end_time: datetime | None = None
@@ -52,6 +54,7 @@ class EventResponse(BaseModel):
     title: str
     description: str | None
     category: str | None
+    department: str | None = None
     location: str | None
     start_time: datetime
     end_time: datetime | None

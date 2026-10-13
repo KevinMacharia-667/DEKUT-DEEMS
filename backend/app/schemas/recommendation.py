@@ -13,6 +13,12 @@ class RecommendationItem(BaseModel):
     event: EventResponse
     score: float
     explanation: str
+    badge: str | None = None
+    reasons: list[str] = []
+    content_score: float = 0.0
+    collab_score: float = 0.0
+    urgency_score: float = 0.0
+    dept_score: float = 0.0
 
 
 class RecommendationListResponse(BaseModel):

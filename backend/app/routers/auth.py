@@ -53,6 +53,7 @@ def register(
         username=payload.username,
         hashed_password=hash_password(payload.password),
         full_name=payload.full_name,
+        department=payload.department,
     )
     db.add(user)
     db.commit()

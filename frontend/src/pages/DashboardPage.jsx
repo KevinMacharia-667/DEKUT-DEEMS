@@ -1,9 +1,20 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { getEvents, getMyRsvps, getEvent, getMyInterests, updateMyInterests } from '../api';
+import { useToast } from '../components/Toast';
+import { getEvents, getMyRsvps, getEvent, getMyInterests, updateMyInterests, updateMe, cancelRsvp } from '../api';
 import RecommendedEvents from '../components/RecommendedEvents';
 import './DashboardPage.css';
+
+const DEPARTMENTS = [
+  'School of Computer Science & IT',
+  'School of Engineering',
+  'School of Business',
+  'School of Science & Applied Tech',
+  'Health Sciences',
+  'Student Affairs & Sports',
+  'Cultural Society',
+];
 
 /**
  * Predefined interest tags matching the event categories and common
@@ -23,11 +34,24 @@ function formatDate(dateStr) {
 }
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
+  const toast = useToast();
   const [myEvents, setMyEvents] = useState([]);
   const [myRsvps, setMyRsvps] = useState([]);
   const [rsvpEvents, setRsvpEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Recommendations & dashboard live refresh counter
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  // Profile edit state
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [profileForm, setProfileForm] = useState({
+    full_name: '',
+    email: '',
+    department: '',
+  });
+  const [savingProfile, setSavingProfile] = useState(false);
 
   // Interest tags state
   const [selectedTags, setSelectedTags] = useState(new Set());
@@ -36,36 +60,69 @@ export default function DashboardPage() {
   const [interestsSaved, setInterestsSaved] = useState(false);
 
   useEffect(() => {
-    async function fetchData() {
+    if (user) {
+      setProfileForm({
+        full_name: user.full_name || '',
+        email: user.email || '',
+        department: user.department || 'School of Computer Science & IT',
+      });
+    }
+  }, [user]);
+
+  // Fetch initial interests once user is loaded
+  useEffect(() => {
+    async function loadInterests() {
       try {
-        // Fetch events created by current user (use search with published_only=false)
-        const eventsData = await getEvents({ per_page: 100, published_only: false });
-        const owned = eventsData.events.filter(
-          (e) => e.organizer?.id === user?.id
-        );
-        setMyEvents(owned);
-
-        // Fetch RSVPs
-        const rsvps = await getMyRsvps();
-        setMyRsvps(rsvps);
-
-        // Fetch event details for each RSVP
-        const eventDetails = await Promise.all(
-          rsvps.map((r) => getEvent(r.event_id).catch(() => null))
-        );
-        setRsvpEvents(eventDetails.filter(Boolean));
-
-        // Fetch existing interests
         const interests = await getMyInterests();
         setSelectedTags(new Set(interests.map((i) => i.interest_tag)));
       } catch {
-        // Silently handle errors
-      } finally {
-        setLoading(false);
+        // Silently handle
       }
     }
-    fetchData();
+    if (user) {
+      loadInterests();
+    }
   }, [user]);
+
+  // Fetch events and RSVPs whenever user or refreshKey changes
+  const fetchDashboardData = useCallback(async () => {
+    try {
+      // Fetch events created by current user
+      const eventsData = await getEvents({ per_page: 100, published_only: false });
+      const owned = eventsData.events.filter(
+        (e) => e.organizer?.id === user?.id
+      );
+      setMyEvents(owned);
+
+      // Fetch RSVPs
+      const rsvps = await getMyRsvps();
+      setMyRsvps(rsvps);
+
+      // Fetch event details for each RSVP
+      const eventDetails = await Promise.all(
+        rsvps.map((r) => getEvent(r.event_id).catch(() => null))
+      );
+      setRsvpEvents(eventDetails.filter(Boolean));
+    } catch {
+      // Silently handle
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData, refreshKey]);
+
+  // Automatically refresh in real time when window gets focus (e.g. user returns from another tab/event page)
+  useEffect(() => {
+    function handleFocus() {
+      fetchDashboardData();
+      setRefreshKey((k) => k + 1);
+    }
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [fetchDashboardData]);
 
   // Save interests to backend
   const saveInterests = useCallback(async (tags) => {
@@ -75,6 +132,8 @@ export default function DashboardPage() {
       const interests = [...tags].map((tag) => ({ tag, weight: 1.0 }));
       await updateMyInterests(interests);
       setInterestsSaved(true);
+      // Trigger instant real-time recommendation & dashboard refresh
+      setRefreshKey((k) => k + 1);
       setTimeout(() => setInterestsSaved(false), 2000);
     } catch {
       // Silently handle
@@ -109,6 +168,37 @@ export default function DashboardPage() {
     setCustomTag('');
   }
 
+  async function handleProfileSubmit(e) {
+    e.preventDefault();
+    setSavingProfile(true);
+    try {
+      await updateMe(profileForm);
+      await refreshUser();
+      setIsEditingProfile(false);
+      // Real-time refresh recommendation feed since department or details changed
+      setRefreshKey((k) => k + 1);
+      toast.success('Profile updated successfully!');
+    } catch (err) {
+      toast.error(err.message || 'Failed to update profile');
+    } finally {
+      setSavingProfile(false);
+    }
+  }
+
+  // Quick cancel RSVP from dashboard with immediate real-time refresh
+  async function handleCancelRsvp(eventId, e) {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      await cancelRsvp(eventId);
+      toast.info('RSVP cancelled');
+      // Increment refreshKey: re-fetches dashboard RSVPs and updates Hybrid recommendations
+      setRefreshKey((k) => k + 1);
+    } catch (err) {
+      toast.error(err.message || 'Failed to cancel RSVP');
+    }
+  }
+
   if (loading) {
     return <div className="page"><div className="loading-page"><div className="spinner" /></div></div>;
   }
@@ -118,12 +208,26 @@ export default function DashboardPage() {
   return (
     <div className="page">
       <div className="container">
-        <div className="page-header animate-fade-in">
-          <h1>Dashboard</h1>
-          <p>Your events and activity at a glance</p>
+        <div className="page-header animate-fade-in" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+          <div>
+            <h1>Dashboard</h1>
+            <p>Your events and activity at a glance</p>
+          </div>
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm"
+            onClick={() => {
+              fetchDashboardData();
+              setRefreshKey((k) => k + 1);
+              toast.info('Dashboard refreshed!');
+            }}
+            title="Refresh dashboard and recommendations in real time"
+          >
+            🔄 Refresh Live
+          </button>
         </div>
 
-        <RecommendedEvents k={5} />
+        <RecommendedEvents k={6} refreshTrigger={refreshKey} />
 
         <div className="dashboard-grid animate-fade-in">
           {/* Profile sidebar */}
@@ -132,11 +236,95 @@ export default function DashboardPage() {
               <div className="profile-avatar">
                 {user?.full_name?.[0]?.toUpperCase() || user?.username?.[0]?.toUpperCase() || '?'}
               </div>
-              <div className="profile-name">
-                {user?.full_name || user?.username}
-              </div>
-              <div className="profile-email">{user?.email}</div>
-              <span className="badge badge-accent profile-role">{user?.role}</span>
+
+              {!isEditingProfile ? (
+                <>
+                  <div className="profile-name">
+                    {user?.full_name || user?.username}
+                  </div>
+                  <div className="profile-username">@{user?.username}</div>
+                  <div className="profile-email">{user?.email}</div>
+
+                  {user?.department && (
+                    <div className="profile-department-badge" title="Academic Department">
+                      🎓 {user.department}
+                    </div>
+                  )}
+
+                  <span className="badge badge-accent profile-role">{user?.role}</span>
+
+                  <div style={{ margin: 'var(--space-md) 0' }}>
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => setIsEditingProfile(true)}
+                    >
+                      ✏️ Edit Profile
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <form className="profile-edit-form" onSubmit={handleProfileSubmit}>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="edit-full-name">Full Name</label>
+                    <input
+                      id="edit-full-name"
+                      type="text"
+                      className="form-input"
+                      value={profileForm.full_name}
+                      onChange={(e) => setProfileForm({ ...profileForm, full_name: e.target.value })}
+                      placeholder="e.g. Jane Doe"
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="edit-email">Email</label>
+                    <input
+                      id="edit-email"
+                      type="email"
+                      className="form-input"
+                      value={profileForm.email}
+                      onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="edit-department">Academic School / Dept</label>
+                    <select
+                      id="edit-department"
+                      className="form-input"
+                      value={profileForm.department}
+                      onChange={(e) => setProfileForm({ ...profileForm, department: e.target.value })}
+                    >
+                      {DEPARTMENTS.map((dept) => (
+                        <option key={dept} value={dept}>
+                          {dept}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="profile-edit-actions">
+                    <button
+                      type="submit"
+                      className="btn btn-primary btn-sm"
+                      disabled={savingProfile}
+                    >
+                      {savingProfile ? 'Saving…' : 'Save Changes'}
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => setIsEditingProfile(false)}
+                      disabled={savingProfile}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              )}
 
               <div className="profile-stats">
                 <div>
@@ -261,23 +449,34 @@ export default function DashboardPage() {
               ) : (
                 <div className="dashboard-list">
                   {rsvpEvents.map((event) => (
-                    <Link
-                      key={event.id}
-                      to={`/events/${event.id}`}
-                      className="glass-card dashboard-item"
-                    >
-                      <div className="dashboard-item-icon" style={{ background: 'var(--gold-bg)' }}>
-                        🎟️
-                      </div>
-                      <div className="dashboard-item-body">
-                        <div className="dashboard-item-title">{event.title}</div>
-                        <div className="dashboard-item-meta">
-                          {formatDate(event.start_time)}
-                          {event.location && ` · ${event.location}`}
+                    <div key={event.id} className="glass-card dashboard-item-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingRight: '12px' }}>
+                      <Link
+                        to={`/events/${event.id}`}
+                        className="dashboard-item"
+                        style={{ flex: 1, border: 'none', background: 'transparent' }}
+                      >
+                        <div className="dashboard-item-icon" style={{ background: 'var(--gold-bg)' }}>
+                          🎟️
                         </div>
-                      </div>
-                      <span className="badge badge-accent">Attending</span>
-                    </Link>
+                        <div className="dashboard-item-body">
+                          <div className="dashboard-item-title">{event.title}</div>
+                          <div className="dashboard-item-meta">
+                            {formatDate(event.start_time)}
+                            {event.location && ` · ${event.location}`}
+                          </div>
+                        </div>
+                        <span className="badge badge-accent">Attending</span>
+                      </Link>
+                      <button
+                        type="button"
+                        className="btn btn-secondary btn-xs"
+                        style={{ fontSize: '0.75rem', padding: '4px 8px', flexShrink: 0 }}
+                        onClick={(e) => handleCancelRsvp(event.id, e)}
+                        title="Cancel attendance for this event"
+                      >
+                        Cancel
+                      </button>
+                    </div>
                   ))}
                 </div>
               )}

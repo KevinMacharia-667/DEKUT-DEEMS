@@ -36,6 +36,7 @@ def _event_to_response(event: Event) -> EventResponse:
         title=event.title,
         description=event.description,
         category=event.category,
+        department=event.department,
         location=event.location,
         start_time=event.start_time,
         end_time=event.end_time,

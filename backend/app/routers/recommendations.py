@@ -20,6 +20,7 @@ from sqlalchemy.orm import Session
 from app.dependencies import get_current_user, get_db
 from app.ml.baseline import recommend_baseline
 from app.ml.engine import recommend_with_scores
+from app.ml.hybrid_engine import recommend_hybrid
 from app.models.event import Event
 from app.models.rsvp import RSVP
 from app.models.user import User
@@ -41,19 +42,20 @@ router = APIRouter(prefix="/recommendations", tags=["Recommendations"])
 def get_recommendations(
     current_user: Annotated[User, Depends(get_current_user)],
     db: Annotated[Session, Depends(get_db)],
-    strategy: Literal["ml", "baseline"] = Query(
-        "ml", description="Ranking strategy: 'ml' (TF-IDF) or 'baseline' (rules)"
+    strategy: Literal["hybrid", "ml", "baseline"] = Query(
+        "hybrid",
+        description="Ranking strategy: 'hybrid' (Multi-Factor), 'ml' (TF-IDF), or 'baseline' (rules)",
     ),
     k: int = Query(10, ge=1, le=50, description="Number of recommendations"),
 ):
     """
-    Rank upcoming published events for the current user based on their
-    interest tags (and, for the ML strategy, their RSVP history).
+    Rank upcoming published events for the current user using the selected strategy.
+    Default is 'hybrid' which combines Content-Based Filtering, SVD Collaborative Filtering,
+    and Contextual Ranking (Urgency, Popularity, and Faculty alignment).
     """
     now = datetime.now(timezone.utc)
 
     # Candidate pool: upcoming, published events only.
-    # (SQLite stores naive datetimes, so compare with a naive UTC value.)
     candidates = (
         db.query(Event)
         .filter(Event.is_published.is_(True))
@@ -67,27 +69,72 @@ def get_recommendations(
         .all()
     )
 
+    user_rsvps = (
+        db.query(Event)
+        .join(RSVP, RSVP.event_id == Event.id)
+        .filter(RSVP.user_id == current_user.id, RSVP.status == "confirmed")
+        .all()
+    )
+
     if strategy == "baseline":
         ranked = recommend_baseline(interests, candidates, top_n=k)
-    else:
-        rsvp_events = (
-            db.query(Event)
-            .join(RSVP, RSVP.event_id == Event.id)
-            .filter(RSVP.user_id == current_user.id, RSVP.status == "confirmed")
-            .all()
-        )
+        items = [
+            RecommendationItem(
+                event=_event_to_response(r["event"]),
+                score=r["score"],
+                explanation=r["explanation"],
+                badge="📌 Rule Match",
+                reasons=[r["explanation"]] if r["explanation"] else ["Rule-based heuristic match"],
+                content_score=0.0,
+                collab_score=0.0,
+                urgency_score=0.0,
+                dept_score=0.0,
+            )
+            for r in ranked
+        ]
+    elif strategy == "ml":
         ranked = recommend_with_scores(
-            interests, candidates, rsvp_events=rsvp_events, top_n=k
+            interests, candidates, rsvp_events=user_rsvps, top_n=k
         )
-
-    items = [
-        RecommendationItem(
-            event=_event_to_response(r["event"]),
-            score=r["score"],
-            explanation=r["explanation"],
+        items = [
+            RecommendationItem(
+                event=_event_to_response(r["event"]),
+                score=r["score"],
+                explanation=r["explanation"],
+                badge="✨ For You" if idx < 2 else "⭐ Content Match",
+                reasons=[r["explanation"]] if r["explanation"] else ["TF-IDF semantic match"],
+                content_score=r["score"],
+                collab_score=0.0,
+                urgency_score=0.0,
+                dept_score=0.0,
+            )
+            for idx, r in enumerate(ranked)
+        ]
+    else:
+        # Default: Unified Multi-Factor Hybrid Engine
+        all_rsvps = db.query(RSVP).all()
+        ranked = recommend_hybrid(
+            user=current_user,
+            user_interests=interests,
+            all_events=candidates,
+            all_rsvps=all_rsvps,
+            rsvp_events=user_rsvps,
+            top_n=k,
         )
-        for r in ranked
-    ]
+        items = [
+            RecommendationItem(
+                event=_event_to_response(r["event"]),
+                score=r["score"],
+                explanation=r["explanation"],
+                badge=r.get("badge", "✨ For You"),
+                reasons=r.get("reasons", []),
+                content_score=r.get("content_score", 0.0),
+                collab_score=r.get("collab_score", 0.0),
+                urgency_score=r.get("urgency_score", 0.0),
+                dept_score=r.get("dept_score", 0.0),
+            )
+            for r in ranked
+        ]
 
     return RecommendationListResponse(
         strategy=strategy, count=len(items), recommendations=items

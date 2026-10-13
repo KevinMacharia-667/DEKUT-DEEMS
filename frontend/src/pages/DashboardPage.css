@@ -35,15 +35,70 @@
   margin-bottom: 4px;
 }
 
-.profile-email {
+.profile-username {
   font-size: 0.85rem;
+  color: var(--accent-light);
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.profile-email {
+  font-size: 0.82rem;
   color: var(--text-muted);
   margin-bottom: var(--space-sm);
+  word-break: break-all;
+}
+
+.profile-department-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg-card-hover);
+  border: 1px solid var(--accent-border);
+  color: var(--accent-light);
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  margin-bottom: var(--space-sm);
+  text-align: left;
+  line-height: 1.3;
 }
 
 .profile-role {
   display: inline-block;
+  margin-bottom: var(--space-xs);
+}
+
+.profile-edit-form {
+  text-align: left;
   margin-bottom: var(--space-md);
+  padding-top: var(--space-xs);
+}
+
+.profile-edit-form .form-group {
+  margin-bottom: var(--space-sm);
+}
+
+.profile-edit-form .form-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  display: block;
+}
+
+.profile-edit-form .form-input {
+  font-size: 0.82rem;
+  padding: 6px 10px;
+  width: 100%;
+}
+
+.profile-edit-actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+  justify-content: flex-end;
 }
 
 .profile-stats {

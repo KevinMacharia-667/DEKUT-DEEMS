@@ -20,6 +20,7 @@ class UserCreate(BaseModel):
     )
     password: str = Field(..., min_length=8, max_length=128)
     full_name: str | None = Field(None, max_length=100)
+    department: str | None = Field(None, max_length=100)
 
 
 class UserUpdate(BaseModel):
@@ -27,6 +28,7 @@ class UserUpdate(BaseModel):
 
     full_name: str | None = Field(None, max_length=100)
     email: EmailStr | None = None
+    department: str | None = Field(None, max_length=100)
 
 
 class UserLogin(BaseModel):
@@ -47,6 +49,7 @@ class UserResponse(BaseModel):
     username: str
     full_name: str | None
     role: str
+    department: str | None = None
     is_active: bool
     created_at: datetime
 

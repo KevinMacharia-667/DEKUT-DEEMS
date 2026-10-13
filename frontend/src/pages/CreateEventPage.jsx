@@ -6,6 +6,16 @@ import './CreateEventPage.css';
 
 const CATEGORIES = ['Academic', 'Social', 'Sports', 'Workshop', 'Cultural', 'Tech', 'Career'];
 
+const DEPARTMENTS = [
+  'School of Computer Science & IT',
+  'School of Engineering',
+  'School of Business',
+  'School of Science & Applied Tech',
+  'Health Sciences',
+  'Student Affairs & Sports',
+  'Cultural Society',
+];
+
 export default function CreateEventPage() {
   const navigate = useNavigate();
   const toast = useToast();
@@ -14,6 +24,7 @@ export default function CreateEventPage() {
     title: '',
     description: '',
     category: '',
+    department: '',
     tags: '',
     location: '',
     start_time: '',
@@ -41,6 +52,7 @@ export default function CreateEventPage() {
         title: form.title,
         description: form.description || null,
         category: form.category || null,
+        department: form.department || null,
         tags: form.tags.trim() || null,
         location: form.location || null,
         start_time: new Date(form.start_time).toISOString(),
@@ -113,6 +125,22 @@ export default function CreateEventPage() {
                 <option value="">Select category</option>
                 {CATEGORIES.map((cat) => (
                   <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="event-dept">Host Department / School</label>
+              <select
+                id="event-dept"
+                className="form-select"
+                name="department"
+                value={form.department}
+                onChange={handleChange}
+              >
+                <option value="">Campus-Wide / All Departments</option>
+                {DEPARTMENTS.map((dept) => (
+                  <option key={dept} value={dept}>{dept}</option>
                 ))}
               </select>
             </div>

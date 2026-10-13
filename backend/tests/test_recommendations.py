@@ -76,3 +76,19 @@ def test_recommendations_baseline_and_ml(client, db_session, student_user, stude
     for rec in data["recommendations"]:
         assert rec["score"] > 0
         assert "explanation" in rec
+
+    # 5. Test Unified Hybrid strategy (default)
+    response = client.get(
+        "/recommendations?strategy=hybrid",
+        headers={"Authorization": f"Bearer {student_token}"}
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["strategy"] == "hybrid"
+    assert len(data["recommendations"]) >= 1
+    top_categories_hybrid = [rec["event"]["category"] for rec in data["recommendations"][:2]]
+    assert "Tech" in top_categories_hybrid
+    for rec in data["recommendations"]:
+        assert rec["score"] > 0
+        assert rec["badge"] is not None
+        assert "reasons" in rec
