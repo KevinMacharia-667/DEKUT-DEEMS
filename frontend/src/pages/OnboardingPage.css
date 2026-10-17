@@ -82,9 +82,9 @@
 }
 
 .tukio-onboarding-tracker.incomplete {
-  background: #fef3c7;
-  color: #92400e;
-  border: 1px solid #fde68a;
+  background: var(--gold-bg, #fef3c7);
+  color: var(--gold-light, #92400e);
+  border: 1px solid var(--gold, #fde68a);
 }
 
 .tukio-onboarding-tracker.complete {
@@ -119,7 +119,7 @@
 }
 
 .tukio-onboarding-tile:hover {
-  background: #ffffff;
+  background: var(--bg-card-hover, #ffffff);
   border-color: var(--primary, #34b233);
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(52, 178, 51, 0.12);
@@ -153,7 +153,7 @@
   height: 20px;
   border-radius: 50%;
   border: 1.5px solid var(--border-light, #cbd5e1);
-  background: #ffffff;
+  background: var(--surface);
   display: flex;
   align-items: center;
   justify-content: center;

@@ -67,6 +67,10 @@ export default function EventsPage() {
   const [isDragging, setIsDragging] = useState(false);
   const touchStartRef = useRef({ x: 0, y: 0, time: 0 });
 
+  // Card flight transition state & navigation lock
+  const [transitionClass, setTransitionClass] = useState('');
+  const isTransitioningRef = useRef(false);
+
   // ── Fetch User RSVPs ──────────────────────────────────────────────
   const loadUserRsvps = useCallback(async () => {
     if (!isAuthenticated) {
@@ -288,7 +292,11 @@ export default function EventsPage() {
   }, [currentEvent]);
 
   // ── Navigation in Deck (with telemetry skip logging) ───────────────
+  // ── Navigation in Deck (with telemetry skip logging & animation lock) ───────────────
   const goNext = useCallback(() => {
+    if (isTransitioningRef.current) return;
+    if (currentIndex >= events.length) return;
+
     if (currentEvent && currentEvent.id) {
       const isAttending = myRsvps.has(currentEvent.id);
       const isInterested = interestedSet.has(currentEvent.id);
@@ -296,12 +304,60 @@ export default function EventsPage() {
         logEventInteraction(currentEvent.id, 'skip').catch(() => {});
       }
     }
-    setCurrentIndex((prev) => Math.min(prev + 1, events.length));
-  }, [currentEvent, events.length, myRsvps, interestedSet]);
+
+    const reducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (reducedMotion) {
+      setCurrentIndex((prev) => Math.min(prev + 1, events.length));
+      return;
+    }
+
+    isTransitioningRef.current = true;
+    setTransitionClass('slide-out-left');
+
+    setTimeout(() => {
+      setCurrentIndex((prev) => Math.min(prev + 1, events.length));
+      setDragOffset({ x: 0, y: 0 });
+      setTransitionClass('card-entering');
+
+      setTimeout(() => {
+        setTransitionClass('');
+        isTransitioningRef.current = false;
+      }, 200);
+    }, 180);
+  }, [currentIndex, currentEvent, events.length, myRsvps, interestedSet]);
 
   const goPrev = useCallback(() => {
-    setCurrentIndex((prev) => Math.max(prev - 1, 0));
-  }, []);
+    if (isTransitioningRef.current) return;
+    if (currentIndex <= 0) return;
+
+    const reducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (reducedMotion) {
+      setCurrentIndex((prev) => Math.max(prev - 1, 0));
+      return;
+    }
+
+    isTransitioningRef.current = true;
+    setTransitionClass('slide-out-right');
+
+    setTimeout(() => {
+      setCurrentIndex((prev) => Math.max(prev - 1, 0));
+      setDragOffset({ x: 0, y: 0 });
+      setTransitionClass('card-entering');
+
+      setTimeout(() => {
+        setTransitionClass('');
+        isTransitioningRef.current = false;
+      }, 200);
+    }, 180);
+  }, [currentIndex]);
 
   // Keyboard navigation (Arrow keys & Space)
   useEffect(() => {
@@ -322,6 +378,7 @@ export default function EventsPage() {
 
   // ── Touch Gesture Handlers ────────────────────────────────────────
   function handleTouchStart(e) {
+    if (isTransitioningRef.current) return;
     const touch = e.touches[0];
     touchStartRef.current = {
       x: touch.clientX,
@@ -332,7 +389,7 @@ export default function EventsPage() {
   }
 
   function handleTouchMove(e) {
-    if (!isDragging) return;
+    if (!isDragging || isTransitioningRef.current) return;
     const touch = e.touches[0];
     const deltaX = touch.clientX - touchStartRef.current.x;
     const deltaY = touch.clientY - touchStartRef.current.y;
@@ -342,6 +399,7 @@ export default function EventsPage() {
   function handleTouchEnd() {
     if (!isDragging) return;
     setIsDragging(false);
+    if (isTransitioningRef.current) return;
 
     const deltaX = dragOffset.x;
     const elapsed = Date.now() - touchStartRef.current.time;
@@ -351,9 +409,9 @@ export default function EventsPage() {
       goNext();
     } else if (deltaX > 60 || (deltaX > 25 && velocity > 0.35)) {
       goPrev();
+    } else {
+      setDragOffset({ x: 0, y: 0 });
     }
-
-    setDragOffset({ x: 0, y: 0 });
   }
 
   // ── Feedback Handler (Interested / Not for me with Undo) ───────────
@@ -715,6 +773,7 @@ export default function EventsPage() {
                 rsvpLoading={rsvpLoadingId === currentEvent.id}
                 isDragging={isDragging}
                 dragOffset={dragOffset}
+                transitionClass={transitionClass}
               />
             </div>
           )}
@@ -728,7 +787,7 @@ export default function EventsPage() {
                 type="button"
                 className="tukio-nav-btn"
                 onClick={goPrev}
-                disabled={currentIndex === 0}
+                disabled={currentIndex === 0 || Boolean(transitionClass)}
                 aria-label="Previous event card"
                 title="Previous (Arrow Left)"
               >
@@ -755,7 +814,7 @@ export default function EventsPage() {
                 type="button"
                 className="tukio-nav-btn"
                 onClick={goNext}
-                disabled={isEndOfDeck}
+                disabled={isEndOfDeck || Boolean(transitionClass)}
                 aria-label="Next event card"
                 title="Next (Arrow Right)"
               >

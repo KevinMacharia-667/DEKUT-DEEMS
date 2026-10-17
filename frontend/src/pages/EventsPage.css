@@ -8,7 +8,7 @@
   flex-direction: column;
   align-items: center;
   padding: var(--space-md, 16px) var(--space-sm, 8px) var(--space-2xl, 48px);
-  background: radial-gradient(circle at 50% 0%, rgba(52, 178, 51, 0.08) 0%, transparent 60%),
+  background: radial-gradient(circle at 50% 0%, var(--primary-tint) 0%, transparent 60%),
               var(--bg, #ffffff);
 }
 
@@ -93,7 +93,7 @@
 
 .tukio-section-tab:hover {
   color: var(--text, #0f172a);
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--bg-card-hover, rgba(255, 255, 255, 0.6));
 }
 
 .tukio-section-tab.active {
@@ -108,7 +108,7 @@
 }
 
 .tukio-section-tab-count {
-  background: #eab308;
+  background: var(--gold, #eab308);
   color: #1a1a1a;
   font-size: 0.68rem;
   font-weight: 800;
@@ -332,7 +332,7 @@
   min-height: 380px;
   background: var(--bg-card, #ffffff);
   border-radius: var(--radius-xl, 24px);
-  border: 1px solid #fed7d7;
+  border: 1px solid rgba(239, 68, 68, 0.35);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -351,7 +351,7 @@
   font-family: var(--font-heading, system-ui, sans-serif);
   font-size: 1.35rem;
   font-weight: 700;
-  color: #991b1b;
+  color: var(--link-hover, #ef4444);
   margin: 0;
 }
 
@@ -363,7 +363,7 @@
 }
 
 .tukio-retry-btn {
-  background: #c8102e;
+  background: var(--link-hover, #c8102e);
   color: #ffffff;
   border: none;
   font-family: var(--font-heading, system-ui, sans-serif);
@@ -377,7 +377,7 @@
 }
 
 .tukio-retry-btn:hover {
-  background: #991b1b;
+  background: #b91c1c;
   transform: translateY(-1px);
 }
 

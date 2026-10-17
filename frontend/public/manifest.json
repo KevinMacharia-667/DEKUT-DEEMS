@@ -1,0 +1,62 @@
+{
+  "name": "Tukio — DeKUT Campus Events",
+  "short_name": "Tukio",
+  "description": "Personalized campus event recommendations and attendance app for Dedan Kimathi University of Technology.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#34B233",
+  "background_color": "#0B111A",
+  "categories": ["education", "events", "social"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Discover Events",
+      "short_name": "Events",
+      "description": "Browse recommended and upcoming campus events",
+      "url": "/events",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "My Interests",
+      "short_name": "Interests",
+      "description": "Personalize recommendations by category and topics",
+      "url": "/onboarding",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

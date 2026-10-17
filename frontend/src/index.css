@@ -76,11 +76,61 @@
   --bg-input: #FFFFFF;
   --border-light: var(--border);
 
+  /* Skeleton Shimmer */
+  --skeleton-bg: #E2E8F0;
+  --skeleton-highlight: #F8FAFC;
+
   /* elevation */
   --shadow-sm: 0 1px 2px rgba(15, 42, 15, 0.06);
   --shadow-md: 0 4px 10px rgba(15, 42, 15, 0.08);
   --shadow-lg: 0 10px 24px rgba(15, 42, 15, 0.10);
   --shadow-glow: 0 0 0 3px rgba(52, 178, 51, 0.15);
+}
+
+/* ── Dark Theme Token Overrides ────────────────────────────────────── */
+:root[data-theme="dark"] {
+  --bg: #0B111A;
+  --surface: #131D28;
+  --text: #F8FAFC;
+  --text-muted: #94A3B8;
+  --border: #243547;
+
+  /* legacy alias overrides for dark mode */
+  --text-primary: #F8FAFC;
+  --text-secondary: #CBD5E1;
+  --text-inverse: #0B111A;
+
+  --primary: #34B233;
+  --primary-dark: #4ADE80;   /* readable vibrant green on dark background */
+  --primary-tint: rgba(52, 178, 51, 0.18);
+  --accent-gold: #FACC15;
+  --link-hover: #F87171;
+
+  --accent: #34B233;
+  --accent-dark: #4ADE80;
+  --accent-light: #4ADE80;
+  --accent-bg: rgba(52, 178, 51, 0.18);
+  --accent-bg-hover: rgba(52, 178, 51, 0.28);
+  --accent-border: #34B233;
+
+  --gold: #EAB308;
+  --gold-light: #FACC15;
+  --gold-bg: rgba(234, 179, 8, 0.16);
+
+  --bg-secondary: #131D28;
+  --bg-card: #182330;
+  --bg-card-hover: #1E2C3D;
+  --bg-glass: rgba(24, 35, 48, 0.85);
+  --bg-input: #131D28;
+  --border-light: #243547;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.65);
+  --shadow-glow: 0 0 0 3px rgba(74, 222, 128, 0.25);
+
+  --skeleton-bg: #1E293B;
+  --skeleton-highlight: #334155;
 }
 
 
@@ -335,13 +385,13 @@ a:hover {
 }
 
 .badge-gold {
-  background: #FDF3D4;
-  color: #7A5B05;
-  border: 1px solid #E5C044;
+  background: var(--gold-bg, #FDF3D4);
+  color: var(--gold-light, #7A5B05);
+  border: 1px solid var(--gold, #E5C044);
 }
 
 .badge-muted {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--surface);
   color: var(--text-muted);
   border: 1px solid var(--border);
 }
@@ -497,3 +547,16 @@ a:hover {
     padding: var(--space-2xl) 0 var(--space-xl);
   }
 }
+
+/* ── Accessibility: Reduced Motion ────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+

@@ -140,9 +140,11 @@ export default function TukioCard({
   rsvpLoading = false,
   isDragging = false,
   dragOffset = { x: 0, y: 0 },
+  transitionClass = '',
 }) {
   const [descExpanded, setDescExpanded] = useState(false);
   const [showWhyModal, setShowWhyModal] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   if (!event) return null;
 
@@ -195,18 +197,22 @@ export default function TukioCard({
 
   return (
     <div
-      className={`tukio-card ${isDragging ? 'dragging' : ''}`}
+      className={`tukio-card ${isDragging ? 'dragging' : ''} ${transitionClass}`.trim()}
       style={cardStyle}
     >
       {/* ── Top Media / Image Header ────────────────────────────── */}
       <div className="tukio-card-media">
         {event.image_url ? (
-          <img
-            src={event.image_url}
-            alt={event.title}
-            className="tukio-card-img"
-            loading="lazy"
-          />
+          <>
+            {!imgLoaded && <div className="tukio-card-img-placeholder" />}
+            <img
+              src={event.image_url}
+              alt={event.title}
+              className={`tukio-card-img ${imgLoaded ? 'loaded' : ''}`}
+              loading="lazy"
+              onLoad={() => setImgLoaded(true)}
+            />
+          </>
         ) : (
           <div
             className="tukio-card-fallback-media"

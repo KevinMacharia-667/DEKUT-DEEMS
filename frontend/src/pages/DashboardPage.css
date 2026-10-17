@@ -252,9 +252,8 @@
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--text-secondary);
-  border: 1px solid var(--border);
-  background: #FFFFFF;
   border: 1px solid var(--border-light);
+  background: var(--surface);
   border-radius: var(--radius-full);
   cursor: pointer;
   transition: all var(--transition-fast);

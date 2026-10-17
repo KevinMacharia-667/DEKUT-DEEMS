@@ -1,11 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import Logo from './Logo';
 import './Navbar.css';
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -34,7 +36,7 @@ export default function Navbar() {
     <nav className="navbar">
       <div className="navbar-inner">
         {/* Brand */}
-<Link to="/events" className="navbar-brand">
+        <Link to="/events" className="navbar-brand">
           <Logo size={34} showWordmark onDark />
         </Link>
 
@@ -82,8 +84,18 @@ export default function Navbar() {
           )}
         </ul>
 
-        {/* Auth actions */}
+        {/* Auth actions & Theme toggle */}
         <div className="navbar-actions">
+          <button
+            type="button"
+            className="navbar-theme-toggle"
+            onClick={toggleTheme}
+            aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+            title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {isDark ? '☀️' : '🌙'}
+          </button>
+
           {isAuthenticated ? (
             <div ref={dropdownRef} style={{ position: 'relative' }}>
               <button
@@ -116,6 +128,16 @@ export default function Navbar() {
                   >
                     🎯 My Interests & Preferences
                   </Link>
+                  <button
+                    type="button"
+                    className="navbar-dropdown-item"
+                    onClick={() => {
+                      toggleTheme();
+                      setDropdownOpen(false);
+                    }}
+                  >
+                    {isDark ? '☀️ Light Theme' : '🌙 Dark Theme'}
+                  </button>
                   <div className="navbar-dropdown-divider" />
                   <button
                     className="navbar-dropdown-item"

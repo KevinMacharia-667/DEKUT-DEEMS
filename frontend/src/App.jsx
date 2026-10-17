@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import PWAInstallPrompt from './components/PWAInstallPrompt';
 import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -59,6 +60,7 @@ export default function App() {
         {/* Catch-all */}
         <Route path="*" element={<Navigate to="/events" replace />} />
       </Routes>
+      <PWAInstallPrompt />
     </>
   );
 }

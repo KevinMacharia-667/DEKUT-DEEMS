@@ -243,3 +243,54 @@
   background: rgba(255, 255, 255, 0.18);
   color: #FFFFFF;
 }
+
+/* ── Theme Toggle Button & Dark Mode Overrides ─────────────────────── */
+.navbar-theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #FFFFFF;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.navbar-theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.28);
+  transform: scale(1.05);
+}
+
+[data-theme="dark"] .navbar {
+  background: rgba(11, 17, 26, 0.95);
+  border-bottom: 1px solid var(--border);
+}
+
+[data-theme="dark"] .navbar-theme-toggle {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .navbar-theme-toggle:hover {
+  background: var(--bg-card-hover);
+}
+
+[data-theme="dark"] .navbar-dropdown {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+
+[data-theme="dark"] .navbar-dropdown-item {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .navbar-dropdown-item:hover {
+  background: var(--surface);
+  color: var(--primary-dark);
+}

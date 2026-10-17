@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
-    "test": "node --test src/utils/calendar.test.js",
+    "test": "node --test src/utils/calendar.test.js src/utils/theme.test.js src/utils/pwa.test.js",
     "preview": "vite preview"
   },
   "dependencies": {
