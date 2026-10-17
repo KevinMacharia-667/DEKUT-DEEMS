@@ -15,7 +15,10 @@ from datetime import datetime, timezone
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, Query
+from sqlalchemy import or_, and_
 from sqlalchemy.orm import Session
+
+from app.services.time_utils import get_nairobi_now
 
 from app.dependencies import get_current_user, get_db
 from app.ml.baseline import recommend_baseline
@@ -47,21 +50,46 @@ def get_recommendations(
         description="Ranking strategy: 'hybrid' (Multi-Factor), 'ml' (TF-IDF), or 'baseline' (rules)",
     ),
     k: int = Query(10, ge=1, le=50, description="Number of recommendations"),
+    reference_time: datetime | None = Query(
+        None, description="Optional reference datetime in ISO format (for tests or fixed-date evaluation)"
+    ),
 ):
     """
     Rank upcoming published events for the current user using the selected strategy.
     Default is 'hybrid' which combines Content-Based Filtering, SVD Collaborative Filtering,
     and Contextual Ranking (Urgency, Popularity, and Faculty alignment).
+    Excludes events that have already ended.
     """
-    now = datetime.now(timezone.utc)
+    ref_dt = get_nairobi_now(reference_time)
+    naive_ref = ref_dt.replace(tzinfo=None)
 
-    # Candidate pool: upcoming, published events only.
-    candidates = (
-        db.query(Event)
-        .filter(Event.is_published.is_(True))
-        .filter(Event.start_time >= now.replace(tzinfo=None))
+    not_ended_filter = or_(
+        Event.end_time >= naive_ref,
+        and_(Event.end_time.is_(None), Event.start_time >= naive_ref),
+    )
+
+    from app.models.event_feedback import EventFeedback
+
+    # Query user's feedbacks
+    user_feedbacks = (
+        db.query(EventFeedback)
+        .filter(EventFeedback.user_id == current_user.id)
         .all()
     )
+    not_for_me_ids = {f.event_id for f in user_feedbacks if f.feedback_type == "not_for_me"}
+    interested_ids = {f.event_id for f in user_feedbacks if f.feedback_type == "interested"}
+
+    # Candidate pool: upcoming, published events that haven't ended yet
+    # Exclude events the user explicitly marked "not_for_me" (applies to For You recommendations)
+    cand_query = (
+        db.query(Event)
+        .filter(Event.is_published.is_(True))
+        .filter(not_ended_filter)
+    )
+    if not_for_me_ids:
+        cand_query = cand_query.filter(~Event.id.in_(not_for_me_ids))
+
+    candidates = cand_query.all()
 
     interests = (
         db.query(UserInterest)
@@ -73,6 +101,22 @@ def get_recommendations(
         db.query(Event)
         .join(RSVP, RSVP.event_id == Event.id)
         .filter(RSVP.user_id == current_user.id, RSVP.status == "confirmed")
+        .all()
+    )
+
+    interested_events = (
+        db.query(Event).filter(Event.id.in_(interested_ids)).all()
+        if interested_ids
+        else []
+    )
+    not_for_me_events = (
+        db.query(Event).filter(Event.id.in_(not_for_me_ids)).all()
+        if not_for_me_ids
+        else []
+    )
+    all_feedbacks = (
+        db.query(EventFeedback)
+        .filter(EventFeedback.feedback_type == "interested")
         .all()
     )
 
@@ -94,7 +138,10 @@ def get_recommendations(
         ]
     elif strategy == "ml":
         ranked = recommend_with_scores(
-            interests, candidates, rsvp_events=user_rsvps, top_n=k
+            interests,
+            candidates,
+            rsvp_events=list(user_rsvps) + list(interested_events),
+            top_n=k,
         )
         items = [
             RecommendationItem(
@@ -119,6 +166,9 @@ def get_recommendations(
             all_events=candidates,
             all_rsvps=all_rsvps,
             rsvp_events=user_rsvps,
+            interested_events=interested_events,
+            not_for_me_events=not_for_me_events,
+            all_feedbacks=all_feedbacks,
             top_n=k,
         )
         items = [

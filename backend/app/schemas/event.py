@@ -26,6 +26,7 @@ class EventCreate(BaseModel):
     max_attendees: int | None = Field(None, ge=1)
     image_url: str | None = Field(None, max_length=500)
     tags: str | None = Field(None, max_length=500, description="Comma-separated tags")
+    is_published: bool = True
 
 
 class EventUpdate(BaseModel):

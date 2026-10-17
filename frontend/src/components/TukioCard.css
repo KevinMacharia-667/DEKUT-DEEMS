@@ -1,0 +1,700 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Tukio — Swipeable Event Card Component Styles
+   Mobile-first, glassmorphism, fluid animations & high-contrast typography
+   ═══════════════════════════════════════════════════════════════════ */
+
+.tukio-card {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  min-height: 520px;
+  background: var(--bg-card, #ffffff);
+  border-radius: var(--radius-xl, 24px);
+  border: 1px solid var(--border-light, #d8e5d8);
+  box-shadow: 0 16px 36px rgba(15, 42, 15, 0.12), 0 2px 8px rgba(15, 42, 15, 0.04);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+  touch-action: pan-y;
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease;
+}
+
+.tukio-card.dragging {
+  transition: none;
+  cursor: grabbing;
+}
+
+/* ── Hero Image / Gradient ────────────────────────────────────────── */
+
+.tukio-card-media {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  background: #111827;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tukio-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.tukio-card:hover .tukio-card-img {
+  transform: scale(1.03);
+}
+
+.tukio-card-fallback-media {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  position: relative;
+}
+
+.tukio-card-fallback-emoji {
+  font-size: 4rem;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+  transition: transform 0.3s ease;
+}
+
+.tukio-card:hover .tukio-card-fallback-emoji {
+  transform: scale(1.1);
+}
+
+.tukio-card-gradient-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.2) 0%,
+    transparent 40%,
+    rgba(0, 0, 0, 0.6) 80%,
+    rgba(0, 0, 0, 0.85) 100%
+  );
+  pointer-events: none;
+}
+
+/* Badges on top of media */
+.tukio-card-top-badges {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.tukio-badge-category {
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-full, 9999px);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tukio-badge-time-status {
+  background: #34B233;
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: var(--radius-full, 9999px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.tukio-badge-time-status.today {
+  background: #eab308;
+  color: #1a1a1a;
+}
+
+.tukio-badge-time-status.weekend {
+  background: #8b5cf6;
+  color: #ffffff;
+}
+
+/* ── Card Content Body ────────────────────────────────────────────── */
+
+.tukio-card-body {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 12px;
+}
+
+.tukio-card-title-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tukio-card-title {
+  font-family: var(--font-heading, system-ui, sans-serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+}
+
+.tukio-card-organizer {
+  font-size: 0.82rem;
+  color: var(--text-muted, #64748b);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Meta Info Grid */
+.tukio-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--surface, #f7faf7);
+  padding: 10px 14px;
+  border-radius: var(--radius-md, 10px);
+  border: 1px solid var(--border-light, #d8e5d8);
+}
+
+.tukio-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  color: var(--text-secondary, #3f5140);
+  font-weight: 500;
+}
+
+.tukio-meta-icon {
+  font-size: 1rem;
+  width: 20px;
+  display: inline-flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tukio-meta-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Description preview */
+.tukio-card-description {
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--text-muted, #64748b);
+  margin: 0;
+  position: relative;
+}
+
+.tukio-card-description.clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tukio-expand-desc-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-top: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primary-dark, #1e7a1e);
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.tukio-expand-desc-btn:hover {
+  text-decoration: underline;
+}
+
+/* Slot for future extensions (Why Recommended in Step 2, Feedback in Step 5) */
+.tukio-card-extension-slot {
+  empty-cells: hide;
+}
+
+/* ── Card Footer & CTA ────────────────────────────────────────────── */
+
+.tukio-card-footer {
+  padding: 14px 20px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px solid var(--border-light, #e2e8f0);
+  background: var(--bg-card, #ffffff);
+}
+
+/* ── Feedback Row (Interested / Not for me) ────────────────────────── */
+
+.tukio-feedback-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+}
+
+.tukio-feedback-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-full, 9999px);
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-size: 0.82rem;
+  font-weight: 600;
+  border: 1px solid var(--border-light, #d8e5d8);
+  background: var(--surface, #f8faf8);
+  color: var(--text-secondary, #475569);
+  cursor: pointer;
+  transition: all 0.18s ease;
+  user-select: none;
+}
+
+.tukio-feedback-btn:hover:not(:disabled) {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: var(--text-primary, #0f172a);
+}
+
+.tukio-feedback-btn.interested:hover:not(:disabled) {
+  background: #e9f9e7;
+  border-color: #a7f3d0;
+  color: #065f46;
+}
+
+.tukio-feedback-btn.interested.active {
+  background: #ecfdf5;
+  border-color: #34b233;
+  color: #15803d;
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(52, 178, 51, 0.15);
+}
+
+.tukio-feedback-btn.not-for-me:hover:not(:disabled) {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+
+.tukio-feedback-icon {
+  font-size: 0.95rem;
+}
+
+/* ── Compact Utility Row (WhatsApp Share / Add to Calendar) ────────── */
+
+.tukio-card-utility-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+}
+
+.tukio-utility-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full, 9999px);
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-size: 0.76rem;
+  font-weight: 600;
+  border: 1px solid var(--border-light, #e2e8f0);
+  background: transparent;
+  color: var(--text-muted, #64748b);
+  cursor: pointer;
+  transition: all 0.16s ease;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.tukio-utility-btn:hover {
+  background: var(--surface, #f8faf8);
+  border-color: #cbd5e1;
+  color: var(--text-primary, #0f172a);
+}
+
+.tukio-utility-btn.whatsapp:hover {
+  background: #f0fdf4;
+  border-color: #86efac;
+  color: #15803d;
+}
+
+.tukio-utility-btn.calendar:hover {
+  background: #eff6ff;
+  border-color: #93c5fd;
+  color: #1d4ed8;
+}
+
+.tukio-utility-icon {
+  font-size: 0.85rem;
+}
+
+.tukio-card-cta-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.tukio-rsvp-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-heading, system-ui, sans-serif);
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 13px 20px;
+  border-radius: var(--radius-full, 9999px);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 4px 14px rgba(52, 178, 51, 0.25);
+  background: var(--primary, #34B233);
+  color: #ffffff;
+}
+
+.tukio-rsvp-btn:hover:not(:disabled) {
+  background: var(--primary-dark, #1E7A1E);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(30, 122, 30, 0.3);
+}
+
+.tukio-rsvp-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.tukio-rsvp-btn.attending {
+  background: var(--primary-tint, #e9f9e7);
+  color: var(--primary-dark, #1e7a1e);
+  border: 1.5px solid var(--primary, #34b233);
+  box-shadow: none;
+}
+
+.tukio-rsvp-btn.attending:hover:not(:disabled) {
+  background: #fde8e8;
+  color: #c8102e;
+  border-color: #f87171;
+}
+
+.tukio-details-link-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  border-radius: var(--radius-full, 9999px);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-secondary, #3f5140);
+  background: var(--surface, #f7faf7);
+  border: 1px solid var(--border-light, #d8e5d8);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.tukio-details-link-btn:hover {
+  background: var(--border-light, #e2e8f0);
+  color: var(--text-primary, #0f172a);
+}
+
+/* Micro spinner for RSVP button */
+.tukio-micro-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: tukioSpin 0.7s linear infinite;
+}
+
+.tukio-rsvp-btn.attending .tukio-micro-spinner {
+  border-color: rgba(30, 122, 30, 0.2);
+  border-top-color: var(--primary-dark, #1e7a1e);
+}
+
+@keyframes tukioSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Skeleton Card Loader ─────────────────────────────────────────── */
+
+.tukio-skeleton-card {
+  pointer-events: none;
+}
+
+.tukio-skeleton-box {
+  background: linear-gradient(
+    90deg,
+    #edf2f7 0%,
+    #f7fafc 50%,
+    #edf2f7 100%
+  );
+  background-size: 200% 100%;
+  animation: tukioShimmer 1.5s infinite;
+  border-radius: var(--radius-sm, 6px);
+}
+
+@keyframes tukioShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.tukio-skeleton-img {
+  width: 100%;
+  height: 220px;
+}
+
+.tukio-skeleton-title {
+  height: 26px;
+  width: 78%;
+  margin-bottom: 6px;
+}
+
+.tukio-skeleton-meta {
+  height: 48px;
+  width: 100%;
+  border-radius: var(--radius-md, 10px);
+}
+
+.tukio-skeleton-text {
+  height: 16px;
+  width: 90%;
+  margin-bottom: 4px;
+}
+
+.tukio-skeleton-btn {
+  height: 46px;
+  width: 100%;
+  border-radius: var(--radius-full, 9999px);
+}
+
+/* ── Why Recommended Chip & Explanations ────────────────────────── */
+
+.tukio-why-chip-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tukio-why-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.12) 0%, rgba(52, 178, 51, 0.12) 100%);
+  border: 1px solid rgba(234, 179, 8, 0.4);
+  color: var(--primary-dark, #1e7a1e);
+  font-family: var(--font-heading, system-ui, sans-serif);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: var(--radius-full, 9999px);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.tukio-why-chip:hover {
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.22) 0%, rgba(52, 178, 51, 0.22) 100%);
+  border-color: var(--primary, #34b233);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(52, 178, 51, 0.15);
+}
+
+.tukio-why-chip-icon {
+  font-size: 0.88rem;
+  line-height: 1;
+}
+
+.tukio-why-chip-score {
+  background: #ffffff;
+  color: #854d0e;
+  border: 1px solid rgba(234, 179, 8, 0.4);
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: var(--radius-full, 9999px);
+}
+
+.tukio-why-chip-info {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+/* Modal / Overlay for full explanation */
+.tukio-why-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 10;
+  display: flex;
+  align-items: flex-end;
+  border-radius: var(--radius-xl, 24px);
+  overflow: hidden;
+  animation: tukioFadeIn 0.2s ease;
+}
+
+@keyframes tukioFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.tukio-why-sheet {
+  width: 100%;
+  background: var(--bg-card, #ffffff);
+  border-top-left-radius: var(--radius-lg, 16px);
+  border-top-right-radius: var(--radius-lg, 16px);
+  border-top: 3px solid var(--primary, #34b233);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.15);
+  animation: tukioSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes tukioSlideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.tukio-why-sheet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tukio-why-sheet-title {
+  font-family: var(--font-heading, system-ui, sans-serif);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tukio-why-sheet-close {
+  background: var(--surface, #f7faf7);
+  border: 1px solid var(--border-light, #d8e5d8);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted, #64748b);
+  transition: all 0.15s ease;
+}
+
+.tukio-why-sheet-close:hover {
+  background: #f1f5f9;
+  color: var(--text-primary, #0f172a);
+}
+
+.tukio-why-meter-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--surface, #f7faf7);
+  padding: 10px 14px;
+  border-radius: var(--radius-md, 10px);
+  border: 1px solid var(--border-light, #d8e5d8);
+}
+
+.tukio-why-meter-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.tukio-why-meter-label {
+  color: var(--text-secondary, #3f5140);
+}
+
+.tukio-why-meter-percent {
+  color: var(--primary-dark, #1e7a1e);
+}
+
+.tukio-why-bar-bg {
+  width: 100%;
+  height: 7px;
+  background: var(--border-light, #e2e8f0);
+  border-radius: var(--radius-full, 9999px);
+  overflow: hidden;
+}
+
+.tukio-why-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #eab308 0%, #34B233 100%);
+  border-radius: var(--radius-full, 9999px);
+  transition: width 0.5s ease;
+}
+
+.tukio-why-reasons-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted, #64748b);
+}
+
+.tukio-why-reasons-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tukio-why-reason-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.86rem;
+  color: var(--text-secondary, #3f5140);
+  line-height: 1.35;
+}
+
+.tukio-why-reason-bullet {
+  color: var(--primary, #34b233);
+  font-weight: 800;
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
+
+.tukio-why-guest-prompt {
+  font-size: 0.86rem;
+  color: var(--text-muted, #64748b);
+  line-height: 1.45;
+  margin: 0;
+}

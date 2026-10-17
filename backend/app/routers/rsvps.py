@@ -14,6 +14,7 @@ from app.models.rsvp import RSVP
 from app.models.user import User
 from app.schemas.rsvp import AttendeeResponse, RSVPResponse
 from app.schemas.user import UserBrief
+from app.services.interaction_service import log_interaction
 
 router = APIRouter(tags=["RSVPs"])
 
@@ -57,6 +58,7 @@ def create_rsvp(
         existing.status = "confirmed"
         db.commit()
         db.refresh(existing)
+        log_interaction(db, event_id=event_id, interaction_type="rsvp", user_id=current_user.id)
         return existing
 
     # Check capacity
@@ -76,6 +78,7 @@ def create_rsvp(
     db.add(rsvp)
     db.commit()
     db.refresh(rsvp)
+    log_interaction(db, event_id=event_id, interaction_type="rsvp", user_id=current_user.id)
     return rsvp
 
 
@@ -103,6 +106,7 @@ def cancel_rsvp(
 
     rsvp.status = "cancelled"
     db.commit()
+    log_interaction(db, event_id=event_id, interaction_type="rsvp_cancel", user_id=current_user.id)
 
 
 @router.get(

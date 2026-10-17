@@ -2,12 +2,19 @@
 Events router: CRUD operations for campus events.
 """
 
+from datetime import datetime
 import uuid
-from typing import Annotated
+from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import func as sa_func
+from sqlalchemy import func as sa_func, or_, and_
 from sqlalchemy.orm import Session
+
+from app.services.time_utils import (
+    get_nairobi_now,
+    get_today_bounds,
+    get_weekend_bounds,
+)
 
 from app.dependencies import get_current_user, get_db
 from app.ml.engine import recommend_events
@@ -97,24 +104,62 @@ def list_events(
     category: str | None = Query(None, description="Filter by category"),
     search: str | None = Query(None, description="Search in title"),
     published_only: bool = Query(True, description="Show only published events"),
+    time_frame: Literal["today", "weekend", "upcoming", "all"] | None = Query(
+        None, description="Time-aware filter: 'today', 'weekend', 'upcoming', or 'all'"
+    ),
+    reference_time: datetime | None = Query(
+        None, description="Optional reference ISO timestamp for fixed-date queries/tests"
+    ),
 ):
     """
     Return a paginated list of events.
-    Supports filtering by category and text search on title.
+    Supports filtering by category, search text, and time frames in Africa/Nairobi timezone
+    ('today', 'weekend', 'upcoming'). Excludes events that have already ended for active feeds.
     """
+    now_nairobi = get_nairobi_now(reference_time)
+    naive_now = now_nairobi.replace(tzinfo=None)
+
     query = db.query(Event)
 
     if published_only:
         query = query.filter(Event.is_published.is_(True))
-    if category:
+    if category and category != "All":
         query = query.filter(Event.category == category)
     if search:
         query = query.filter(Event.title.ilike(f"%{search}%"))
 
+    not_ended_filter = or_(
+        Event.end_time >= naive_now,
+        and_(Event.end_time.is_(None), Event.start_time >= naive_now),
+    )
+
+    if time_frame == "today":
+        start_bound, end_bound = get_today_bounds(reference_time)
+        naive_start = start_bound.replace(tzinfo=None)
+        naive_end = end_bound.replace(tzinfo=None)
+        query = query.filter(
+            Event.start_time >= naive_start,
+            Event.start_time <= naive_end,
+            not_ended_filter,
+        ).order_by(Event.start_time.asc())
+    elif time_frame == "weekend":
+        start_bound, end_bound = get_weekend_bounds(reference_time)
+        naive_start = start_bound.replace(tzinfo=None)
+        naive_end = end_bound.replace(tzinfo=None)
+        query = query.filter(
+            Event.start_time >= naive_start,
+            Event.start_time <= naive_end,
+            not_ended_filter,
+        ).order_by(Event.start_time.asc())
+    elif time_frame == "upcoming":
+        query = query.filter(not_ended_filter).order_by(Event.start_time.asc())
+    else:
+        # Default view: chronological upcoming events soonest first
+        query = query.order_by(Event.start_time.asc())
+
     total = query.count()
     events = (
-        query.order_by(Event.start_time.desc())
-        .offset((page - 1) * per_page)
+        query.offset((page - 1) * per_page)
         .limit(per_page)
         .all()
     )

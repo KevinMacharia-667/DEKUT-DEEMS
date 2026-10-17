@@ -1,18 +1,22 @@
-# DeKUT Event Management System
+# Tukio — DeKUT Campus Event Recommendation App
 
-A campus event management platform with a recommendation engine built as a final-year project.
+**Tukio** (Swahili for *Event / Happening*) is a mobile-first, engagement-focused event recommendation app built for Dedan Kimathi University of Technology (DeKUT). It combines a TikTok/Tinder-style swipeable card feed with an intelligent hybrid recommendation engine (TF-IDF content filtering + collaborative signals) for instant campus discovery and one-tap RSVPs.
 
 ## Repository Layout
-- `/backend`: Python 3.11 + FastAPI + SQLAlchemy + PostgreSQL (Supabase)
-- `/frontend`: React 18 + Vite + Tailwind CSS + react-router (configured as a PWA)
-- `/ml`: Recommendation engine module using `scikit-learn` for TF-IDF & cosine similarity
+- `/backend`: Python 3.11/3.13 + FastAPI + SQLAlchemy + SQLite (dev) / PostgreSQL (Supabase prod)
+- `/frontend`: React 19 + Vite 8 + React Router 7 (configured as mobile-first Tukio PWA)
+- `/backend/app/ml`: Recommendation engine (rule-based baseline, TF-IDF content similarity, and multi-factor hybrid engine)
 
-## Current Stage
-**STAGE 5 COMPLETE: Recommendation Engine (baseline + ML).**
-- Stages 1-4 done: auth (JWT + roles), events CRUD, RSVPs, full React frontend.
-- Stage 5 Part A done: event category/tags, user_interests model + /me/interests endpoints, seed script with ground truth.
-- Stage 5 Parts B & C done: rule-based baseline (app/ml/baseline.py), TF-IDF engine with explanations (app/ml/engine.py), GET /recommendations?strategy=ml|baseline endpoint, "Recommended for you" section with strategy toggle on the Dashboard, and evaluate.py (precision@5/@10 comparison for the report).
-- Next: search/filter UI polish, edit-event page, tests, then Stage 6 (PWA) and Stage 7 (deploy + Supabase).
+## Project Pivot & Roadmap (Tukio)
+1. ✅ **Mobile-first swipeable card feed**: Full-focus event card deck with touch swipe gestures, keyboard navigation, and instant one-tap RSVP.
+2. ⏳ **"Why recommended" chip**: Direct explainability chips on each card powered by the ML engine.
+3. ⏳ **Quick onboarding cold-start**: 3+ interest categories selection for new users.
+4. ⏳ **Time-aware curation**: Happening Today, This Weekend, For You sections.
+5. ⏳ **Feedback loop**: "Interested" / "Not for me" write-backs to the recommender.
+6. ⏳ **Sharing & Calendar**: WhatsApp direct sharing and `.ics` / Google Calendar integration.
+7. ⏳ **Polishing & UI**: Skeleton loaders, smooth transitions, and dark mode.
+8. ⏳ **PWA completion**: Web app manifest, service worker, and mobile install prompt.
+9. ⏳ **Offline evaluation script**: Precision@K and Recall@K comparison table for academic documentation.
 
 ### Evaluating the recommendation engines
 From the backend directory (after seeding): `python seed.py` then `python evaluate.py`

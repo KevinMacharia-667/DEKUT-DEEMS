@@ -17,7 +17,7 @@ class InterestTag(BaseModel):
 class UserInterestsUpdate(BaseModel):
     """Replace all of a user's interest tags at once."""
 
-    interests: list[InterestTag]
+    interests: list[InterestTag] = Field(..., min_length=1, max_length=50)
 
 
 class UserInterestResponse(BaseModel):

@@ -32,7 +32,7 @@ export default function Logo({
         height={size}
         viewBox="0 0 64 64"
         role="img"
-        aria-label="DeKUT DEEMS"
+        aria-label="Tukio"
       >
         <defs>
           <linearGradient id={`${gid}-g`} x1="0" y1="0" x2="0" y2="1">
@@ -69,8 +69,8 @@ export default function Logo({
       {showWordmark && (
         <span className="logo-text">
           <span className="logo-wordmark" style={{ fontSize: size * 0.46 }}>
-            <span className="logo-word-dekut">DeKUT</span>
-            <span className="logo-word-deems">DEEMS</span>
+            <span className="logo-word-dekut">Tukio</span>
+            <span className="logo-word-deems" style={{ fontSize: '0.68em', opacity: 0.9 }}>DeKUT</span>
           </span>
           {tagline && <span className="logo-tagline">{tagline}</span>}
         </span>

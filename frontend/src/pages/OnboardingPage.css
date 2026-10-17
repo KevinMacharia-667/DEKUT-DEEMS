@@ -1,0 +1,263 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Tukio — Onboarding Screen Styles
+   Mobile-first, tactile category cards with accessible button states
+   ═══════════════════════════════════════════════════════════════════ */
+
+.tukio-onboarding-page {
+  min-height: calc(100vh - 64px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl, 32px) var(--space-md, 16px) var(--space-3xl, 64px);
+  background: radial-gradient(circle at 50% 10%, rgba(52, 178, 51, 0.1) 0%, transparent 60%),
+              var(--bg, #ffffff);
+}
+
+.tukio-onboarding-card {
+  width: 100%;
+  max-width: 540px;
+  background: var(--bg-card, #ffffff);
+  border-radius: var(--radius-xl, 24px);
+  border: 1px solid var(--border-light, #d8e5d8);
+  box-shadow: 0 20px 40px rgba(15, 42, 15, 0.1), 0 2px 8px rgba(15, 42, 15, 0.04);
+  padding: 36px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* ── Header Lockup ────────────────────────────────────────────────── */
+
+.tukio-onboarding-header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.tukio-onboarding-badge {
+  background: var(--primary-tint, #e9f9e7);
+  color: var(--primary-dark, #1e7a1e);
+  border: 1px solid rgba(52, 178, 51, 0.25);
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: var(--radius-full, 9999px);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.tukio-onboarding-title {
+  font-family: var(--font-heading, system-ui, sans-serif);
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+  line-height: 1.25;
+}
+
+.tukio-onboarding-subtitle {
+  font-size: 0.92rem;
+  color: var(--text-muted, #64748b);
+  max-width: 420px;
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* ── Live Requirement Tracker ─────────────────────────────────────── */
+
+.tukio-onboarding-tracker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 16px;
+  border-radius: var(--radius-full, 9999px);
+  font-size: 0.84rem;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.tukio-onboarding-tracker.incomplete {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.tukio-onboarding-tracker.complete {
+  background: var(--primary-tint, #e9f9e7);
+  color: var(--primary-dark, #1e7a1e);
+  border: 1px solid var(--primary, #34b233);
+}
+
+/* ── Category Tiles Grid ─────────────────────────────────────────── */
+
+.tukio-onboarding-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.tukio-onboarding-tile {
+  background: var(--surface, #f7faf7);
+  border: 1.5px solid var(--border-light, #d8e5d8);
+  border-radius: var(--radius-lg, 16px);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  position: relative;
+  outline: none;
+  font-family: inherit;
+}
+
+.tukio-onboarding-tile:hover {
+  background: #ffffff;
+  border-color: var(--primary, #34b233);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(52, 178, 51, 0.12);
+}
+
+.tukio-onboarding-tile:focus-visible {
+  box-shadow: 0 0 0 3px rgba(52, 178, 51, 0.35);
+  border-color: var(--primary-dark, #1e7a1e);
+}
+
+.tukio-onboarding-tile.selected {
+  background: var(--primary-tint, #e9f9e7);
+  border-color: var(--primary, #34b233);
+  box-shadow: 0 4px 14px rgba(52, 178, 51, 0.18);
+}
+
+.tukio-tile-top {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tukio-tile-emoji {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.tukio-tile-check {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-light, #cbd5e1);
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: transparent;
+  transition: all 0.2s ease;
+}
+
+.tukio-onboarding-tile.selected .tukio-tile-check {
+  background: var(--primary, #34b233);
+  border-color: var(--primary, #34b233);
+  color: #ffffff;
+}
+
+.tukio-tile-label {
+  font-family: var(--font-heading, system-ui, sans-serif);
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+}
+
+.tukio-tile-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted, #64748b);
+  line-height: 1.3;
+}
+
+/* ── Actions & Skip Footer ────────────────────────────────────────── */
+
+.tukio-onboarding-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.tukio-onboarding-submit-btn {
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: var(--radius-full, 9999px);
+  border: none;
+  font-family: var(--font-heading, system-ui, sans-serif);
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.tukio-onboarding-submit-btn:not(:disabled) {
+  background: var(--primary, #34B233);
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(52, 178, 51, 0.3);
+}
+
+.tukio-onboarding-submit-btn:not(:disabled):hover {
+  background: var(--primary-dark, #1E7A1E);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(30, 122, 30, 0.35);
+}
+
+.tukio-onboarding-submit-btn:disabled {
+  background: var(--surface, #e2e8f0);
+  color: var(--text-muted, #94a3b8);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.tukio-onboarding-skip-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted, #64748b);
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm, 6px);
+  transition: color 0.15s ease;
+}
+
+.tukio-onboarding-skip-btn:hover {
+  color: var(--text-primary, #0f172a);
+  text-decoration: underline;
+}
+
+/* ── Mobile viewport adjustments ─────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .tukio-onboarding-card {
+    padding: 24px 18px;
+  }
+
+  .tukio-onboarding-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .tukio-onboarding-title {
+    font-size: 1.45rem;
+  }
+}

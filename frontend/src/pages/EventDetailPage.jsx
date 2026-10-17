@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getEvent, getAttendees, rsvpToEvent, cancelRsvp, deleteEvent } from '../api';
+import { getEvent, getAttendees, rsvpToEvent, cancelRsvp, deleteEvent, logEventInteraction } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/Toast';
+import { openWhatsAppShare } from '../utils/share';
+import { downloadEventICS } from '../utils/calendar';
 import './EventDetailPage.css';
 
 const CATEGORY_EMOJI = {
@@ -186,6 +188,29 @@ export default function EventDetailPage() {
               {rsvpLoading ? <span className="spinner" /> : 'RSVP to this event'}
             </button>
           )}
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => {
+              openWhatsAppShare(event);
+              logEventInteraction(event.id, 'share').catch(() => {});
+            }}
+            title="Share via WhatsApp"
+          >
+            💬 Share
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => {
+              downloadEventICS(event, window.location.origin);
+              toast.success(`Calendar event downloaded for "${event.title}"`);
+              logEventInteraction(event.id, 'add_to_calendar').catch(() => {});
+            }}
+            title="Add to Calendar (.ics)"
+          >
+            📅 Calendar
+          </button>
           {(isOwner || isAdmin) && (
             <>
               <button 

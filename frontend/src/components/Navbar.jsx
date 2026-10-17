@@ -109,6 +109,13 @@ export default function Navbar() {
                   >
                     Dashboard
                   </Link>
+                  <Link
+                    to="/onboarding"
+                    className="navbar-dropdown-item"
+                    onClick={() => setDropdownOpen(false)}
+                  >
+                    🎯 My Interests & Preferences
+                  </Link>
                   <div className="navbar-dropdown-divider" />
                   <button
                     className="navbar-dropdown-item"

@@ -56,9 +56,10 @@ def build_event_document(event: Event) -> str:
 def build_user_profile(
     user_interests: Sequence[UserInterest],
     rsvp_events: Sequence[Event] = (),
+    interested_events: Sequence[Event] = (),
     department: str | None = None,
 ) -> str:
-    """Build the user text document from declared interests, RSVPs, and department."""
+    """Build the user text document from declared interests, RSVPs, interested feedback, and department."""
     words: list[str] = []
     for ui in user_interests:
         repeats = max(1, int(round(ui.weight)))
@@ -68,6 +69,13 @@ def build_user_profile(
             words.append(event.title.lower())
         if event.category:
             words.append(event.category.lower())
+    for event in interested_events:
+        if event.title:
+            words.append(event.title.lower())
+        if event.category:
+            words.append(event.category.lower())
+        if event.tags:
+            words.extend(event.tags.replace(",", " ").lower().split())
     if department:
         words.extend([department.lower().strip()] * 2)
     return " ".join(words)
@@ -113,17 +121,27 @@ def compute_collaborative_scores(
     target_user_id: uuid.UUID,
     all_events: Sequence[Event],
     all_rsvps: Sequence[RSVP],
+    all_feedbacks: Sequence = (),
 ) -> np.ndarray:
     """
     Compute collaborative latent factor affinities via TruncatedSVD
     on the User x Event interaction matrix.
+    Uses strictly positive signals (RSVP=+1.5, interested=+1.0).
+    No negative weights are fed into SVD.
     """
     n_events = len(all_events)
-    if n_events == 0 or not all_rsvps:
+    if n_events == 0 or (not all_rsvps and not all_feedbacks):
         return np.zeros(n_events)
 
     event_id_to_idx = {e.id: i for i, e in enumerate(all_events)}
-    unique_users = list({r.user_id for r in all_rsvps})
+
+    interested_feedbacks = [
+        f for f in all_feedbacks if getattr(f, "feedback_type", None) == "interested"
+    ]
+    unique_users = list(
+        {r.user_id for r in all_rsvps if r.status == "confirmed"}
+        | {f.user_id for f in interested_feedbacks}
+    )
 
     if target_user_id not in unique_users:
         return np.zeros(n_events)
@@ -135,16 +153,28 @@ def compute_collaborative_scores(
     if n_users < 3 or n_events < 3:
         scores = np.zeros(n_events)
         for r in all_rsvps:
-            if r.user_id == target_user_id and r.event_id in event_id_to_idx:
+            if r.user_id == target_user_id and r.status == "confirmed" and r.event_id in event_id_to_idx:
                 scores[event_id_to_idx[r.event_id]] = 0.5
+        for f in interested_feedbacks:
+            if f.user_id == target_user_id and f.event_id in event_id_to_idx:
+                scores[event_id_to_idx[f.event_id]] = max(
+                    scores[event_id_to_idx[f.event_id]], 0.4
+                )
         return scores
 
     R = np.zeros((n_users, n_events), dtype=np.float32)
+    # Strictly positive signals:
+    for f in interested_feedbacks:
+        if f.user_id in user_id_to_idx and f.event_id in event_id_to_idx:
+            u_i = user_id_to_idx[f.user_id]
+            e_i = event_id_to_idx[f.event_id]
+            R[u_i, e_i] = 1.0
+
     for r in all_rsvps:
-        if r.user_id in user_id_to_idx and r.event_id in event_id_to_idx:
+        if r.status == "confirmed" and r.user_id in user_id_to_idx and r.event_id in event_id_to_idx:
             u_i = user_id_to_idx[r.user_id]
             e_i = event_id_to_idx[r.event_id]
-            R[u_i, e_i] = 1.0 if r.status == "confirmed" else -0.5
+            R[u_i, e_i] = 1.5
 
     if np.all(R[target_idx] <= 0):
         return np.zeros(n_events)
@@ -268,30 +298,54 @@ def recommend_hybrid(
     all_events: Sequence[Event],
     all_rsvps: Sequence[RSVP] = (),
     rsvp_events: Sequence[Event] = (),
+    interested_events: Sequence[Event] = (),
+    not_for_me_events: Sequence[Event] = (),
+    all_feedbacks: Sequence = (),
     top_n: int = 10,
 ) -> list[dict]:
     """
     Unified Multi-Factor Hybrid Recommender:
     Simultaneously blends Content, Collaborative SVD, and Contextual Ranking.
+    Uses positive signals (RSVPs and interested) in SVD and applies small content penalty for not_for_me.
     """
     n_events = len(all_events)
     if n_events == 0:
         return []
 
     user_doc = build_user_profile(
-        user_interests, rsvp_events=rsvp_events, department=user.department
+        user_interests,
+        rsvp_events=rsvp_events,
+        interested_events=interested_events,
+        department=user.department,
     )
 
     content_scores, explanations = compute_content_scores(user_doc, all_events)
-    collab_scores = compute_collaborative_scores(user.id, all_events, all_rsvps)
+    collab_scores = compute_collaborative_scores(
+        user.id, all_events, all_rsvps, all_feedbacks=all_feedbacks
+    )
     dept_scores, urgency_scores, pop_scores = compute_context_scores(
         all_events, user.department, all_rsvps
     )
 
-    has_user_rsvps = len(rsvp_events) > 0
+    # Small content-profile penalty for categories the user marked 'not_for_me'
+    if not_for_me_events:
+        rejected_categories: dict[str, int] = {}
+        for ev in not_for_me_events:
+            if ev.category:
+                cat_lower = ev.category.strip().lower()
+                rejected_categories[cat_lower] = rejected_categories.get(cat_lower, 0) + 1
+        total_rej = len(not_for_me_events)
+        for i, ev in enumerate(all_events):
+            if ev.category:
+                cat_l = ev.category.strip().lower()
+                if cat_l in rejected_categories:
+                    penalty = 0.15 * (rejected_categories[cat_l] / total_rej)
+                    content_scores[i] = max(0.0, content_scores[i] - penalty)
+
+    has_activity = len(rsvp_events) > 0 or len(interested_events) > 0
     has_interests = len(user_interests) > 0
 
-    if has_user_rsvps:
+    if has_activity:
         w_content = 0.42
         w_collab = 0.28
         w_dept = 0.12

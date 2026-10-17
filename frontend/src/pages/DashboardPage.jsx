@@ -342,6 +342,13 @@ export default function DashboardPage() {
             <div className="glass-card interests-card">
               <div className="interests-header">
                 <h3>My Interests</h3>
+                <Link
+                  to="/onboarding"
+                  className="btn btn-secondary btn-sm"
+                  style={{ padding: '3px 10px', fontSize: '0.78rem' }}
+                >
+                  🎯 Edit Preferences
+                </Link>
                 {savingInterests && <span className="spinner interests-spinner" />}
                 {interestsSaved && <span className="interests-saved">✓ Saved</span>}
               </div>

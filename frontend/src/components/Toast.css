@@ -54,6 +54,28 @@
   flex: 1;
 }
 
+.toast-action-btn {
+  background: var(--primary, #34B233);
+  color: #ffffff;
+  border: none;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm, 6px);
+  cursor: pointer;
+  margin-left: 6px;
+  margin-right: 4px;
+  white-space: nowrap;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.toast-action-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
 .toast-close {
   background: none;
   border: none;

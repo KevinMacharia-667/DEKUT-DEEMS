@@ -2,6 +2,7 @@
 Users router: profile viewing and updating, plus interest management.
 """
 
+import re
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -101,8 +102,40 @@ def update_my_interests(
 ):
     """
     Replace the authenticated user's entire interest tag list.
-    All existing tags are deleted and replaced with the provided list.
+    Validates non-empty, max size <= 50, and sanitizes strings.
     """
+    if not payload.interests:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Interest list cannot be empty",
+        )
+
+    if len(payload.interests) > 50:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Too many interests provided (maximum is 50)",
+        )
+
+    # Sanitize and deduplicate
+    cleaned_items: list[tuple[str, float]] = []
+    seen_tags = set()
+    for item in payload.interests:
+        raw_tag = item.tag.strip().lower()
+        cleaned = re.sub(r"[^a-z0-9\s\-]", "", raw_tag).strip()
+        if not cleaned or len(cleaned) < 2:
+            continue
+        if cleaned in seen_tags:
+            continue
+        seen_tags.add(cleaned)
+        weight = max(0.1, min(10.0, float(item.weight)))
+        cleaned_items.append((cleaned, weight))
+
+    if not cleaned_items:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No valid interest tags provided after sanitization",
+        )
+
     # Delete existing interests
     db.query(UserInterest).filter(
         UserInterest.user_id == current_user.id
@@ -110,16 +143,11 @@ def update_my_interests(
 
     # Insert new interests
     new_interests = []
-    seen_tags = set()
-    for item in payload.interests:
-        tag_lower = item.tag.strip().lower()
-        if not tag_lower or tag_lower in seen_tags:
-            continue  # Skip duplicates and empty tags
-        seen_tags.add(tag_lower)
+    for tag_name, weight in cleaned_items:
         interest = UserInterest(
             user_id=current_user.id,
-            interest_tag=tag_lower,
-            weight=item.weight,
+            interest_tag=tag_name,
+            weight=weight,
         )
         db.add(interest)
         new_interests.append(interest)

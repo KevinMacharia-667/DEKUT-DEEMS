@@ -75,12 +75,19 @@ def main() -> None:
                 .filter(UserInterest.user_id == user.id)
                 .all()
             )
-            rsvp_events = (
+
+            # NOTE: Data Leakage Prevention (Step 5 & Evaluation Protocol):
+            # The evaluation protocol requires that interactions held out in the test
+            # ground truth (relevant) must be excluded from the training signals
+            # (rsvp_events and feedback) supplied to the models.
+            all_user_rsvps = (
                 db.query(Event)
                 .join(RSVP, RSVP.event_id == Event.id)
                 .filter(RSVP.user_id == user.id, RSVP.status == "confirmed")
                 .all()
             )
+            # Filter out held-out test events from training signals
+            rsvp_events = [e for e in all_user_rsvps if str(e.id) not in relevant]
 
             max_k = 10
             base = recommend_baseline(interests, all_events, top_n=max_k)

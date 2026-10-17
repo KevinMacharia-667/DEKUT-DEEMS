@@ -8,6 +8,7 @@ import EventDetailPage from './pages/EventDetailPage';
 import CreateEventPage from './pages/CreateEventPage';
 import EditEventPage from './pages/EditEventPage';
 import DashboardPage from './pages/DashboardPage';
+import OnboardingPage from './pages/OnboardingPage';
 
 export default function App() {
   return (
@@ -43,6 +44,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/onboarding"
+          element={
+            <ProtectedRoute>
+              <OnboardingPage />
             </ProtectedRoute>
           }
         />

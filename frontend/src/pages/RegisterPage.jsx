@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/Toast';
-import { updateMyInterests } from '../api';
 import './LoginPage.css'; /* Reuses auth page styles */
 import Logo from '../components/Logo';
 
@@ -77,16 +76,8 @@ export default function RegisterPage() {
     setError('');
     try {
       await register({ ...form, department });
-      if (selectedInterests.size > 0) {
-        try {
-          const interestsPayload = [...selectedInterests].map((tag) => ({ tag, weight: 1.0 }));
-          await updateMyInterests(interestsPayload);
-        } catch {
-          // Non-blocking interest seed
-        }
-      }
-      toast.success('Account created! Welcome to DeKUT DEEMS.');
-      navigate('/dashboard');
+      toast.success('Account created! Welcome to Tukio.');
+      navigate('/onboarding');
     } catch (err) {
       setError(err.message || 'Registration failed');
     } finally {
@@ -100,7 +91,7 @@ export default function RegisterPage() {
         <div className="auth-header">
           <Logo size={64} showWordmark stacked className="logo-hero" />
           <h1>Create account</h1>
-          <p>Join the DeKUT DEEMS community</p>
+          <p>Join the Tukio campus community</p>
         </div>
 
         <form className="auth-form" onSubmit={handleSubmit}>
@@ -230,7 +221,7 @@ export default function RegisterPage() {
             disabled={loading}
             style={{ width: '100%', marginTop: '12px' }}
           >
-            {loading ? <span className="spinner" /> : 'Create account & Go to Feed'}
+            {loading ? <span className="spinner" /> : 'Create Account & Personalize Feed →'}
           </button>
         </form>
 

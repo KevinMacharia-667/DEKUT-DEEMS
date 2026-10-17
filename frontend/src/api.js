@@ -77,10 +77,20 @@ export async function updateMe(data) {
 
 // ── Events ───────────────────────────────────────────────────────────
 
-export async function getEvents({ page = 1, per_page = 20, category, search, published_only = true } = {}) {
+export async function getEvents({
+  page = 1,
+  per_page = 20,
+  category,
+  search,
+  published_only = true,
+  time_frame,
+  reference_time,
+} = {}) {
   const params = new URLSearchParams({ page, per_page, published_only });
   if (category) params.append('category', category);
   if (search) params.append('search', search);
+  if (time_frame) params.append('time_frame', time_frame);
+  if (reference_time) params.append('reference_time', reference_time);
   return request(`/events?${params}`);
 }
 
@@ -150,6 +160,40 @@ export async function updateMyInterests(interests) {
  * strategy: 'ml' (TF-IDF) or 'baseline' (rule-based) — the toggle exists
  * so the two engines can be compared live during the project demo.
  */
-export async function getRecommendations({ strategy = 'ml', k = 5 } = {}) {
+export async function getRecommendations({ strategy = 'hybrid', k = 20 } = {}) {
   return request(`/recommendations?strategy=${strategy}&k=${k}`);
 }
+
+// ── Feedback & Interactions ──────────────────────────────────────────
+
+export async function submitEventFeedback(eventId, feedbackType) {
+  return request(`/events/${eventId}/feedback`, {
+    method: 'POST',
+    body: JSON.stringify({ feedback_type: feedbackType }),
+  });
+}
+
+export async function deleteEventFeedback(eventId) {
+  return request(`/events/${eventId}/feedback`, {
+    method: 'DELETE',
+  });
+}
+
+export async function getMyInteractions() {
+  return request('/users/me/interactions');
+}
+
+export async function logEventInteraction(eventId, interactionType, sessionId) {
+  return request(`/events/${eventId}/interactions`, {
+    method: 'POST',
+    body: JSON.stringify({ interaction_type: interactionType, session_id: sessionId }),
+  });
+}
+
+export async function logBatchInteractions(interactions) {
+  return request('/events/interactions/batch', {
+    method: 'POST',
+    body: JSON.stringify({ interactions }),
+  });
+}
+

@@ -63,6 +63,29 @@ def get_current_user(
     return user
 
 
+oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl="/auth/login", auto_error=False)
+
+
+def get_optional_current_user(
+    token: Annotated[str | None, Depends(oauth2_scheme_optional)],
+    db: Annotated[Session, Depends(get_db)],
+) -> User | None:
+    """Return the User if a valid Bearer token is provided, or None for guest/anonymous requests."""
+    if not token:
+        return None
+    payload = decode_access_token(token)
+    if not payload:
+        return None
+    user_id_str = payload.get("sub")
+    if not user_id_str:
+        return None
+    try:
+        user_id = uuid.UUID(user_id_str)
+    except ValueError:
+        return None
+    return db.query(User).filter(User.id == user_id, User.is_active.is_(True)).first()
+
+
 def require_role(*allowed_roles: str):
     """
     Factory that returns a dependency which checks that the current user

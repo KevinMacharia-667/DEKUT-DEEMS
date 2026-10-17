@@ -1,127 +1,426 @@
-.events-hero {
-  text-align: center;
-  padding: var(--space-3xl) 0 var(--space-xl);
+/* ═══════════════════════════════════════════════════════════════════
+   Tukio — EventsPage Mobile-First Swipe Feed Styles
+   ═══════════════════════════════════════════════════════════════════ */
+
+.tukio-feed-page {
+  min-height: calc(100vh - 64px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-md, 16px) var(--space-sm, 8px) var(--space-2xl, 48px);
+  background: radial-gradient(circle at 50% 0%, rgba(52, 178, 51, 0.08) 0%, transparent 60%),
+              var(--bg, #ffffff);
 }
 
-.events-hero h1 {
-  font-size: 2.5rem;
-  margin-bottom: var(--space-sm);
-  background: linear-gradient(135deg, var(--text-primary) 20%, var(--accent-light) 80%);
+.tukio-feed-container {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md, 16px);
+}
+
+/* ── Feed Header ──────────────────────────────────────────────────── */
+
+.tukio-feed-header {
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.tukio-feed-brand-title {
+  font-family: var(--font-heading, system-ui, sans-serif);
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0;
+  background: linear-gradient(135deg, var(--text, #0f172a) 30%, var(--primary-dark, #1e7a1e) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.events-hero p {
-  font-size: 1.05rem;
-  max-width: 520px;
-  margin: 0 auto var(--space-xl);
+.tukio-feed-brand-sub {
+  font-size: 0.86rem;
+  color: var(--text-muted, #64748b);
+  margin: 0;
 }
 
-/* Search & Filter Form */
-.events-search-form {
-  display: flex;
-  gap: var(--space-sm);
-  max-width: 700px;
-  margin: 0 auto var(--space-xl);
-  align-items: center;
-}
+/* ── Time-Aware Section Tabs (Today / Weekend / For You / All) ─────── */
 
-.events-search-form .search-input {
-  flex: 2;
-}
-
-.events-search-form .custom-dropdown {
-  flex: 1;
-  min-width: 180px;
-  position: relative;
-}
-
-.events-search-form .filter-btn {
+.tukio-section-tabs-wrapper {
   width: 100%;
   display: flex;
-  justify-content: space-between;
+  background: var(--surface, #f1f5f9);
+  padding: 4px;
+  border-radius: var(--radius-full, 9999px);
+  border: 1px solid var(--border-light, #d8e5d8);
+  gap: 4px;
+  box-shadow: 0 2px 8px rgba(15, 42, 15, 0.04);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tukio-section-tabs-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.tukio-section-tab {
+  flex: 1;
+  display: inline-flex;
   align-items: center;
-  background: var(--bg-glass);
-  color: var(--text-primary);
-  text-align: left;
-  cursor: pointer;
-}
-
-.events-search-form .filter-btn .chevron {
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted, #64748b);
+  font-family: var(--font-body, system-ui, sans-serif);
   font-size: 0.8rem;
-  color: var(--text-muted);
+  font-weight: 600;
+  border-radius: var(--radius-full, 9999px);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  user-select: none;
 }
 
-.dropdown-menu {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  right: 0;
-  background: var(--bg-card);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-  overflow: hidden;
-  z-index: 100;
+.tukio-section-tab:hover {
+  color: var(--text, #0f172a);
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.tukio-section-tab.active {
+  background: var(--bg-card, #ffffff);
+  color: var(--primary-dark, #1e7a1e);
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.tukio-section-tab-icon {
+  font-size: 0.95rem;
+}
+
+.tukio-section-tab-count {
+  background: #eab308;
+  color: #1a1a1a;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  line-height: 1.2;
+}
+
+/* ── Category Chip Bar ────────────────────────────────────────────── */
+
+.tukio-category-bar-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+  padding: 4px 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tukio-category-bar-wrapper::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+.tukio-category-chips {
+  display: flex;
+  gap: 8px;
+  padding: 2px 4px;
+  width: max-content;
+  margin: 0 auto;
+}
+
+.tukio-chip {
+  background: var(--surface, #f7faf7);
+  border: 1px solid var(--border-light, #d8e5d8);
+  color: var(--text-secondary, #3f5140);
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: var(--radius-full, 9999px);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.tukio-chip:hover {
+  background: var(--primary-tint, #e9f9e7);
+  border-color: var(--primary, #34b233);
+  color: var(--primary-dark, #1e7a1e);
+}
+
+.tukio-chip.active {
+  background: var(--primary, #34B233);
+  border-color: var(--primary, #34B233);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(52, 178, 51, 0.3);
+}
+
+/* ── Deck Area & Stage ────────────────────────────────────────────── */
+
+.tukio-deck-stage {
+  position: relative;
+  width: 100%;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 540px;
 }
 
-.dropdown-item {
-  padding: 12px 16px;
-  background: transparent;
-  border: none;
-  color: var(--text-secondary);
-  text-align: left;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: all var(--transition-fast);
+.tukio-card-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  transition: opacity 0.2s ease;
 }
 
-.dropdown-item:hover {
-  background: var(--bg-glass);
-  color: var(--text-primary);
+/* Swipe hints overlay */
+.tukio-swipe-hint {
+  font-size: 0.76rem;
+  color: var(--text-muted, #94a3b8);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  user-select: none;
 }
 
-.dropdown-item.active {
-  background: var(--accent-bg-hover);
-  color: var(--accent-light);
-  font-weight: 500;
+/* ── Feed Progress & Navigation Controls ──────────────────────────── */
+
+.tukio-nav-controls {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 4px 0;
 }
 
-/* Events grid */
-.events-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: var(--space-lg);
-  margin-bottom: var(--space-2xl);
-}
-
-/* Pagination */
-.events-pagination {
+.tukio-nav-btn {
+  background: var(--surface, #f7faf7);
+  border: 1px solid var(--border-light, #d8e5d8);
+  color: var(--text-secondary, #3f5140);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-md);
-  padding: var(--space-xl) 0 var(--space-3xl);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.events-pagination-info {
-  font-size: 0.85rem;
-  color: var(--text-muted);
+.tukio-nav-btn:hover:not(:disabled) {
+  background: var(--primary, #34B233);
+  color: #ffffff;
+  border-color: var(--primary, #34B233);
+  transform: scale(1.06);
 }
 
-@media (max-width: 768px) {
-  .events-hero h1 {
-    font-size: 1.75rem;
+.tukio-nav-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.tukio-progress-pill {
+  background: var(--surface, #f7faf7);
+  border: 1px solid var(--border-light, #d8e5d8);
+  padding: 6px 14px;
+  border-radius: var(--radius-full, 9999px);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-secondary, #3f5140);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tukio-progress-dots {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.tukio-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border-light, #cbd5e1);
+  transition: all 0.2s ease;
+}
+
+.tukio-dot.active {
+  width: 16px;
+  border-radius: 4px;
+  background: var(--primary, #34B233);
+}
+
+/* ── End of Deck / Caught Up Card ─────────────────────────────────── */
+
+.tukio-caught-up-card {
+  width: 100%;
+  max-width: 440px;
+  min-height: 460px;
+  background: var(--bg-card, #ffffff);
+  border-radius: var(--radius-xl, 24px);
+  border: 1px dashed var(--primary, #34b233);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 28px;
+  text-align: center;
+  gap: 16px;
+  box-shadow: 0 12px 30px rgba(15, 42, 15, 0.08);
+}
+
+.tukio-caught-up-icon {
+  font-size: 3.5rem;
+  animation: tukioBounce 2s infinite ease-in-out;
+}
+
+@keyframes tukioBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.tukio-caught-up-title {
+  font-family: var(--font-heading, system-ui, sans-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+}
+
+.tukio-caught-up-desc {
+  font-size: 0.9rem;
+  color: var(--text-muted, #64748b);
+  max-width: 300px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.tukio-caught-up-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 260px;
+  margin-top: 8px;
+}
+
+/* ── Error & Graceful Degradation State ───────────────────────────── */
+
+.tukio-error-state {
+  width: 100%;
+  max-width: 440px;
+  min-height: 380px;
+  background: var(--bg-card, #ffffff);
+  border-radius: var(--radius-xl, 24px);
+  border: 1px solid #fed7d7;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  text-align: center;
+  gap: 14px;
+  box-shadow: 0 8px 24px rgba(220, 38, 38, 0.08);
+}
+
+.tukio-error-icon {
+  font-size: 3rem;
+}
+
+.tukio-error-title {
+  font-family: var(--font-heading, system-ui, sans-serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #991b1b;
+  margin: 0;
+}
+
+.tukio-error-msg {
+  font-size: 0.88rem;
+  color: var(--text-muted, #64748b);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.tukio-retry-btn {
+  background: #c8102e;
+  color: #ffffff;
+  border: none;
+  font-family: var(--font-heading, system-ui, sans-serif);
+  font-size: 0.92rem;
+  font-weight: 700;
+  padding: 10px 24px;
+  border-radius: var(--radius-full, 9999px);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(200, 16, 46, 0.25);
+}
+
+.tukio-retry-btn:hover {
+  background: #991b1b;
+  transform: translateY(-1px);
+}
+
+/* ── Mobile Viewport Optimizations ────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .tukio-feed-page {
+    padding: var(--space-sm, 8px) var(--space-xs, 4px) var(--space-xl, 32px);
   }
 
-  .events-grid {
-    grid-template-columns: 1fr;
+  .tukio-feed-brand-title {
+    font-size: 1.6rem;
   }
 
-  .events-search-form {
-    flex-direction: column;
+  .tukio-deck-stage {
+    min-height: 480px;
   }
+}
+
+/* ── Cold-Start Feed Banner ───────────────────────────────────────── */
+
+.tukio-cold-start-banner {
+  width: 100%;
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.14) 0%, rgba(52, 178, 51, 0.14) 100%);
+  border: 1px solid rgba(234, 179, 8, 0.4);
+  padding: 10px 16px;
+  border-radius: var(--radius-md, 10px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.84rem;
+  color: var(--text-primary, #0f172a);
+}
+
+.tukio-cold-start-link {
+  font-weight: 700;
+  color: var(--primary-dark, #1e7a1e);
+  white-space: nowrap;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.tukio-cold-start-link:hover {
+  color: #15803d;
 }
