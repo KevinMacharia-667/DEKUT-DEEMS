@@ -40,7 +40,11 @@ def _event_tag_set(event: Event) -> set[str]:
     return {t.strip().lower() for t in event.tags.split(",") if t.strip()}
 
 
-def score_event(user_tags: set[str], event: Event) -> tuple[float, str]:
+def score_event(
+    user_tags: set[str],
+    event: Event,
+    reference_date: datetime | None = None,
+) -> tuple[float, str]:
     """Return (score, human-readable explanation) for one event."""
     score = 0.0
     reasons: list[str] = []
@@ -55,8 +59,9 @@ def score_event(user_tags: set[str], event: Event) -> tuple[float, str]:
         score += TAG_OVERLAP_POINTS * len(overlap)
         reasons.append("shared tags: " + ", ".join(overlap[:3]))
 
+    now = reference_date if reference_date is not None else _now_utc()
     starts = _as_utc(event.start_time)
-    if _now_utc() <= starts <= _now_utc() + timedelta(days=RECENCY_WINDOW_DAYS):
+    if now <= starts <= now + timedelta(days=RECENCY_WINDOW_DAYS):
         score += RECENCY_BONUS_POINTS
         reasons.append("happening soon")
 
@@ -67,6 +72,7 @@ def recommend_baseline(
     user_interests: Sequence[UserInterest],
     all_events: Sequence[Event],
     top_n: int = 10,
+    reference_date: datetime | None = None,
 ) -> list[dict]:
     """
     Rank events for a user using the rule-based scorer.
@@ -81,7 +87,7 @@ def recommend_baseline(
 
     scored = []
     for event in all_events:
-        score, explanation = score_event(user_tags, event)
+        score, explanation = score_event(user_tags, event, reference_date=reference_date)
         if score > 0:
             scored.append({"event": event, "score": score, "explanation": explanation})
 

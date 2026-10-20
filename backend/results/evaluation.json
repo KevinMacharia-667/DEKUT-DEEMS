@@ -1,0 +1,412 @@
+{
+  "metadata": {
+    "evaluation_date": "2026-10-17T12:00:00+00:00",
+    "seeds": [
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51
+    ],
+    "candidate_events_count": 160,
+    "users_count": 22,
+    "limitation": "Synthetic ground truth from seed.py rewards tag/category match."
+  },
+  "summary": {
+    "Overall_Random": {
+      "precision@5": {
+        "mean": 0.1009,
+        "std": 0.0179
+      },
+      "precision@10": {
+        "mean": 0.0982,
+        "std": 0.021
+      },
+      "recall@5": {
+        "mean": 0.0329,
+        "std": 0.0076
+      },
+      "recall@10": {
+        "mean": 0.065,
+        "std": 0.0162
+      },
+      "ndcg@10": {
+        "mean": 0.0988,
+        "std": 0.0172
+      },
+      "mrr": {
+        "mean": 0.234,
+        "std": 0.0422
+      }
+    },
+    "Overall_Popularity": {
+      "precision@5": {
+        "mean": 0.1764,
+        "std": 0.0566
+      },
+      "precision@10": {
+        "mean": 0.1609,
+        "std": 0.0225
+      },
+      "recall@5": {
+        "mean": 0.0544,
+        "std": 0.0193
+      },
+      "recall@10": {
+        "mean": 0.1009,
+        "std": 0.0173
+      },
+      "ndcg@10": {
+        "mean": 0.1653,
+        "std": 0.0356
+      },
+      "mrr": {
+        "mean": 0.2807,
+        "std": 0.0811
+      }
+    },
+    "Overall_Rule-Based": {
+      "precision@5": {
+        "mean": 0.83,
+        "std": 0.0348
+      },
+      "precision@10": {
+        "mean": 0.8118,
+        "std": 0.02
+      },
+      "recall@5": {
+        "mean": 0.3048,
+        "std": 0.0149
+      },
+      "recall@10": {
+        "mean": 0.5964,
+        "std": 0.0196
+      },
+      "ndcg@10": {
+        "mean": 0.825,
+        "std": 0.0258
+      },
+      "mrr": {
+        "mean": 0.9261,
+        "std": 0.0355
+      }
+    },
+    "Overall_Content-Based ML": {
+      "precision@5": {
+        "mean": 0.7655,
+        "std": 0.0411
+      },
+      "precision@10": {
+        "mean": 0.7073,
+        "std": 0.0193
+      },
+      "recall@5": {
+        "mean": 0.278,
+        "std": 0.0135
+      },
+      "recall@10": {
+        "mean": 0.5159,
+        "std": 0.013
+      },
+      "ndcg@10": {
+        "mean": 0.7357,
+        "std": 0.0252
+      },
+      "mrr": {
+        "mean": 0.9081,
+        "std": 0.0487
+      }
+    },
+    "Overall_Unified Hybrid": {
+      "precision@5": {
+        "mean": 0.7555,
+        "std": 0.038
+      },
+      "precision@10": {
+        "mean": 0.7109,
+        "std": 0.0163
+      },
+      "recall@5": {
+        "mean": 0.2849,
+        "std": 0.0121
+      },
+      "recall@10": {
+        "mean": 0.5406,
+        "std": 0.0196
+      },
+      "ndcg@10": {
+        "mean": 0.7296,
+        "std": 0.0229
+      },
+      "mrr": {
+        "mean": 0.8487,
+        "std": 0.04
+      }
+    },
+    "Cold-Start_Random": {
+      "precision@5": {
+        "mean": 0.1286,
+        "std": 0.0471
+      },
+      "precision@10": {
+        "mean": 0.1343,
+        "std": 0.0443
+      },
+      "recall@5": {
+        "mean": 0.0333,
+        "std": 0.0114
+      },
+      "recall@10": {
+        "mean": 0.069,
+        "std": 0.0235
+      },
+      "ndcg@10": {
+        "mean": 0.1287,
+        "std": 0.0412
+      },
+      "mrr": {
+        "mean": 0.2696,
+        "std": 0.0992
+      }
+    },
+    "Cold-Start_Popularity": {
+      "precision@5": {
+        "mean": 0.2171,
+        "std": 0.0964
+      },
+      "precision@10": {
+        "mean": 0.19,
+        "std": 0.0617
+      },
+      "recall@5": {
+        "mean": 0.051,
+        "std": 0.0206
+      },
+      "recall@10": {
+        "mean": 0.0911,
+        "std": 0.0309
+      },
+      "ndcg@10": {
+        "mean": 0.193,
+        "std": 0.0679
+      },
+      "mrr": {
+        "mean": 0.3059,
+        "std": 0.1039
+      }
+    },
+    "Cold-Start_Rule-Based": {
+      "precision@5": {
+        "mean": 0.7657,
+        "std": 0.0535
+      },
+      "precision@10": {
+        "mean": 0.7443,
+        "std": 0.051
+      },
+      "recall@5": {
+        "mean": 0.2091,
+        "std": 0.0235
+      },
+      "recall@10": {
+        "mean": 0.4084,
+        "std": 0.0511
+      },
+      "ndcg@10": {
+        "mean": 0.7542,
+        "std": 0.0523
+      },
+      "mrr": {
+        "mean": 0.881,
+        "std": 0.0727
+      }
+    },
+    "Cold-Start_Content-Based ML": {
+      "precision@5": {
+        "mean": 0.7771,
+        "std": 0.0584
+      },
+      "precision@10": {
+        "mean": 0.71,
+        "std": 0.0583
+      },
+      "recall@5": {
+        "mean": 0.2133,
+        "std": 0.0274
+      },
+      "recall@10": {
+        "mean": 0.3917,
+        "std": 0.0489
+      },
+      "ndcg@10": {
+        "mean": 0.7277,
+        "std": 0.0611
+      },
+      "mrr": {
+        "mean": 0.8683,
+        "std": 0.0906
+      }
+    },
+    "Cold-Start_Unified Hybrid": {
+      "precision@5": {
+        "mean": 0.6914,
+        "std": 0.1248
+      },
+      "precision@10": {
+        "mean": 0.63,
+        "std": 0.0939
+      },
+      "recall@5": {
+        "mean": 0.1966,
+        "std": 0.0415
+      },
+      "recall@10": {
+        "mean": 0.3588,
+        "std": 0.0628
+      },
+      "ndcg@10": {
+        "mean": 0.6462,
+        "std": 0.1031
+      },
+      "mrr": {
+        "mean": 0.7917,
+        "std": 0.1298
+      }
+    },
+    "Warm_Random": {
+      "precision@5": {
+        "mean": 0.088,
+        "std": 0.0357
+      },
+      "precision@10": {
+        "mean": 0.0813,
+        "std": 0.0288
+      },
+      "recall@5": {
+        "mean": 0.0327,
+        "std": 0.0135
+      },
+      "recall@10": {
+        "mean": 0.0631,
+        "std": 0.0223
+      },
+      "ndcg@10": {
+        "mean": 0.0849,
+        "std": 0.0271
+      },
+      "mrr": {
+        "mean": 0.2174,
+        "std": 0.0678
+      }
+    },
+    "Warm_Popularity": {
+      "precision@5": {
+        "mean": 0.1573,
+        "std": 0.0877
+      },
+      "precision@10": {
+        "mean": 0.1473,
+        "std": 0.0547
+      },
+      "recall@5": {
+        "mean": 0.0561,
+        "std": 0.0309
+      },
+      "recall@10": {
+        "mean": 0.1054,
+        "std": 0.0375
+      },
+      "ndcg@10": {
+        "mean": 0.1524,
+        "std": 0.0583
+      },
+      "mrr": {
+        "mean": 0.269,
+        "std": 0.1033
+      }
+    },
+    "Warm_Rule-Based": {
+      "precision@5": {
+        "mean": 0.86,
+        "std": 0.0394
+      },
+      "precision@10": {
+        "mean": 0.8433,
+        "std": 0.0123
+      },
+      "recall@5": {
+        "mean": 0.3495,
+        "std": 0.0207
+      },
+      "recall@10": {
+        "mean": 0.6841,
+        "std": 0.0277
+      },
+      "ndcg@10": {
+        "mean": 0.8581,
+        "std": 0.0219
+      },
+      "mrr": {
+        "mean": 0.9472,
+        "std": 0.032
+      }
+    },
+    "Warm_Content-Based ML": {
+      "precision@5": {
+        "mean": 0.76,
+        "std": 0.0382
+      },
+      "precision@10": {
+        "mean": 0.706,
+        "std": 0.0135
+      },
+      "recall@5": {
+        "mean": 0.3081,
+        "std": 0.0175
+      },
+      "recall@10": {
+        "mean": 0.5739,
+        "std": 0.0241
+      },
+      "ndcg@10": {
+        "mean": 0.7395,
+        "std": 0.0173
+      },
+      "mrr": {
+        "mean": 0.9267,
+        "std": 0.0557
+      }
+    },
+    "Warm_Unified Hybrid": {
+      "precision@5": {
+        "mean": 0.7853,
+        "std": 0.0298
+      },
+      "precision@10": {
+        "mean": 0.7487,
+        "std": 0.0346
+      },
+      "recall@5": {
+        "mean": 0.3261,
+        "std": 0.0151
+      },
+      "recall@10": {
+        "mean": 0.6255,
+        "std": 0.0415
+      },
+      "ndcg@10": {
+        "mean": 0.7686,
+        "std": 0.0328
+      },
+      "mrr": {
+        "mean": 0.8753,
+        "std": 0.0468
+      }
+    }
+  }
+}

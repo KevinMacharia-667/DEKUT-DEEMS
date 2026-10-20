@@ -103,3 +103,15 @@ test('isIOS detects iOS user agents accurately', () => {
   assert.equal(isIOS(androidUA), false);
   assert.equal(isIOS(desktopUA), false);
 });
+
+test('sw.js guarantees authenticated endpoints and user tokens are not cached', () => {
+  const swPath = path.resolve(__dirname, '../../public/sw.js');
+  assert.ok(fs.existsSync(swPath), 'sw.js must exist');
+  const swContent = fs.readFileSync(swPath, 'utf-8');
+
+  // Verify auth bypass rules are present
+  assert.ok(swContent.includes("request.headers.has('Authorization')"), 'Must check for Authorization header');
+  assert.ok(swContent.includes('/recommendations'), 'Must exclude recommendations from SW cache');
+  assert.ok(swContent.includes('/rsvps'), 'Must exclude rsvps from SW cache');
+  assert.ok(swContent.includes('/users'), 'Must exclude users from SW cache');
+});

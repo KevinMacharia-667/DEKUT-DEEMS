@@ -51,7 +51,8 @@ def build_user_profile(
     """
     words: list[str] = []
     for ui in user_interests:
-        repeats = max(1, int(round(ui.weight)))
+        w_val = ui.weight if (ui.weight is not None) else 1.0
+        repeats = max(1, int(round(w_val)))
         words.extend([ui.interest_tag.lower().strip()] * repeats)
     for event in rsvp_events:
         if event.title:

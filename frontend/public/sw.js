@@ -57,8 +57,24 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 1. API Calls: Network-first with cache fallback
+  // 1. API Calls: Network-first for public events, NO-CACHE for authenticated/personalized endpoints
   if (url.pathname.startsWith('/api') || url.port === '8000') {
+    const isAuthRequest =
+      request.headers.has('Authorization') ||
+      url.pathname.includes('/recommendations') ||
+      url.pathname.includes('/rsvps') ||
+      url.pathname.includes('/users') ||
+      url.pathname.includes('/auth') ||
+      url.pathname.includes('/feedback') ||
+      url.pathname.includes('/interactions');
+
+    if (isAuthRequest) {
+      // Authenticated/personalized data must never be cached in the service worker
+      event.respondWith(fetch(request));
+      return;
+    }
+
+    // Public event catalog queries: network-first with cache fallback
     event.respondWith(
       fetch(request)
         .then((response) => {

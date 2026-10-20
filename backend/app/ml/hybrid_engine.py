@@ -62,7 +62,8 @@ def build_user_profile(
     """Build the user text document from declared interests, RSVPs, interested feedback, and department."""
     words: list[str] = []
     for ui in user_interests:
-        repeats = max(1, int(round(ui.weight)))
+        w_val = ui.weight if (ui.weight is not None) else 1.0
+        repeats = max(1, int(round(w_val)))
         words.extend([ui.interest_tag.lower().strip()] * repeats)
     for event in rsvp_events:
         if event.title:
@@ -203,6 +204,7 @@ def compute_context_scores(
     all_events: Sequence[Event],
     user_department: str | None,
     all_rsvps: Sequence[RSVP],
+    reference_date: datetime | None = None,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Compute contextual feature vectors for all candidate events:
@@ -210,7 +212,7 @@ def compute_context_scores(
     2. Time-urgency decay (higher score for upcoming events within 2-14 days)
     3. Popularity velocity (ratio of confirmed RSVPs relative to capacity)
     """
-    now = _now_utc()
+    now = reference_date if reference_date is not None else _now_utc()
     n_events = len(all_events)
 
     dept_scores = np.zeros(n_events)
@@ -250,6 +252,7 @@ def assign_badge_and_reasons(
     matched_terms: list[str],
     event: Event,
     rank: int,
+    reference_date: datetime | None = None,
 ) -> tuple[str, list[str]]:
     """Determine dynamic badge tag and human-readable explanation pills."""
     reasons: list[str] = []
@@ -265,7 +268,7 @@ def assign_badge_and_reasons(
     if dept_score > 0.5:
         reasons.append(f"Department: {event.department or 'Campus-wide'}")
 
-    now = _now_utc()
+    now = reference_date if reference_date is not None else _now_utc()
     delta_days = (_as_utc(event.start_time) - now).total_seconds() / 86400.0
     if 0 <= delta_days <= 4:
         reasons.append(f"Happening in {max(1, int(round(delta_days)))} days")
@@ -302,6 +305,8 @@ def recommend_hybrid(
     not_for_me_events: Sequence[Event] = (),
     all_feedbacks: Sequence = (),
     top_n: int = 10,
+    reference_date: datetime | None = None,
+    custom_weights: dict[str, float] | None = None,
 ) -> list[dict]:
     """
     Unified Multi-Factor Hybrid Recommender:
@@ -324,7 +329,7 @@ def recommend_hybrid(
         user.id, all_events, all_rsvps, all_feedbacks=all_feedbacks
     )
     dept_scores, urgency_scores, pop_scores = compute_context_scores(
-        all_events, user.department, all_rsvps
+        all_events, user.department, all_rsvps, reference_date=reference_date
     )
 
     # Small content-profile penalty for categories the user marked 'not_for_me'
@@ -345,7 +350,13 @@ def recommend_hybrid(
     has_activity = len(rsvp_events) > 0 or len(interested_events) > 0
     has_interests = len(user_interests) > 0
 
-    if has_activity:
+    if custom_weights:
+        w_content = custom_weights.get("content", 0.42)
+        w_collab = custom_weights.get("collab", 0.28)
+        w_dept = custom_weights.get("dept", 0.12)
+        w_urgency = custom_weights.get("urgency", 0.10)
+        w_pop = custom_weights.get("pop", 0.08)
+    elif has_activity:
         w_content = 0.42
         w_collab = 0.28
         w_dept = 0.12
@@ -390,6 +401,7 @@ def recommend_hybrid(
             matched_terms=explanations[idx],
             event=event,
             rank=rank,
+            reference_date=reference_date,
         )
 
         explanation_str = "; ".join(reasons) if reasons else "Recommended campus event"
