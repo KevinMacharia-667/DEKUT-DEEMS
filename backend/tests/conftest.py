@@ -1,4 +1,5 @@
 import os
+os.environ["APP_ENV"] = "development"
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -6,6 +7,7 @@ from sqlalchemy.orm import sessionmaker
 
 from app.database import Base
 from app.dependencies import get_db
+from app.services.rate_limiter import reset_auth_limiter
 from main import app
 from app.models.user import User
 from app.services.auth import hash_password
@@ -17,6 +19,12 @@ engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
 )
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+@pytest.fixture(autouse=True)
+def reset_rate_limiter_fixture():
+    reset_auth_limiter()
+    yield
+    reset_auth_limiter()
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_test_db():
@@ -59,7 +67,8 @@ def student_user(db_session):
         username="student_test",
         hashed_password=hash_password("password123"),
         full_name="Test Student",
-        role="student"
+        role="student",
+        department="Computer Science",
     )
     db_session.add(user)
     db_session.commit()
@@ -73,7 +82,35 @@ def organizer_user(db_session):
         username="organizer_test",
         hashed_password=hash_password("password123"),
         full_name="Test Organizer",
-        role="organizer"
+        role="organizer",
+    )
+    db_session.add(user)
+    db_session.commit()
+    db_session.refresh(user)
+    return user
+
+@pytest.fixture
+def admin_user(db_session):
+    user = User(
+        email="admin@test.com",
+        username="admin_test",
+        hashed_password=hash_password("password123"),
+        full_name="Test Admin",
+        role="admin",
+    )
+    db_session.add(user)
+    db_session.commit()
+    db_session.refresh(user)
+    return user
+
+@pytest.fixture
+def second_organizer_user(db_session):
+    user = User(
+        email="organizer2@test.com",
+        username="organizer2_test",
+        hashed_password=hash_password("password123"),
+        full_name="Second Organizer",
+        role="organizer",
     )
     db_session.add(user)
     db_session.commit()
@@ -93,5 +130,21 @@ def organizer_token(client, organizer_user):
     response = client.post(
         "/auth/login",
         json={"email": organizer_user.email, "password": "password123"}
+    )
+    return response.json()["access_token"]
+
+@pytest.fixture
+def admin_token(client, admin_user):
+    response = client.post(
+        "/auth/login",
+        json={"email": admin_user.email, "password": "password123"}
+    )
+    return response.json()["access_token"]
+
+@pytest.fixture
+def second_organizer_token(client, second_organizer_user):
+    response = client.post(
+        "/auth/login",
+        json={"email": second_organizer_user.email, "password": "password123"}
     )
     return response.json()["access_token"]

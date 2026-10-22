@@ -92,3 +92,129 @@ def test_recommendations_baseline_and_ml(client, db_session, student_user, stude
         assert rec["score"] > 0
         assert rec["badge"] is not None
         assert "reasons" in rec
+
+
+def test_hybrid_empty_database(client, student_token):
+    """Hybrid recommender returns empty list when no published events exist."""
+    response = client.get(
+        "/recommendations?strategy=hybrid",
+        headers={"Authorization": f"Bearer {student_token}"},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["strategy"] == "hybrid"
+    assert data["count"] == 0
+    assert data["recommendations"] == []
+
+
+def test_hybrid_cold_start_user(client, db_session, student_user, student_token, organizer_user):
+    """
+    Cold-start user (0 declared interests, 0 RSVPs, 0 feedback) receives
+    graceful contextual recommendations without crashing.
+    """
+    now = datetime.now(timezone.utc)
+    events = [
+        Event(
+            title="Intro to Computing at DeKUT",
+            description="Orientation for Computer Science students.",
+            category="Academic",
+            department="Computer Science",
+            start_time=now + timedelta(days=1),
+            organizer_id=organizer_user.id,
+            is_published=True,
+        ),
+        Event(
+            title="Weekend Forest Walk",
+            description="Recreational hiking at Conservancy.",
+            category="Social",
+            department="Tourism",
+            start_time=now + timedelta(days=10),
+            organizer_id=organizer_user.id,
+            is_published=True,
+        ),
+    ]
+    db_session.add_all(events)
+    db_session.commit()
+
+    # Verify student has NO interests and NO RSVPs
+    interests = db_session.query(UserInterest).filter_by(user_id=student_user.id).all()
+    assert len(interests) == 0
+
+    response = client.get(
+        "/recommendations?strategy=hybrid",
+        headers={"Authorization": f"Bearer {student_token}"},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["strategy"] == "hybrid"
+    assert len(data["recommendations"]) == 2
+
+    # Since student is in 'Computer Science', that department event should rank #1
+    top_event = data["recommendations"][0]["event"]
+    assert top_event["title"] == "Intro to Computing at DeKUT"
+    assert data["recommendations"][0]["badge"] is not None
+    assert len(data["recommendations"][0]["reasons"]) > 0
+
+
+def test_hybrid_user_with_rsvps(client, db_session, student_user, student_token, organizer_user):
+    """
+    User with no declared interests but confirmed RSVPs for a category
+    receives recommendations biased towards that RSVP history.
+    """
+    now = datetime.now(timezone.utc)
+    # Past/attended event that student RSVP'd to
+    past_event = Event(
+        title="Inter-University Football Match",
+        description="Championship game at sports pitch.",
+        category="Sports",
+        tags="football, sports, pitch",
+        start_time=now - timedelta(days=2),
+        end_time=now - timedelta(days=2, hours=-2),
+        organizer_id=organizer_user.id,
+        is_published=True,
+    )
+    db_session.add(past_event)
+    db_session.commit()
+    db_session.refresh(past_event)
+
+    # Student RSVPs to the football event
+    from app.models.rsvp import RSVP
+    rsvp = RSVP(user_id=student_user.id, event_id=past_event.id, status="confirmed")
+    db_session.add(rsvp)
+    db_session.commit()
+
+    # Upcoming candidate events: one Sports, one Agriculture
+    upcoming_sports = Event(
+        title="Basketball Finals",
+        description="Annual basketball tournament at Court.",
+        category="Sports",
+        tags="basketball, sports, court",
+        start_time=now + timedelta(days=3),
+        organizer_id=organizer_user.id,
+        is_published=True,
+    )
+    upcoming_agri = Event(
+        title="Organic Soil Fertility Workshop",
+        description="Field session on organic soil fertility.",
+        category="Academic",
+        tags="soil, farming, crop",
+        department="Agriculture",
+        start_time=now + timedelta(days=4),
+        organizer_id=organizer_user.id,
+        is_published=True,
+    )
+    db_session.add_all([upcoming_sports, upcoming_agri])
+    db_session.commit()
+
+    response = client.get(
+        "/recommendations?strategy=hybrid",
+        headers={"Authorization": f"Bearer {student_token}"},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["recommendations"]) >= 2
+
+    # Sports event should be top recommended due to RSVP history
+    top_rec = data["recommendations"][0]
+    assert top_rec["event"]["category"] == "Sports"
+    assert top_rec["score"] > 0

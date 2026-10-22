@@ -58,7 +58,22 @@ Campus facilities are formalized in [`backend/app/venues.py`](file:///c:/Users/A
 
 ---
 
-## 5. Running the Project (Windows Setup)
+## 5. Security & Fail-Safe Configuration
+
+* **Fail-Safe JWT Secret Guard (`APP_ENV`):**
+  * The environment variable `APP_ENV` defaults to `"production"`.
+  * If `APP_ENV` is omitted, blank, or set to anything other than `"development"`, the backend **refuses to start** with a `ValueError` if the default development secret is in use.
+  * For local testing and development, you must explicitly set `APP_ENV=development` in your `.env` or environment.
+  * In production, always set a cryptographically strong, unique `JWT_SECRET` string.
+* **Authentication Rate Limiting:**
+  * Endpoints `/auth/login` and `/auth/register` are protected against credential stuffing and brute-force attacks via an in-memory sliding-window limiter.
+  * Default policy: **5 attempts per 60 seconds per IP**.
+  * When exceeded, the API responds with `HTTP 429 Too Many Requests`, a detailed error message, and a `Retry-After` header.
+  * Configurable via `.env` (`AUTH_RATE_LIMIT_MAX_ATTEMPTS`, `AUTH_RATE_LIMIT_WINDOW_SECONDS`, `AUTH_RATE_LIMIT_ENABLED`).
+
+---
+
+## 6. Running the Project (Windows Setup)
 
 ### Prerequisites
 * Python 3.11+ (Python 3.13 recommended)

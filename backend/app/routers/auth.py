@@ -12,6 +12,7 @@ from app.models.user import User
 from app.schemas.token import Token
 from app.schemas.user import UserCreate, UserLogin, UserResponse
 from app.services.auth import create_access_token, hash_password, verify_password
+from app.services.rate_limiter import rate_limit_auth
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -21,6 +22,7 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
     response_model=UserResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Register a new user account",
+    dependencies=[Depends(rate_limit_auth)],
 )
 def register(
     payload: UserCreate,
@@ -65,6 +67,7 @@ def register(
     "/login",
     response_model=Token,
     summary="Login and receive a JWT access token",
+    dependencies=[Depends(rate_limit_auth)],
 )
 def login(
     payload: UserLogin,

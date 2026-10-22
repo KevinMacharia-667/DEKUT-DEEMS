@@ -175,3 +175,44 @@ def test_rsvp_capacity_limit_and_reconfirm_guard(client, student_token, organize
     assert r1_reconfirm_fail.status_code == 400
     assert "maximum capacity" in r1_reconfirm_fail.json()["detail"]
 
+
+
+def test_rsvp_unlimited_capacity_event(client, student_token, organizer_token):
+    """Events without max_attendees allow multiple RSVPs without limits."""
+    create_res = client.post(
+        "/events",
+        headers={"Authorization": f"Bearer {organizer_token}"},
+        json={
+            "title": "Open Campus Concert",
+            "category": "Cultural",
+            "start_time": "2026-12-20T17:00:00Z",
+            "max_attendees": None,
+            "is_published": True,
+        },
+    )
+    assert create_res.status_code == 201
+    event_id = create_res.json()["id"]
+
+    # Student 1 RSVPs
+    r1 = client.post(
+        f"/events/{event_id}/rsvp",
+        headers={"Authorization": f"Bearer {student_token}"},
+    )
+    assert r1.status_code == 201
+    assert r1.json()["status"] == "confirmed"
+
+
+def test_rsvp_nonexistent_event_and_unauthenticated(client, student_token):
+    """RSVP to non-existent event returns 404; unauthenticated returns 401."""
+    import uuid
+
+    # 401 Unauthenticated
+    r_unauth = client.post(f"/events/{uuid.uuid4()}/rsvp")
+    assert r_unauth.status_code == 401
+
+    # 404 Not Found
+    r_notfound = client.post(
+        f"/events/{uuid.uuid4()}/rsvp",
+        headers={"Authorization": f"Bearer {student_token}"},
+    )
+    assert r_notfound.status_code == 404

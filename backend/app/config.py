@@ -14,7 +14,9 @@ class Settings(BaseSettings):
     """
 
     # ── Environment & Server ──────────────────────────────────────────
-    ENVIRONMENT: str = "development"
+    # Defaults to "production" so a missing or forgotten setting fails safe.
+    APP_ENV: str = "production"
+    ENVIRONMENT: str = "production"
     HOST: str = "127.0.0.1"
     PORT: int = 8000
 
@@ -26,6 +28,11 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440  # 24 hours
 
+    # ── Rate Limiting (Brute-Force & Abuse Defense) ───────────────────
+    AUTH_RATE_LIMIT_ENABLED: bool = True
+    AUTH_RATE_LIMIT_MAX_ATTEMPTS: int = 5
+    AUTH_RATE_LIMIT_WINDOW_SECONDS: int = 60
+
     # ── CORS Origins ──────────────────────────────────────────────────
     CORS_ORIGINS: list[str] = [
         "http://localhost:5173",
@@ -36,11 +43,12 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_production_secrets(self) -> "Settings":
-        if self.ENVIRONMENT.lower() == "production":
+        env_val = (self.APP_ENV or self.ENVIRONMENT or "production").lower()
+        if env_val != "development":
             if self.JWT_SECRET == "your_super_secret_jwt_key_here_change_in_production":
                 raise ValueError(
-                    "CRITICAL SECURITY ERROR: Default JWT_SECRET cannot be used in production mode! "
-                    "Set a secure random JWT_SECRET in your environment or .env file."
+                    "CRITICAL SECURITY ERROR: Default JWT_SECRET cannot be used unless APP_ENV=development is explicitly set! "
+                    "In production mode, set a strong, unique JWT_SECRET in your environment or .env file."
                 )
         return self
 
