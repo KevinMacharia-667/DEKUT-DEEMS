@@ -1,6 +1,7 @@
 /**
  * Tukio Service Worker
- * Precaches app shell, serves static assets stale-while-revalidate,
+ * Precaches app shell (including hashed Vite production chunks),
+ * serves assets cache-first / stale-while-revalidate,
  * and handles network-first caching for API event queries with offline fallback.
  */
 
@@ -20,29 +21,34 @@ const STATIC_PRECACHE = [
 // Install: Pre-cache app shell assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_PRECACHE).catch((err) => {
-        // Continue even if some individual static asset fails to cache
-        console.warn('[SW] Pre-cache warning:', err);
-      });
-    }).then(() => self.skipWaiting())
+    caches
+      .open(CACHE_NAME)
+      .then((cache) => {
+        return cache.addAll(STATIC_PRECACHE).catch((err) => {
+          console.warn('[SW] Pre-cache warning:', err);
+        });
+      })
+      .then(() => self.skipWaiting())
   );
 });
 
 // Activate: Clean up legacy caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
-      );
-    }).then(() => self.clients.claim())
+    caches
+      .keys()
+      .then((keys) => {
+        return Promise.all(
+          keys
+            .filter((key) => key !== CACHE_NAME)
+            .map((key) => caches.delete(key))
+        );
+      })
+      .then(() => self.clients.claim())
   );
 });
 
-// Fetch: Network-first for API, Cache-first/Stale-while-revalidate for static assets
+// Fetch handler
 self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
@@ -108,28 +114,39 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 2. Navigation (HTML pages) and Static Assets: Stale-while-revalidate
-  event.respondWith(
-    caches.match(request).then((cachedResponse) => {
-      const fetchPromise = fetch(request)
+  // 2. Navigation Requests (HTML App Shell): Network-first with offline fallback to /index.html
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
         .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             const clone = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(request, clone);
-            });
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
           }
           return networkResponse;
         })
         .catch(() => {
-          // If offline and requesting navigation, fall back to cached index.html
-          if (request.mode === 'navigate') {
-            return caches.match('/') || caches.match('/index.html');
-          }
-          return cachedResponse;
-        });
+          return caches.match('/index.html').then((cachedHtml) => {
+            return cachedHtml || caches.match('/');
+          });
+        })
+    );
+    return;
+  }
 
-      return cachedResponse || fetchPromise;
+  // 3. Static Assets & Hashed Bundles (/assets/*, icons, manifest): Cache-first with network fallback
+  event.respondWith(
+    caches.match(request).then((cachedResponse) => {
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+      return fetch(request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const clone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+        }
+        return networkResponse;
+      });
     })
   );
 });

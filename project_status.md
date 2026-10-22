@@ -2,7 +2,7 @@
 
 > **Date:** 22 October 2026  
 > **Status:** Stage 5: Pre-Defense Hardening & Polish (Feature Complete & Tested)  
-> **Test Suite Counts:** **57/57 passing backend tests** (`pytest`, **93% code coverage**, see `docs/coverage.md`) | **13/13 passing frontend tests** (`node --test`)
+> **Test Suite Counts:** **57/57 passing backend tests** (`pytest`, **93% code coverage**, see `docs/coverage.md`) | **14/14 passing frontend tests** (`node --test`)
 
 ---
 
@@ -30,7 +30,7 @@
 | **Onboarding** | `OnboardingPage.jsx`, `user_interest.py` | ✅ Complete — Cold-start category picker (3+ required), tested in `test_tukio_onboarding.py` |
 | **Calendar & Share** | `utils/calendar.js`, `TukioCard.jsx` | ✅ Complete — RFC 5545 `.ics` generator and WhatsApp deep link; tested in `src/utils/calendar.test.js` |
 | **Theme & Transitions** | `context/ThemeContext.jsx`, `utils/theme.js`, `index.css` | ✅ Complete — Dark/light mode with anti-flash script; tested in `src/utils/theme.test.js` |
-| **PWA Infrastructure** | `public/manifest.json`, `public/sw.js`, `components/PWAInstallPrompt.jsx` | 🟡 Partial — Manifest and SW installed; full offline app-shell for hashed Vite chunks scheduled for Step 3 |
+| **PWA Infrastructure** | `public/manifest.json`, `dist/sw.js`, `vite.config.js`, `components/PWAInstallPrompt.jsx` | ✅ Complete — Manifest, precached hashed Vite chunks, offline app shell fallback, and install prompt (tested in `src/utils/pwa.test.js`) |
 | **API Client** | `api.js` | ✅ Complete — Unified client covering events, feedback, interactions, telemetry, venues, and auth |
 
 ---
@@ -51,8 +51,8 @@
    *Evidence:* `frontend/src/utils/calendar.js`, `frontend/src/components/TukioCard.jsx:340` (verified in `frontend/src/utils/calendar.test.js`).
 7. ✅ **Skeleton loaders, smooth transitions & dark mode**  
    *Evidence:* `frontend/src/components/TukioCard.css`, `frontend/src/context/ThemeContext.jsx` (verified in `frontend/src/utils/theme.test.js`).
-8. 🟡 **PWA setup (manifest, service worker, install prompt)**  
-   *Evidence:* `frontend/public/manifest.json`, `frontend/public/sw.js` (verified in `frontend/src/utils/pwa.test.js`; marked partial pending hashed chunk precaching in Step 3).
+8. ✅ **PWA setup (manifest, service worker, install prompt)**  
+   *Evidence:* `frontend/public/manifest.json`, `frontend/dist/sw.js`, `frontend/vite.config.js` (verified in `frontend/src/utils/pwa.test.js`; precaches hashed chunks, offline navigation fallback).
 9. 🟡 **Offline evaluation script (Precision@K, Recall@K, NDCG@K, MRR)**  
    *Evidence:* `backend/evaluate.py`, `backend/results/evaluation.json` (verified in `tests/test_tukio_evaluation.py`; marked partial pending catalog coverage and docs chart in Step 4).
 

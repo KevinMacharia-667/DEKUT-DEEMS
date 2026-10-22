@@ -29,7 +29,7 @@
 | 5 | **Feedback loop ("Interested" / "Not for me")** | ✅ Done | `backend/app/routers/interactions.py`, `backend/app/models/event_feedback.py` (tested in `tests/test_tukio_feedback.py`) |
 | 6 | **WhatsApp share & .ics calendar download** | ✅ Done | `frontend/src/utils/calendar.js`, `frontend/src/components/TukioCard.jsx:340` (tested in `frontend/src/utils/calendar.test.js`) |
 | 7 | **Skeleton loaders, smooth transitions & dark mode** | ✅ Done | `frontend/src/components/TukioCard.css`, `frontend/src/context/ThemeContext.jsx` (tested in `frontend/src/utils/theme.test.js`) |
-| 8 | **PWA setup (manifest, service worker, install prompt)** | 🟡 Partial | `frontend/public/manifest.json`, `frontend/public/sw.js` (tested in `frontend/src/utils/pwa.test.js`; awaiting Vite hash precache in Step 3) |
+| 8 | **PWA setup (manifest, service worker, install prompt)** | ✅ Done | `frontend/dist/sw.js`, `vite.config.js` (precache hashed chunks, offline app shell fallback, tested in `frontend/src/utils/pwa.test.js`) |
 | 9 | **Offline evaluation benchmark (ML vs Baselines)** | 🟡 Partial | `backend/evaluate.py`, `backend/results/evaluation.json` (tested in `tests/test_tukio_evaluation.py`; awaiting coverage & docs chart in Step 4) |
 
 ---
@@ -53,8 +53,6 @@ Campus facilities are formalized in [`backend/app/venues.py`](file:///c:/Users/A
   Relevance in `backend/seed_ground_truth.json` was generated in `seed.py` by matching category tags and tag overlaps. The heuristic **Rule-Based Baseline** therefore has an inherent structural advantage on this synthetic benchmark compared to unsupervised ML models.
 * **Campus Room Granularity:**  
   Individual room numbers and seating capacities within the Resource Centre (RC phases 1–3) and Wildlife Conservancy conference wings are not published online by the university and must be physically confirmed on site.
-* **PWA Offline Asset Caching:**  
-  While the service worker handles runtime caching and public event queries, dynamic hashed chunks from Vite production builds are not yet statically precached during build.
 
 ---
 

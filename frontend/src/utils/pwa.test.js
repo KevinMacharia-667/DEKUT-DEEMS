@@ -115,3 +115,14 @@ test('sw.js guarantees authenticated endpoints and user tokens are not cached', 
   assert.ok(swContent.includes('/rsvps'), 'Must exclude rsvps from SW cache');
   assert.ok(swContent.includes('/users'), 'Must exclude users from SW cache');
 });
+
+
+test('dist/sw.js precaches hashed Vite assets and provides offline app shell fallback', () => {
+  const distSwPath = path.resolve(__dirname, '../../dist/sw.js');
+  if (fs.existsSync(distSwPath)) {
+    const distContent = fs.readFileSync(distSwPath, 'utf-8');
+    assert.match(distContent, /\/assets\/index-[a-zA-Z0-9_-]+\.js/, 'dist/sw.js must precache hashed JavaScript bundle');
+    assert.match(distContent, /\/assets\/index-[a-zA-Z0-9_-]+\.css/, 'dist/sw.js must precache hashed CSS bundle');
+    assert.ok(distContent.includes("caches.match('/index.html')"), 'dist/sw.js must provide /index.html fallback for offline navigation');
+  }
+});
