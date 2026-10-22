@@ -2,7 +2,7 @@
 
 > **Current Date:** 22 October 2026  
 > **Status:** Stage 5: Pre-Defense Hardening & Polish  
-> **Test Suite:** **25/25 passing backend tests** (`pytest`) | **13/13 passing frontend tests** (`node --test`)
+> **Test Suite:** **61/61 passing backend tests** (`pytest`, 93% coverage, see `docs/coverage.md`) | **14/14 passing frontend tests** (`node --test`)
 
 **Tukio** (*Swahili for "Event" / "Happening"*) is a mobile-first campus event recommendation application designed for Dedan Kimathi University of Technology (DeKUT). It pairs a swipeable, engagement-driven card feed with a multi-factor recommendation engine (TF-IDF content filtering, TruncatedSVD collaborative filtering, and contextual urgency) for frictionless campus discovery and one-tap RSVPs.
 
@@ -30,7 +30,7 @@
 | 6 | **WhatsApp share & .ics calendar download** | ✅ Done | `frontend/src/utils/calendar.js`, `frontend/src/components/TukioCard.jsx:340` (tested in `frontend/src/utils/calendar.test.js`) |
 | 7 | **Skeleton loaders, smooth transitions & dark mode** | ✅ Done | `frontend/src/components/TukioCard.css`, `frontend/src/context/ThemeContext.jsx` (tested in `frontend/src/utils/theme.test.js`) |
 | 8 | **PWA setup (manifest, service worker, install prompt)** | ✅ Done | `frontend/dist/sw.js`, `vite.config.js` (precache hashed chunks, offline app shell fallback, tested in `frontend/src/utils/pwa.test.js`) |
-| 9 | **Offline evaluation benchmark (ML vs Baselines)** | 🟡 Partial | `backend/evaluate.py`, `backend/results/evaluation.json` (tested in `tests/test_tukio_evaluation.py`; awaiting coverage & docs chart in Step 4) |
+| 9 | **Offline evaluation benchmark (ML vs Baselines)** | ✅ Done | `backend/evaluate.py` (behaviour-based + tag-overlap ground truth, 10 seeds, catalog coverage), write-up in `docs/evaluation.md`, version history in `docs/iterations.md`, chart `docs/evaluation_chart.png` (tested in `tests/test_tukio_evaluation.py`) |
 
 ---
 
@@ -49,8 +49,8 @@ Campus facilities are formalized in [`backend/app/venues.py`](file:///c:/Users/A
 
 ## 4. Known Limitations
 
-* **Synthetic Ground Truth Bias:**  
-  Relevance in `backend/seed_ground_truth.json` was generated in `seed.py` by matching category tags and tag overlaps. The heuristic **Rule-Based Baseline** therefore has an inherent structural advantage on this synthetic benchmark compared to unsupervised ML models.
+* **Synthetic Evaluation Data:**  
+  The original `backend/seed_ground_truth.json` uses the same tag/category overlap rule as the Rule-Based baseline, which wins on that set. The primary benchmark now uses simulated per-user behaviour with hidden preferences, where the hybrid leads, but the size of that lead depends on simulator assumptions. See `docs/evaluation.md`. Real RSVP logs are still needed.
 * **Campus Room Granularity:**  
   Individual room numbers and seating capacities within the Resource Centre (RC phases 1–3) and Wildlife Conservancy conference wings are not published online by the university and must be physically confirmed on site.
 

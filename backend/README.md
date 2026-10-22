@@ -50,16 +50,18 @@ FastAPI backend application for the DeKUT Event Management Platform.
 
 ## Recommendation Engine Offline Benchmark
 
-To run the multi-seed evaluation benchmark comparing all 5 recommendation strategies across Overall, Cold-Start, and Warm user cohorts:
+To run the multi-seed evaluation benchmark (about 8 minutes) comparing all 5 recommendation strategies on two ground-truth sets, across Overall, Cold-Start, and Warm user cohorts:
 
 ```powershell
+$env:APP_ENV = "development"
 python evaluate.py
 ```
 
-### Benchmark Methodology & Limitation Note
-- **Ground Truth Generation**: In `seed.py`, `seed_ground_truth.json` was generated synthetically by evaluating whether an event's category matches a user's declared interest tags or shares $\ge 2$ tags with the user's declared tags.
-- **Methodological Limitation**: Because relevance in `seed_ground_truth.json` was defined through category and tag overlap, the heuristic **Rule-Based Baseline** has an inherent structural advantage on this synthetic dataset. For production deployment, ground truth must be collected from real user implicit feedback telemetry (such as click-through rate, card dwell time, and RSVP completion).
-- **Data Leakage Prevention**: In `evaluate.py`, each user's interactions are partitioned into Train, Validation, and Test sets. Held-out test events are strictly quarantined: they are never present in the user's training profile, never included in the collaborative filtering SVD interaction matrix, and never included in the popularity frequency counts.
-- **Metrics Reported**: Precision@5, Precision@10, Recall@5, Recall@10, NDCG@10, and Mean Reciprocal Rank (MRR averaged across users), reported as $\text{Mean} \pm \text{Std}$ over 10 evaluation seeds.
-- **Output Artifacts**: Detailed results are exported to `results/evaluation.csv` and `results/evaluation.json`.
+Full method, results, and limitations: [`docs/evaluation.md`](../docs/evaluation.md).
 
+### Benchmark Methodology Summary
+- **Behaviour-based ground truth (primary)**: 60 simulated students per seed with hidden latent preferences (category taste, taste cluster, department, event appeal) plus noise. Their RSVPs come from that hidden utility, not from the tag-overlap rule. Models only see noisy declared interests and training-split RSVPs.
+- **Tag-overlap ground truth (secondary, biased toward the baseline)**: `seed_ground_truth.json` from `seed.py`, built with the same category/tag overlap rule the Rule-Based baseline scores with. Kept for comparison.
+- **Data Leakage Prevention**: Each user's interactions are partitioned into Train, Validation, and Test sets. Held-out test events never appear in the user's training profile, the SVD interaction matrix, or the popularity counts.
+- **Metrics Reported**: Precision@5, Precision@10, Recall@5, Recall@10, NDCG@10, MRR, and Catalog Coverage@10, as mean ± std over 10 seeds.
+- **Output Artifacts**: `results/evaluation.csv`, `results/evaluation.json`, `docs/evaluation_results.md` (tables), and `docs/evaluation_chart.png`.

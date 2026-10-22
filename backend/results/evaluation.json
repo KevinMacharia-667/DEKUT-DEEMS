@@ -14,398 +14,1080 @@
       51
     ],
     "candidate_events_count": 160,
-    "users_count": 22,
-    "limitation": "Synthetic ground truth from seed.py rewards tag/category match."
+    "users_count": {
+      "behaviour": 60,
+      "tag_overlap": 22
+    },
+    "ground_truth_sources": {
+      "behaviour": "Behaviour-based ground truth (simulated latent preferences)",
+      "tag_overlap": "Tag-overlap ground truth (biased toward the baseline)"
+    },
+    "behaviour_simulation": {
+      "users": 60,
+      "clusters": 6,
+      "noise_std": 0.6,
+      "positives_range": [
+        8,
+        16
+      ],
+      "utility_weights": {
+        "category": 0.45,
+        "cluster": 0.35,
+        "dept": 0.1,
+        "appeal": 0.1
+      },
+      "declaration_noise": 0.25
+    },
+    "selected_hybrid_weights": {
+      "behaviour": [
+        {
+          "content": 0.58,
+          "collab": 0.18,
+          "dept": 0.12,
+          "urgency": 0.08,
+          "pop": 0.04
+        },
+        {
+          "content": 0.42,
+          "collab": 0.28,
+          "dept": 0.12,
+          "urgency": 0.1,
+          "pop": 0.08
+        },
+        {
+          "content": 0.42,
+          "collab": 0.28,
+          "dept": 0.12,
+          "urgency": 0.1,
+          "pop": 0.08
+        },
+        {
+          "content": 0.58,
+          "collab": 0.18,
+          "dept": 0.12,
+          "urgency": 0.08,
+          "pop": 0.04
+        },
+        {
+          "content": 0.58,
+          "collab": 0.18,
+          "dept": 0.12,
+          "urgency": 0.08,
+          "pop": 0.04
+        },
+        {
+          "content": 0.42,
+          "collab": 0.28,
+          "dept": 0.12,
+          "urgency": 0.1,
+          "pop": 0.08
+        },
+        {
+          "content": 0.58,
+          "collab": 0.18,
+          "dept": 0.12,
+          "urgency": 0.08,
+          "pop": 0.04
+        },
+        {
+          "content": 0.58,
+          "collab": 0.18,
+          "dept": 0.12,
+          "urgency": 0.08,
+          "pop": 0.04
+        },
+        {
+          "content": 0.42,
+          "collab": 0.28,
+          "dept": 0.12,
+          "urgency": 0.1,
+          "pop": 0.08
+        },
+        {
+          "content": 0.58,
+          "collab": 0.18,
+          "dept": 0.12,
+          "urgency": 0.08,
+          "pop": 0.04
+        }
+      ],
+      "tag_overlap": [
+        {
+          "content": 0.58,
+          "collab": 0.18,
+          "dept": 0.12,
+          "urgency": 0.08,
+          "pop": 0.04
+        },
+        {
+          "content": 0.42,
+          "collab": 0.28,
+          "dept": 0.12,
+          "urgency": 0.1,
+          "pop": 0.08
+        },
+        {
+          "content": 0.58,
+          "collab": 0.18,
+          "dept": 0.12,
+          "urgency": 0.08,
+          "pop": 0.04
+        },
+        {
+          "content": 0.3,
+          "collab": 0.42,
+          "dept": 0.12,
+          "urgency": 0.1,
+          "pop": 0.06
+        },
+        {
+          "content": 0.3,
+          "collab": 0.42,
+          "dept": 0.12,
+          "urgency": 0.1,
+          "pop": 0.06
+        },
+        {
+          "content": 0.42,
+          "collab": 0.28,
+          "dept": 0.12,
+          "urgency": 0.1,
+          "pop": 0.08
+        },
+        {
+          "content": 0.58,
+          "collab": 0.18,
+          "dept": 0.12,
+          "urgency": 0.08,
+          "pop": 0.04
+        },
+        {
+          "content": 0.58,
+          "collab": 0.18,
+          "dept": 0.12,
+          "urgency": 0.08,
+          "pop": 0.04
+        },
+        {
+          "content": 0.58,
+          "collab": 0.18,
+          "dept": 0.12,
+          "urgency": 0.08,
+          "pop": 0.04
+        },
+        {
+          "content": 0.58,
+          "collab": 0.18,
+          "dept": 0.12,
+          "urgency": 0.08,
+          "pop": 0.04
+        }
+      ]
+    }
   },
   "summary": {
-    "Overall_Random": {
-      "precision@5": {
-        "mean": 0.1009,
-        "std": 0.0179
+    "behaviour": {
+      "Overall_Random": {
+        "precision@5": {
+          "mean": 0.0293,
+          "std": 0.0097
+        },
+        "precision@10": {
+          "mean": 0.0312,
+          "std": 0.0043
+        },
+        "recall@5": {
+          "mean": 0.0321,
+          "std": 0.011
+        },
+        "recall@10": {
+          "mean": 0.0683,
+          "std": 0.0112
+        },
+        "ndcg@10": {
+          "mean": 0.0478,
+          "std": 0.0061
+        },
+        "mrr": {
+          "mean": 0.0767,
+          "std": 0.019
+        },
+        "coverage@10": {
+          "mean": 0.9775,
+          "std": 0.0132
+        }
       },
-      "precision@10": {
-        "mean": 0.0982,
-        "std": 0.021
+      "Overall_Popularity": {
+        "precision@5": {
+          "mean": 0.0353,
+          "std": 0.0082
+        },
+        "precision@10": {
+          "mean": 0.0375,
+          "std": 0.0055
+        },
+        "recall@5": {
+          "mean": 0.0355,
+          "std": 0.0126
+        },
+        "recall@10": {
+          "mean": 0.0777,
+          "std": 0.0157
+        },
+        "ndcg@10": {
+          "mean": 0.0578,
+          "std": 0.014
+        },
+        "mrr": {
+          "mean": 0.1033,
+          "std": 0.0277
+        },
+        "coverage@10": {
+          "mean": 0.0906,
+          "std": 0.0061
+        }
       },
-      "recall@5": {
-        "mean": 0.0329,
-        "std": 0.0076
+      "Overall_Rule-Based": {
+        "precision@5": {
+          "mean": 0.0777,
+          "std": 0.0148
+        },
+        "precision@10": {
+          "mean": 0.0727,
+          "std": 0.0084
+        },
+        "recall@5": {
+          "mean": 0.0849,
+          "std": 0.0172
+        },
+        "recall@10": {
+          "mean": 0.1562,
+          "std": 0.0235
+        },
+        "ndcg@10": {
+          "mean": 0.1204,
+          "std": 0.0185
+        },
+        "mrr": {
+          "mean": 0.1885,
+          "std": 0.0318
+        },
+        "coverage@10": {
+          "mean": 0.8325,
+          "std": 0.0338
+        }
       },
-      "recall@10": {
-        "mean": 0.065,
-        "std": 0.0162
+      "Overall_TF-IDF Content": {
+        "precision@5": {
+          "mean": 0.088,
+          "std": 0.0133
+        },
+        "precision@10": {
+          "mean": 0.0807,
+          "std": 0.0084
+        },
+        "recall@5": {
+          "mean": 0.0977,
+          "std": 0.0174
+        },
+        "recall@10": {
+          "mean": 0.1777,
+          "std": 0.0248
+        },
+        "ndcg@10": {
+          "mean": 0.1385,
+          "std": 0.021
+        },
+        "mrr": {
+          "mean": 0.2172,
+          "std": 0.0439
+        },
+        "coverage@10": {
+          "mean": 0.9012,
+          "std": 0.035
+        }
       },
-      "ndcg@10": {
-        "mean": 0.0988,
-        "std": 0.0172
+      "Overall_Unified Hybrid": {
+        "precision@5": {
+          "mean": 0.1273,
+          "std": 0.0145
+        },
+        "precision@10": {
+          "mean": 0.1225,
+          "std": 0.0111
+        },
+        "recall@5": {
+          "mean": 0.141,
+          "std": 0.0167
+        },
+        "recall@10": {
+          "mean": 0.2714,
+          "std": 0.0253
+        },
+        "ndcg@10": {
+          "mean": 0.2038,
+          "std": 0.0245
+        },
+        "mrr": {
+          "mean": 0.2841,
+          "std": 0.0442
+        },
+        "coverage@10": {
+          "mean": 0.7212,
+          "std": 0.0111
+        }
       },
-      "mrr": {
-        "mean": 0.234,
-        "std": 0.0422
+      "Cold-Start_Random": {
+        "precision@5": {
+          "mean": 0.0419,
+          "std": 0.0181
+        },
+        "precision@10": {
+          "mean": 0.0395,
+          "std": 0.0159
+        },
+        "recall@5": {
+          "mean": 0.0311,
+          "std": 0.015
+        },
+        "recall@10": {
+          "mean": 0.0597,
+          "std": 0.0233
+        },
+        "ndcg@10": {
+          "mean": 0.0494,
+          "std": 0.0196
+        },
+        "mrr": {
+          "mean": 0.1017,
+          "std": 0.0493
+        },
+        "coverage@10": {
+          "mean": 0.735,
+          "std": 0.0182
+        }
+      },
+      "Cold-Start_Popularity": {
+        "precision@5": {
+          "mean": 0.0581,
+          "std": 0.0217
+        },
+        "precision@10": {
+          "mean": 0.0567,
+          "std": 0.0159
+        },
+        "recall@5": {
+          "mean": 0.0421,
+          "std": 0.014
+        },
+        "recall@10": {
+          "mean": 0.0823,
+          "std": 0.0206
+        },
+        "ndcg@10": {
+          "mean": 0.0742,
+          "std": 0.0201
+        },
+        "mrr": {
+          "mean": 0.1643,
+          "std": 0.0512
+        },
+        "coverage@10": {
+          "mean": 0.0712,
+          "std": 0.0032
+        }
+      },
+      "Cold-Start_Rule-Based": {
+        "precision@5": {
+          "mean": 0.1019,
+          "std": 0.0262
+        },
+        "precision@10": {
+          "mean": 0.1,
+          "std": 0.0147
+        },
+        "recall@5": {
+          "mean": 0.076,
+          "std": 0.0195
+        },
+        "recall@10": {
+          "mean": 0.1467,
+          "std": 0.0202
+        },
+        "ndcg@10": {
+          "mean": 0.131,
+          "std": 0.0233
+        },
+        "mrr": {
+          "mean": 0.2456,
+          "std": 0.0482
+        },
+        "coverage@10": {
+          "mean": 0.6013,
+          "std": 0.0318
+        }
+      },
+      "Cold-Start_TF-IDF Content": {
+        "precision@5": {
+          "mean": 0.1019,
+          "std": 0.0142
+        },
+        "precision@10": {
+          "mean": 0.1014,
+          "std": 0.0095
+        },
+        "recall@5": {
+          "mean": 0.073,
+          "std": 0.0117
+        },
+        "recall@10": {
+          "mean": 0.1482,
+          "std": 0.0184
+        },
+        "ndcg@10": {
+          "mean": 0.1272,
+          "std": 0.0128
+        },
+        "mrr": {
+          "mean": 0.2328,
+          "std": 0.0395
+        },
+        "coverage@10": {
+          "mean": 0.6462,
+          "std": 0.0484
+        }
+      },
+      "Cold-Start_Unified Hybrid": {
+        "precision@5": {
+          "mean": 0.161,
+          "std": 0.0271
+        },
+        "precision@10": {
+          "mean": 0.1557,
+          "std": 0.0255
+        },
+        "recall@5": {
+          "mean": 0.1158,
+          "std": 0.0165
+        },
+        "recall@10": {
+          "mean": 0.2293,
+          "std": 0.0337
+        },
+        "ndcg@10": {
+          "mean": 0.1958,
+          "std": 0.0286
+        },
+        "mrr": {
+          "mean": 0.3059,
+          "std": 0.0598
+        },
+        "coverage@10": {
+          "mean": 0.5531,
+          "std": 0.0262
+        }
+      },
+      "Warm_Random": {
+        "precision@5": {
+          "mean": 0.0226,
+          "std": 0.0081
+        },
+        "precision@10": {
+          "mean": 0.0267,
+          "std": 0.0074
+        },
+        "recall@5": {
+          "mean": 0.0326,
+          "std": 0.0118
+        },
+        "recall@10": {
+          "mean": 0.073,
+          "std": 0.0203
+        },
+        "ndcg@10": {
+          "mean": 0.0469,
+          "std": 0.0071
+        },
+        "mrr": {
+          "mean": 0.0633,
+          "std": 0.008
+        },
+        "coverage@10": {
+          "mean": 0.9219,
+          "std": 0.0264
+        }
+      },
+      "Warm_Popularity": {
+        "precision@5": {
+          "mean": 0.0231,
+          "std": 0.0153
+        },
+        "precision@10": {
+          "mean": 0.0272,
+          "std": 0.01
+        },
+        "recall@5": {
+          "mean": 0.032,
+          "std": 0.0218
+        },
+        "recall@10": {
+          "mean": 0.0753,
+          "std": 0.0273
+        },
+        "ndcg@10": {
+          "mean": 0.049,
+          "std": 0.0224
+        },
+        "mrr": {
+          "mean": 0.0705,
+          "std": 0.0367
+        },
+        "coverage@10": {
+          "mean": 0.0906,
+          "std": 0.0061
+        }
+      },
+      "Warm_Rule-Based": {
+        "precision@5": {
+          "mean": 0.0646,
+          "std": 0.0135
+        },
+        "precision@10": {
+          "mean": 0.0579,
+          "std": 0.0108
+        },
+        "recall@5": {
+          "mean": 0.0897,
+          "std": 0.0207
+        },
+        "recall@10": {
+          "mean": 0.1612,
+          "std": 0.0355
+        },
+        "ndcg@10": {
+          "mean": 0.1147,
+          "std": 0.0227
+        },
+        "mrr": {
+          "mean": 0.1578,
+          "std": 0.0309
+        },
+        "coverage@10": {
+          "mean": 0.7656,
+          "std": 0.0407
+        }
+      },
+      "Warm_TF-IDF Content": {
+        "precision@5": {
+          "mean": 0.0805,
+          "std": 0.0198
+        },
+        "precision@10": {
+          "mean": 0.0695,
+          "std": 0.0134
+        },
+        "recall@5": {
+          "mean": 0.1111,
+          "std": 0.0281
+        },
+        "recall@10": {
+          "mean": 0.1936,
+          "std": 0.0415
+        },
+        "ndcg@10": {
+          "mean": 0.1446,
+          "std": 0.0317
+        },
+        "mrr": {
+          "mean": 0.2088,
+          "std": 0.0545
+        },
+        "coverage@10": {
+          "mean": 0.8263,
+          "std": 0.0446
+        }
+      },
+      "Warm_Unified Hybrid": {
+        "precision@5": {
+          "mean": 0.1092,
+          "std": 0.0135
+        },
+        "precision@10": {
+          "mean": 0.1046,
+          "std": 0.0111
+        },
+        "recall@5": {
+          "mean": 0.1545,
+          "std": 0.0226
+        },
+        "recall@10": {
+          "mean": 0.2941,
+          "std": 0.0388
+        },
+        "ndcg@10": {
+          "mean": 0.2082,
+          "std": 0.034
+        },
+        "mrr": {
+          "mean": 0.2724,
+          "std": 0.0549
+        },
+        "coverage@10": {
+          "mean": 0.6856,
+          "std": 0.015
+        }
       }
     },
-    "Overall_Popularity": {
-      "precision@5": {
-        "mean": 0.1764,
-        "std": 0.0566
-      },
-      "precision@10": {
-        "mean": 0.1609,
-        "std": 0.0225
-      },
-      "recall@5": {
-        "mean": 0.0544,
-        "std": 0.0193
-      },
-      "recall@10": {
-        "mean": 0.1009,
-        "std": 0.0173
-      },
-      "ndcg@10": {
-        "mean": 0.1653,
-        "std": 0.0356
-      },
-      "mrr": {
-        "mean": 0.2807,
-        "std": 0.0811
-      }
-    },
-    "Overall_Rule-Based": {
-      "precision@5": {
-        "mean": 0.83,
-        "std": 0.0348
-      },
-      "precision@10": {
-        "mean": 0.8118,
-        "std": 0.02
-      },
-      "recall@5": {
-        "mean": 0.3048,
-        "std": 0.0149
-      },
-      "recall@10": {
-        "mean": 0.5964,
-        "std": 0.0196
-      },
-      "ndcg@10": {
-        "mean": 0.825,
-        "std": 0.0258
-      },
-      "mrr": {
-        "mean": 0.9261,
-        "std": 0.0355
-      }
-    },
-    "Overall_Content-Based ML": {
-      "precision@5": {
-        "mean": 0.7655,
-        "std": 0.0411
-      },
-      "precision@10": {
-        "mean": 0.7073,
-        "std": 0.0193
-      },
-      "recall@5": {
-        "mean": 0.278,
-        "std": 0.0135
-      },
-      "recall@10": {
-        "mean": 0.5159,
-        "std": 0.013
-      },
-      "ndcg@10": {
-        "mean": 0.7357,
-        "std": 0.0252
-      },
-      "mrr": {
-        "mean": 0.9081,
-        "std": 0.0487
-      }
-    },
-    "Overall_Unified Hybrid": {
-      "precision@5": {
-        "mean": 0.7555,
-        "std": 0.038
-      },
-      "precision@10": {
-        "mean": 0.7109,
-        "std": 0.0163
-      },
-      "recall@5": {
-        "mean": 0.2849,
-        "std": 0.0121
-      },
-      "recall@10": {
-        "mean": 0.5406,
-        "std": 0.0196
-      },
-      "ndcg@10": {
-        "mean": 0.7296,
-        "std": 0.0229
-      },
-      "mrr": {
-        "mean": 0.8487,
-        "std": 0.04
-      }
-    },
-    "Cold-Start_Random": {
-      "precision@5": {
-        "mean": 0.1286,
-        "std": 0.0471
-      },
-      "precision@10": {
-        "mean": 0.1343,
-        "std": 0.0443
-      },
-      "recall@5": {
-        "mean": 0.0333,
-        "std": 0.0114
-      },
-      "recall@10": {
-        "mean": 0.069,
-        "std": 0.0235
-      },
-      "ndcg@10": {
-        "mean": 0.1287,
-        "std": 0.0412
-      },
-      "mrr": {
-        "mean": 0.2696,
-        "std": 0.0992
-      }
-    },
-    "Cold-Start_Popularity": {
-      "precision@5": {
-        "mean": 0.2171,
-        "std": 0.0964
-      },
-      "precision@10": {
-        "mean": 0.19,
-        "std": 0.0617
-      },
-      "recall@5": {
-        "mean": 0.051,
-        "std": 0.0206
-      },
-      "recall@10": {
-        "mean": 0.0911,
-        "std": 0.0309
-      },
-      "ndcg@10": {
-        "mean": 0.193,
-        "std": 0.0679
-      },
-      "mrr": {
-        "mean": 0.3059,
-        "std": 0.1039
-      }
-    },
-    "Cold-Start_Rule-Based": {
-      "precision@5": {
-        "mean": 0.7657,
-        "std": 0.0535
-      },
-      "precision@10": {
-        "mean": 0.7443,
-        "std": 0.051
-      },
-      "recall@5": {
-        "mean": 0.2091,
-        "std": 0.0235
-      },
-      "recall@10": {
-        "mean": 0.4084,
-        "std": 0.0511
-      },
-      "ndcg@10": {
-        "mean": 0.7542,
-        "std": 0.0523
-      },
-      "mrr": {
-        "mean": 0.881,
-        "std": 0.0727
-      }
-    },
-    "Cold-Start_Content-Based ML": {
-      "precision@5": {
-        "mean": 0.7771,
-        "std": 0.0584
-      },
-      "precision@10": {
-        "mean": 0.71,
-        "std": 0.0583
-      },
-      "recall@5": {
-        "mean": 0.2133,
-        "std": 0.0274
-      },
-      "recall@10": {
-        "mean": 0.3917,
-        "std": 0.0489
-      },
-      "ndcg@10": {
-        "mean": 0.7277,
-        "std": 0.0611
-      },
-      "mrr": {
-        "mean": 0.8683,
-        "std": 0.0906
-      }
-    },
-    "Cold-Start_Unified Hybrid": {
-      "precision@5": {
-        "mean": 0.6914,
-        "std": 0.1248
-      },
-      "precision@10": {
-        "mean": 0.63,
-        "std": 0.0939
-      },
-      "recall@5": {
-        "mean": 0.1966,
-        "std": 0.0415
-      },
-      "recall@10": {
-        "mean": 0.3588,
-        "std": 0.0628
-      },
-      "ndcg@10": {
-        "mean": 0.6462,
-        "std": 0.1031
-      },
-      "mrr": {
-        "mean": 0.7917,
-        "std": 0.1298
-      }
-    },
-    "Warm_Random": {
-      "precision@5": {
-        "mean": 0.088,
-        "std": 0.0357
-      },
-      "precision@10": {
-        "mean": 0.0813,
-        "std": 0.0288
-      },
-      "recall@5": {
-        "mean": 0.0327,
-        "std": 0.0135
-      },
-      "recall@10": {
-        "mean": 0.0631,
-        "std": 0.0223
-      },
-      "ndcg@10": {
-        "mean": 0.0849,
-        "std": 0.0271
-      },
-      "mrr": {
-        "mean": 0.2174,
-        "std": 0.0678
-      }
-    },
-    "Warm_Popularity": {
-      "precision@5": {
-        "mean": 0.1573,
-        "std": 0.0877
-      },
-      "precision@10": {
-        "mean": 0.1473,
-        "std": 0.0547
-      },
-      "recall@5": {
-        "mean": 0.0561,
-        "std": 0.0309
-      },
-      "recall@10": {
-        "mean": 0.1054,
-        "std": 0.0375
-      },
-      "ndcg@10": {
-        "mean": 0.1524,
-        "std": 0.0583
-      },
-      "mrr": {
-        "mean": 0.269,
-        "std": 0.1033
-      }
-    },
-    "Warm_Rule-Based": {
-      "precision@5": {
-        "mean": 0.86,
-        "std": 0.0394
-      },
-      "precision@10": {
-        "mean": 0.8433,
-        "std": 0.0123
-      },
-      "recall@5": {
-        "mean": 0.3495,
-        "std": 0.0207
-      },
-      "recall@10": {
-        "mean": 0.6841,
-        "std": 0.0277
-      },
-      "ndcg@10": {
-        "mean": 0.8581,
-        "std": 0.0219
-      },
-      "mrr": {
-        "mean": 0.9472,
-        "std": 0.032
-      }
-    },
-    "Warm_Content-Based ML": {
-      "precision@5": {
-        "mean": 0.76,
-        "std": 0.0382
-      },
-      "precision@10": {
-        "mean": 0.706,
-        "std": 0.0135
-      },
-      "recall@5": {
-        "mean": 0.3081,
-        "std": 0.0175
-      },
-      "recall@10": {
-        "mean": 0.5739,
-        "std": 0.0241
-      },
-      "ndcg@10": {
-        "mean": 0.7395,
-        "std": 0.0173
-      },
-      "mrr": {
-        "mean": 0.9267,
-        "std": 0.0557
-      }
-    },
-    "Warm_Unified Hybrid": {
-      "precision@5": {
-        "mean": 0.7853,
-        "std": 0.0298
-      },
-      "precision@10": {
-        "mean": 0.7487,
-        "std": 0.0346
-      },
-      "recall@5": {
-        "mean": 0.3261,
-        "std": 0.0151
-      },
-      "recall@10": {
-        "mean": 0.6255,
-        "std": 0.0415
-      },
-      "ndcg@10": {
-        "mean": 0.7686,
-        "std": 0.0328
-      },
-      "mrr": {
-        "mean": 0.8753,
-        "std": 0.0468
+    "tag_overlap": {
+      "Overall_Random": {
+        "precision@5": {
+          "mean": 0.0882,
+          "std": 0.0182
+        },
+        "precision@10": {
+          "mean": 0.0973,
+          "std": 0.0131
+        },
+        "recall@5": {
+          "mean": 0.0286,
+          "std": 0.0073
+        },
+        "recall@10": {
+          "mean": 0.0643,
+          "std": 0.0098
+        },
+        "ndcg@10": {
+          "mean": 0.0968,
+          "std": 0.013
+        },
+        "mrr": {
+          "mean": 0.2285,
+          "std": 0.0418
+        },
+        "coverage@10": {
+          "mean": 0.7475,
+          "std": 0.0267
+        }
+      },
+      "Overall_Popularity": {
+        "precision@5": {
+          "mean": 0.1764,
+          "std": 0.0566
+        },
+        "precision@10": {
+          "mean": 0.1609,
+          "std": 0.0225
+        },
+        "recall@5": {
+          "mean": 0.0544,
+          "std": 0.0193
+        },
+        "recall@10": {
+          "mean": 0.1009,
+          "std": 0.0173
+        },
+        "ndcg@10": {
+          "mean": 0.1653,
+          "std": 0.0356
+        },
+        "mrr": {
+          "mean": 0.2807,
+          "std": 0.0811
+        },
+        "coverage@10": {
+          "mean": 0.1113,
+          "std": 0.0109
+        }
+      },
+      "Overall_Rule-Based": {
+        "precision@5": {
+          "mean": 0.8309,
+          "std": 0.0333
+        },
+        "precision@10": {
+          "mean": 0.8123,
+          "std": 0.0202
+        },
+        "recall@5": {
+          "mean": 0.305,
+          "std": 0.0147
+        },
+        "recall@10": {
+          "mean": 0.5967,
+          "std": 0.0195
+        },
+        "ndcg@10": {
+          "mean": 0.8254,
+          "std": 0.0258
+        },
+        "mrr": {
+          "mean": 0.9261,
+          "std": 0.0355
+        },
+        "coverage@10": {
+          "mean": 0.6919,
+          "std": 0.0153
+        }
+      },
+      "Overall_TF-IDF Content": {
+        "precision@5": {
+          "mean": 0.7655,
+          "std": 0.0411
+        },
+        "precision@10": {
+          "mean": 0.7073,
+          "std": 0.0193
+        },
+        "recall@5": {
+          "mean": 0.278,
+          "std": 0.0135
+        },
+        "recall@10": {
+          "mean": 0.5159,
+          "std": 0.013
+        },
+        "ndcg@10": {
+          "mean": 0.7357,
+          "std": 0.0252
+        },
+        "mrr": {
+          "mean": 0.9081,
+          "std": 0.0487
+        },
+        "coverage@10": {
+          "mean": 0.7438,
+          "std": 0.0204
+        }
+      },
+      "Overall_Unified Hybrid": {
+        "precision@5": {
+          "mean": 0.7545,
+          "std": 0.0364
+        },
+        "precision@10": {
+          "mean": 0.7105,
+          "std": 0.0177
+        },
+        "recall@5": {
+          "mean": 0.2843,
+          "std": 0.0116
+        },
+        "recall@10": {
+          "mean": 0.5402,
+          "std": 0.0204
+        },
+        "ndcg@10": {
+          "mean": 0.7301,
+          "std": 0.0225
+        },
+        "mrr": {
+          "mean": 0.852,
+          "std": 0.0374
+        },
+        "coverage@10": {
+          "mean": 0.6381,
+          "std": 0.0253
+        }
+      },
+      "Cold-Start_Random": {
+        "precision@5": {
+          "mean": 0.1029,
+          "std": 0.0409
+        },
+        "precision@10": {
+          "mean": 0.12,
+          "std": 0.0394
+        },
+        "recall@5": {
+          "mean": 0.0263,
+          "std": 0.0106
+        },
+        "recall@10": {
+          "mean": 0.0617,
+          "std": 0.0188
+        },
+        "ndcg@10": {
+          "mean": 0.1093,
+          "std": 0.0365
+        },
+        "mrr": {
+          "mean": 0.2216,
+          "std": 0.0768
+        },
+        "coverage@10": {
+          "mean": 0.3688,
+          "std": 0.0159
+        }
+      },
+      "Cold-Start_Popularity": {
+        "precision@5": {
+          "mean": 0.2171,
+          "std": 0.0964
+        },
+        "precision@10": {
+          "mean": 0.19,
+          "std": 0.0617
+        },
+        "recall@5": {
+          "mean": 0.051,
+          "std": 0.0206
+        },
+        "recall@10": {
+          "mean": 0.0911,
+          "std": 0.0309
+        },
+        "ndcg@10": {
+          "mean": 0.193,
+          "std": 0.0679
+        },
+        "mrr": {
+          "mean": 0.3059,
+          "std": 0.1039
+        },
+        "coverage@10": {
+          "mean": 0.0706,
+          "std": 0.003
+        }
+      },
+      "Cold-Start_Rule-Based": {
+        "precision@5": {
+          "mean": 0.7686,
+          "std": 0.0512
+        },
+        "precision@10": {
+          "mean": 0.7457,
+          "std": 0.0525
+        },
+        "recall@5": {
+          "mean": 0.2095,
+          "std": 0.0232
+        },
+        "recall@10": {
+          "mean": 0.4094,
+          "std": 0.0525
+        },
+        "ndcg@10": {
+          "mean": 0.7554,
+          "std": 0.0531
+        },
+        "mrr": {
+          "mean": 0.881,
+          "std": 0.0727
+        },
+        "coverage@10": {
+          "mean": 0.3362,
+          "std": 0.039
+        }
+      },
+      "Cold-Start_TF-IDF Content": {
+        "precision@5": {
+          "mean": 0.7771,
+          "std": 0.0584
+        },
+        "precision@10": {
+          "mean": 0.71,
+          "std": 0.0583
+        },
+        "recall@5": {
+          "mean": 0.2133,
+          "std": 0.0274
+        },
+        "recall@10": {
+          "mean": 0.3917,
+          "std": 0.0489
+        },
+        "ndcg@10": {
+          "mean": 0.7277,
+          "std": 0.0611
+        },
+        "mrr": {
+          "mean": 0.8683,
+          "std": 0.0906
+        },
+        "coverage@10": {
+          "mean": 0.3575,
+          "std": 0.0288
+        }
+      },
+      "Cold-Start_Unified Hybrid": {
+        "precision@5": {
+          "mean": 0.6857,
+          "std": 0.1182
+        },
+        "precision@10": {
+          "mean": 0.63,
+          "std": 0.0939
+        },
+        "recall@5": {
+          "mean": 0.1946,
+          "std": 0.0389
+        },
+        "recall@10": {
+          "mean": 0.3592,
+          "std": 0.0634
+        },
+        "ndcg@10": {
+          "mean": 0.647,
+          "std": 0.1024
+        },
+        "mrr": {
+          "mean": 0.7988,
+          "std": 0.127
+        },
+        "coverage@10": {
+          "mean": 0.3431,
+          "std": 0.0318
+        }
+      },
+      "Warm_Random": {
+        "precision@5": {
+          "mean": 0.0813,
+          "std": 0.0203
+        },
+        "precision@10": {
+          "mean": 0.0867,
+          "std": 0.0181
+        },
+        "recall@5": {
+          "mean": 0.0296,
+          "std": 0.0087
+        },
+        "recall@10": {
+          "mean": 0.0654,
+          "std": 0.0136
+        },
+        "ndcg@10": {
+          "mean": 0.091,
+          "std": 0.0156
+        },
+        "mrr": {
+          "mean": 0.2317,
+          "std": 0.0474
+        },
+        "coverage@10": {
+          "mean": 0.6125,
+          "std": 0.0247
+        }
+      },
+      "Warm_Popularity": {
+        "precision@5": {
+          "mean": 0.1573,
+          "std": 0.0877
+        },
+        "precision@10": {
+          "mean": 0.1473,
+          "std": 0.0547
+        },
+        "recall@5": {
+          "mean": 0.0561,
+          "std": 0.0309
+        },
+        "recall@10": {
+          "mean": 0.1054,
+          "std": 0.0375
+        },
+        "ndcg@10": {
+          "mean": 0.1524,
+          "std": 0.0583
+        },
+        "mrr": {
+          "mean": 0.269,
+          "std": 0.1033
+        },
+        "coverage@10": {
+          "mean": 0.1113,
+          "std": 0.0109
+        }
+      },
+      "Warm_Rule-Based": {
+        "precision@5": {
+          "mean": 0.86,
+          "std": 0.0394
+        },
+        "precision@10": {
+          "mean": 0.8433,
+          "std": 0.0123
+        },
+        "recall@5": {
+          "mean": 0.3495,
+          "std": 0.0207
+        },
+        "recall@10": {
+          "mean": 0.6841,
+          "std": 0.0277
+        },
+        "ndcg@10": {
+          "mean": 0.8581,
+          "std": 0.0219
+        },
+        "mrr": {
+          "mean": 0.9472,
+          "std": 0.032
+        },
+        "coverage@10": {
+          "mean": 0.5794,
+          "std": 0.0431
+        }
+      },
+      "Warm_TF-IDF Content": {
+        "precision@5": {
+          "mean": 0.76,
+          "std": 0.0382
+        },
+        "precision@10": {
+          "mean": 0.706,
+          "std": 0.0135
+        },
+        "recall@5": {
+          "mean": 0.3081,
+          "std": 0.0175
+        },
+        "recall@10": {
+          "mean": 0.5739,
+          "std": 0.0241
+        },
+        "ndcg@10": {
+          "mean": 0.7395,
+          "std": 0.0173
+        },
+        "mrr": {
+          "mean": 0.9267,
+          "std": 0.0557
+        },
+        "coverage@10": {
+          "mean": 0.6088,
+          "std": 0.0349
+        }
+      },
+      "Warm_Unified Hybrid": {
+        "precision@5": {
+          "mean": 0.7867,
+          "std": 0.0274
+        },
+        "precision@10": {
+          "mean": 0.748,
+          "std": 0.0382
+        },
+        "recall@5": {
+          "mean": 0.3261,
+          "std": 0.0144
+        },
+        "recall@10": {
+          "mean": 0.6247,
+          "std": 0.0442
+        },
+        "ndcg@10": {
+          "mean": 0.769,
+          "std": 0.0321
+        },
+        "mrr": {
+          "mean": 0.8769,
+          "std": 0.0372
+        },
+        "coverage@10": {
+          "mean": 0.5356,
+          "std": 0.0404
+        }
       }
     }
   }

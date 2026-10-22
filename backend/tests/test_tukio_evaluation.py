@@ -24,9 +24,15 @@ from evaluate import (
     recall_at_k,
     ndcg_at_k,
     reciprocal_rank,
+    catalog_coverage,
     recommend_popularity,
     recommend_random,
+    simulate_behaviour_users,
+    build_behaviour_splits,
+    CATEGORY_TAGS,
+    CATEGORY_DEPARTMENTS,
     FIXED_REFERENCE_DATE,
+    SIM_POSITIVES_RANGE,
 )
 
 
@@ -166,3 +172,85 @@ def test_fixed_reference_date_determinism(db_session, student_user, organizer_us
     assert len(res1) == 1
     assert res1[0]["score"] == res2[0]["score"]
     assert res1[0]["explanation"] == res2[0]["explanation"]
+
+
+def _synthetic_catalog(n_per_category: int = 6) -> list[Event]:
+    """Unsaved in-memory events spread over every category, each with two pool tags."""
+    events = []
+    for cat, pool in CATEGORY_TAGS.items():
+        for i in range(n_per_category):
+            events.append(Event(
+                id=uuid.uuid4(),
+                title=f"{cat} Event {i}",
+                description=f"A {cat.lower()} session",
+                category=cat,
+                department=CATEGORY_DEPARTMENTS[cat],
+                tags=",".join([pool[i % len(pool)], pool[(i + 1) % len(pool)]]),
+                start_time=FIXED_REFERENCE_DATE + timedelta(days=i + 1),
+            ))
+    return events
+
+
+def test_catalog_coverage():
+    """Coverage counts distinct events across all users' top-K lists."""
+    assert catalog_coverage([], 10) == 0.0
+    assert catalog_coverage([["a", "b"]], 0) == 0.0
+    assert catalog_coverage([["a", "b"], ["b", "c"]], 10) == 0.3
+    # Only the top-K of each list counts
+    assert catalog_coverage([["a", "b", "c"]], 10, k=2) == 0.2
+
+
+def test_behaviour_simulation_is_seeded_and_well_formed():
+    """Same seed reproduces the same users; positives and declared interests are well formed."""
+    events = _synthetic_catalog()
+    event_ids = {str(e.id) for e in events}
+
+    run1 = simulate_behaviour_users(7, events, n_users=20)
+    run2 = simulate_behaviour_users(7, events, n_users=20)
+    assert [u["positives"] for u in run1] == [u["positives"] for u in run2]
+    assert [[i.interest_tag for i in u["interests"]] for u in run1] == \
+           [[i.interest_tag for i in u["interests"]] for u in run2]
+
+    run3 = simulate_behaviour_users(8, events, n_users=20)
+    assert [u["positives"] for u in run1] != [u["positives"] for u in run3]
+
+    for u in run1:
+        lo, hi = SIM_POSITIVES_RANGE
+        assert lo <= len(u["positives"]) <= hi
+        assert len(set(u["positives"])) == len(u["positives"])
+        assert set(u["positives"]) <= event_ids
+        assert 1 <= len(u["interests"]) <= 6
+
+
+def test_behaviour_ground_truth_is_not_the_tag_overlap_rule():
+    """
+    Positives come from hidden preferences, so some RSVP'd events share neither a
+    category nor a tag with the user's declared interests (impossible under seed.py's rule).
+    """
+    events = _synthetic_catalog()
+    by_id = {str(e.id): e for e in events}
+    outside_rule = 0
+    for u in simulate_behaviour_users(11, events, n_users=30):
+        declared = {i.interest_tag for i in u["interests"]}
+        for eid in u["positives"]:
+            ev = by_id[eid]
+            ev_tags = {t.strip() for t in ev.tags.split(",")}
+            if ev.category.lower() not in declared and not (declared & ev_tags):
+                outside_rule += 1
+    assert outside_rule > 0
+
+
+def test_behaviour_splits_have_no_leakage():
+    """Train, validation and test events are disjoint and cold-start users train on 1-2 events."""
+    events = _synthetic_catalog()
+    splits = build_behaviour_splits(3, events)
+    assert any(s["is_cold"] for s in splits) and any(not s["is_cold"] for s in splits)
+    for s in splits:
+        train = s["train_event_ids"]
+        assert not train & s["val_relevant"]
+        assert not train & s["test_relevant"]
+        assert not s["val_relevant"] & s["test_relevant"]
+        assert {str(r.event_id) for r in s["train_rsvps"]} == train
+        assert all(r.user_id == s["user"].id for r in s["train_rsvps"])
+        if s["is_cold"]:
+            assert 1 <= len(train) <= 2

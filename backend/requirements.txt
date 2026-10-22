@@ -13,6 +13,7 @@ alembic>=1.12
 # ML & Recommender Engine
 scikit-learn>=1.3.0
 numpy>=1.24.0
+matplotlib>=3.8  # evaluate.py chart (docs/evaluation_chart.png)
 
 # Dev & Test Dependencies
 pytest>=7.0
