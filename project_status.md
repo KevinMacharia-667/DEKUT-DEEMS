@@ -2,7 +2,7 @@
 
 > **Date:** 22 October 2026  
 > **Status:** Stage 5: Pre-Defense Hardening & Polish (Feature Complete & Tested)  
-> **Test Suite Counts:** **47/47 passing backend tests** (`pytest`, **91% code coverage**) | **13/13 passing frontend tests** (`node --test`)
+> **Test Suite Counts:** **57/57 passing backend tests** (`pytest`, **93% code coverage**, see `docs/coverage.md`) | **13/13 passing frontend tests** (`node --test`)
 
 ---
 
@@ -14,7 +14,7 @@
 |---|---|---|
 | **Models** | `user.py`, `event.py`, `rsvp.py`, `user_interest.py`, `event_feedback.py`, `interaction_event.py` | ✅ Complete — Verified via `tests/test_auth.py`, `tests/test_events.py`, `tests/test_tukio_rsvp.py` |
 | **Schemas** | `user.py`, `event.py`, `rsvp.py`, `token.py`, `user_interest.py`, `recommendation.py`, `interaction.py` | ✅ Complete — Pydantic v2 validation models across all endpoints |
-| **Routers** | `auth.py`, `events.py`, `rsvps.py`, `users.py`, `recommendations.py`, `interactions.py`, `venues.py` | ✅ Complete — Full CRUD, feedback logging, time-aware filtering, venues API (`pytest` 47 passed) |
+| **Routers** | `auth.py`, `events.py`, `rsvps.py`, `users.py`, `recommendations.py`, `interactions.py`, `venues.py` | ✅ Complete — Full CRUD, feedback logging, time-aware filtering, venues API (`pytest` 57 passed, 93% coverage) |
 | **Auth & Security** | `services/auth.py`, `dependencies.py`, `config.py` | ✅ Complete — JWT + bcrypt, role guards, trusted CORS whitelist, production secret validator |
 | **Venues Module** | `venues.py`, `routers/venues.py` | ✅ Complete — Official DeKUT campus spaces with source tags; tested in `tests/test_venues.py` |
 | **Recommender** | `ml/baseline.py`, `ml/engine.py`, `ml/hybrid_engine.py` | ✅ Complete — Heuristic rule baseline, TF-IDF content model, and multi-factor hybrid engine |

@@ -32,6 +32,7 @@ class Settings(BaseSettings):
     AUTH_RATE_LIMIT_ENABLED: bool = True
     AUTH_RATE_LIMIT_MAX_ATTEMPTS: int = 5
     AUTH_RATE_LIMIT_WINDOW_SECONDS: int = 60
+    AUTH_TRUST_PROXY: bool = False
 
     # ── CORS Origins ──────────────────────────────────────────────────
     CORS_ORIGINS: list[str] = [

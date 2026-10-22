@@ -4,7 +4,7 @@ Authentication router: registration and login.
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
 from app.dependencies import get_db
@@ -12,7 +12,11 @@ from app.models.user import User
 from app.schemas.token import Token
 from app.schemas.user import UserCreate, UserLogin, UserResponse
 from app.services.auth import create_access_token, hash_password, verify_password
-from app.services.rate_limiter import rate_limit_auth
+from app.services.rate_limiter import (
+    check_login_rate_limit,
+    record_login_failure,
+    rate_limit_register,
+)
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -22,7 +26,7 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
     response_model=UserResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Register a new user account",
-    dependencies=[Depends(rate_limit_auth)],
+    dependencies=[Depends(rate_limit_register)],
 )
 def register(
     payload: UserCreate,
@@ -67,18 +71,21 @@ def register(
     "/login",
     response_model=Token,
     summary="Login and receive a JWT access token",
-    dependencies=[Depends(rate_limit_auth)],
+    dependencies=[Depends(check_login_rate_limit)],
 )
 def login(
     payload: UserLogin,
+    request: Request,
     db: Annotated[Session, Depends(get_db)],
 ):
     """
     Authenticate with email and password. Returns a bearer JWT token.
+    Failed attempts increment the client's rate-limit failure counter.
     """
     user = db.query(User).filter(User.email == payload.email).first()
 
     if not user or not verify_password(payload.password, user.hashed_password):
+        record_login_failure(request)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",

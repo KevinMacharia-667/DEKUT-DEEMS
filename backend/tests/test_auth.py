@@ -138,7 +138,7 @@ def test_auth_login_rate_limiting_blocks_sixth_attempt(client, student_user):
     )
     assert res_6th.status_code == 429
     data = res_6th.json()
-    assert "Too many attempts" in data["detail"]
+    assert "Too many failed login attempts" in data["detail"]
     assert "Retry-After" in res_6th.headers
 
     # Resetting the limiter restores normal login flow immediately
@@ -219,3 +219,83 @@ def test_jwt_guard_fails_safe_without_explicit_development_mode():
         JWT_SECRET="super_strong_cryptographic_random_key_9876543210_ok"
     )
     assert prod_settings.JWT_SECRET == "super_strong_cryptographic_random_key_9876543210_ok"
+
+
+def test_successful_login_does_not_consume_rate_limit_budget(client, student_user):
+    """
+    Successful logins must not count against the rate limit failure budget.
+    A user can log in repeatedly without being blocked.
+    """
+    from app.services.rate_limiter import reset_auth_limiter
+
+    reset_auth_limiter()
+
+    # Perform 7 successful logins
+    for _ in range(7):
+        res = client.post(
+            "/auth/login",
+            json={"email": student_user.email, "password": "password123"}
+        )
+        assert res.status_code == 200
+        assert "access_token" in res.json()
+
+
+def test_auth_rate_limiting_proxy_trust(client, student_user, monkeypatch):
+    """
+    When AUTH_TRUST_PROXY=true, X-Forwarded-For IP is used as the rate limit key.
+    When AUTH_TRUST_PROXY=false (default), X-Forwarded-For is ignored.
+    """
+    from app.config import get_settings
+    from app.services.rate_limiter import reset_auth_limiter
+
+    reset_auth_limiter()
+    settings = get_settings()
+
+    # Case 1: Proxy trusted -> client IP parsed from X-Forwarded-For
+    monkeypatch.setattr(settings, "AUTH_TRUST_PROXY", True)
+
+    proxy_ip = "198.51.100.42"
+    for _ in range(5):
+        res = client.post(
+            "/auth/login",
+            json={"email": student_user.email, "password": "wrongpassword"},
+            headers={"X-Forwarded-For": f"{proxy_ip}, 10.0.0.1"}
+        )
+        assert res.status_code == 401
+
+    # 6th attempt from the same forwarded IP is blocked
+    res_blocked = client.post(
+        "/auth/login",
+        json={"email": student_user.email, "password": "wrongpassword"},
+        headers={"X-Forwarded-For": f"{proxy_ip}, 10.0.0.1"}
+    )
+    assert res_blocked.status_code == 429
+
+    # Another IP via forwarded header is NOT blocked
+    res_other_ip = client.post(
+        "/auth/login",
+        json={"email": student_user.email, "password": "password123"},
+        headers={"X-Forwarded-For": "198.51.100.99, 10.0.0.1"}
+    )
+    assert res_other_ip.status_code == 200
+
+    # Case 2: Proxy not trusted -> X-Forwarded-For is ignored
+    reset_auth_limiter()
+    monkeypatch.setattr(settings, "AUTH_TRUST_PROXY", False)
+
+    # Sending 5 failures from client.host
+    for _ in range(5):
+        res = client.post(
+            "/auth/login",
+            json={"email": student_user.email, "password": "wrongpassword"},
+            headers={"X-Forwarded-For": "some.spoofed.ip.123"}
+        )
+        assert res.status_code == 401
+
+    # 6th attempt with arbitrary spoofed IP header is STILL blocked because host is used
+    res_spoof_blocked = client.post(
+        "/auth/login",
+        json={"email": student_user.email, "password": "wrongpassword"},
+        headers={"X-Forwarded-For": "another.spoofed.ip.456"}
+    )
+    assert res_spoof_blocked.status_code == 429
