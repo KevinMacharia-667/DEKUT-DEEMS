@@ -22,6 +22,7 @@ from app.models.event import Event
 from app.models.rsvp import RSVP
 from app.models.user_interest import UserInterest
 from app.services.auth import hash_password
+from app.venues import venues_for, ONLINE_NAME, CONSERVANCY, NAIROBI
 
 # ── Constants ─────────────────────────────────────────────────────────
 
@@ -39,12 +40,17 @@ TAG_POOL = {
     "Career":     ["internship", "resume", "interview", "entrepreneurship", "startup", "leadership", "mentorship", "freelancing"],
 }
 
-LOCATIONS = [
-    "Main Hall", "Lecture Theatre 1", "Lecture Theatre 2", "Science Lab",
-    "Library Auditorium", "Sports Complex", "Innovation Hub", "Student Centre",
-    "Cafeteria Courtyard", "Open Grounds", "Computer Lab 3", "Engineering Block",
-    "Arts Studio", "Business Incubator", "Virtual (Zoom)",
-]
+# Venues come from app/venues.py (DeKUT campus data from dkut.ac.ke).
+# Each event is placed at a venue that suits its category.
+
+
+def pick_venue(category: str) -> str:
+    """Pick a venue that suits the category. Main-campus venues are favoured:
+    the Conservancy (7 km out) and the Nairobi campus host far fewer events."""
+    options = venues_for(category)
+    weights = [0.2 if v["area"] in (CONSERVANCY, NAIROBI) else 1.0 for v in options]
+    return random.choices(options, weights=weights, k=1)[0]["name"]
+
 
 # ── Event Templates ───────────────────────────────────────────────────
 # Each template: (title, description, category, extra_tags)
@@ -390,7 +396,11 @@ def main():
                 description=description,
                 category=category,
                 department=dept_name,
-                location=random.choice(LOCATIONS),
+                location=(
+                    ONLINE_NAME
+                    if category in ("Academic", "Workshop", "Tech", "Career") and random.random() < 0.08
+                    else pick_venue(category)
+                ),
                 start_time=start_time,
                 end_time=end_time,
                 max_attendees=random.choice([None, 30, 50, 100, 200]),

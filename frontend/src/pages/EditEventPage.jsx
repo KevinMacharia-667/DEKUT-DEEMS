@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getEvent, updateEvent } from '../api';
+import { getEvent, updateEvent, getVenues } from '../api';
 import { useToast } from '../components/Toast';
 import './CreateEventPage.css';
 
@@ -37,6 +37,16 @@ export default function EditEventPage() {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [error, setError] = useState('');
+  const [venues, setVenues] = useState([]);
+
+  useEffect(() => {
+    getVenues().then(setVenues).catch(() => setVenues([]));
+  }, []);
+
+  // Show venues that suit the chosen category (all venues if none chosen).
+  const venueOptions = venues.filter(
+    (v) => !form.category || v.categories.includes(form.category)
+  );
 
   useEffect(() => {
     getEvent(id)
@@ -183,11 +193,17 @@ export default function EditEventPage() {
                 className="form-input"
                 type="text"
                 name="location"
-                placeholder="e.g. Main Hall"
+                placeholder="Pick a campus venue or type your own"
+                list="venue-options"
                 value={form.location}
                 onChange={handleChange}
                 maxLength={200}
               />
+              <datalist id="venue-options">
+                {venueOptions.map((v) => (
+                  <option key={v.name} value={v.name}>{v.area}</option>
+                ))}
+              </datalist>
             </div>
           </div>
 

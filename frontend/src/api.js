@@ -197,3 +197,9 @@ export async function logBatchInteractions(interactions) {
   });
 }
 
+// ── Venues ──────────────────────────────────────────────────────────
+
+export async function getVenues(category) {
+  const qs = category ? `?category=${encodeURIComponent(category)}` : '';
+  return request(`/venues${qs}`);
+}
