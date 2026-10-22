@@ -7,6 +7,7 @@ Registers all API routers and configures middleware.
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.config import get_settings
 from app.database import Base, engine
 from app.routers import (
     auth,
@@ -30,10 +31,12 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Configure CORS for frontend communication
+settings = get_settings()
+
+# Configure CORS with explicit trusted origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # For local development; refine in production
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

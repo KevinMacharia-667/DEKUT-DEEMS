@@ -100,3 +100,78 @@ def test_tukio_one_tap_rsvp_and_cancel_persistence(client, student_token, organi
     )
     assert re_rsvp_res.status_code in (200, 201)
     assert re_rsvp_res.json()["status"] == "confirmed"
+
+
+def test_rsvp_capacity_limit_and_reconfirm_guard(client, student_token, organizer_token, db_session):
+    # Register a second student
+    reg_res = client.post(
+        "/auth/register",
+        json={
+            "email": "student2@dekut.ac.ke",
+            "username": "student2",
+            "password": "password123",
+            "full_name": "Student Two",
+            "role": "student",
+        },
+    )
+    assert reg_res.status_code == 201
+
+    login_res = client.post(
+        "/auth/login",
+        json={"email": "student2@dekut.ac.ke", "password": "password123"},
+    )
+    assert login_res.status_code == 200
+    student2_token = login_res.json()["access_token"]
+
+    # Organizer creates event with strict capacity of 1 attendee
+    create_res = client.post(
+        "/events",
+        headers={"Authorization": f"Bearer {organizer_token}"},
+        json={
+            "title": "Exclusive Robotics Lab Tour",
+            "category": "Tech",
+            "start_time": "2026-12-10T10:00:00Z",
+            "max_attendees": 1,
+            "is_published": True,
+        },
+    )
+    assert create_res.status_code == 201
+    event_id = create_res.json()["id"]
+
+    # 1. Student 1 RSVPs (occupies the 1 seat)
+    r1 = client.post(
+        f"/events/{event_id}/rsvp",
+        headers={"Authorization": f"Bearer {student_token}"},
+    )
+    assert r1.status_code == 201
+
+    # 2. Student 2 attempts to RSVP -> must be rejected as full (400)
+    r2_fail = client.post(
+        f"/events/{event_id}/rsvp",
+        headers={"Authorization": f"Bearer {student2_token}"},
+    )
+    assert r2_fail.status_code == 400
+    assert "maximum capacity" in r2_fail.json()["detail"]
+
+    # 3. Student 1 cancels their RSVP -> frees the seat
+    r1_cancel = client.delete(
+        f"/events/{event_id}/rsvp",
+        headers={"Authorization": f"Bearer {student_token}"},
+    )
+    assert r1_cancel.status_code == 204
+
+    # 4. Student 2 now RSVPs successfully -> occupies the seat
+    r2_ok = client.post(
+        f"/events/{event_id}/rsvp",
+        headers={"Authorization": f"Bearer {student2_token}"},
+    )
+    assert r2_ok.status_code == 201
+
+    # 5. Student 1 attempts to re-confirm their previously cancelled RSVP -> must fail with 400!
+    r1_reconfirm_fail = client.post(
+        f"/events/{event_id}/rsvp",
+        headers={"Authorization": f"Bearer {student_token}"},
+    )
+    assert r1_reconfirm_fail.status_code == 400
+    assert "maximum capacity" in r1_reconfirm_fail.json()["detail"]
+

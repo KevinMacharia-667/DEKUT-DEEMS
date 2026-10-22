@@ -1,57 +1,116 @@
 # Tukio — DeKUT Campus Event Recommendation App
 
-**Tukio** (Swahili for *Event / Happening*) is a mobile-first, engagement-focused event recommendation app built for Dedan Kimathi University of Technology (DeKUT). It combines a TikTok/Tinder-style swipeable card feed with an intelligent hybrid recommendation engine (TF-IDF content filtering + collaborative signals) for instant campus discovery and one-tap RSVPs.
+> **Current Date:** 22 October 2026  
+> **Status:** Stage 5: Pre-Defense Hardening & Polish  
+> **Test Suite:** **25/25 passing backend tests** (`pytest`) | **13/13 passing frontend tests** (`node --test`)
 
-## Repository Layout
-- `/backend`: Python 3.11/3.13 + FastAPI + SQLAlchemy + SQLite (dev) / PostgreSQL (Supabase prod)
-- `/frontend`: React 19 + Vite 8 + React Router 7 (configured as mobile-first Tukio PWA)
-- `/backend/app/ml`: Recommendation engine (rule-based baseline, TF-IDF content similarity, and multi-factor hybrid engine)
+**Tukio** (*Swahili for "Event" / "Happening"*) is a mobile-first campus event recommendation application designed for Dedan Kimathi University of Technology (DeKUT). It pairs a swipeable, engagement-driven card feed with a multi-factor recommendation engine (TF-IDF content filtering, TruncatedSVD collaborative filtering, and contextual urgency) for frictionless campus discovery and one-tap RSVPs.
 
-## Project Pivot & Roadmap (Tukio)
-1. ✅ **Mobile-first swipeable card feed**: Full-focus event card deck with touch swipe gestures, keyboard navigation, and instant one-tap RSVP.
-2. ⏳ **"Why recommended" chip**: Direct explainability chips on each card powered by the ML engine.
-3. ⏳ **Quick onboarding cold-start**: 3+ interest categories selection for new users.
-4. ⏳ **Time-aware curation**: Happening Today, This Weekend, For You sections.
-5. ⏳ **Feedback loop**: "Interested" / "Not for me" write-backs to the recommender.
-6. ⏳ **Sharing & Calendar**: WhatsApp direct sharing and `.ics` / Google Calendar integration.
-7. ⏳ **Polishing & UI**: Skeleton loaders, smooth transitions, and dark mode.
-8. ⏳ **PWA completion**: Web app manifest, service worker, and mobile install prompt.
-9. ⏳ **Offline evaluation script**: Precision@K and Recall@K comparison table for academic documentation.
+---
 
-### Evaluating the recommendation engines
-From the backend directory (after seeding): `python seed.py` then `python evaluate.py`
-prints the baseline-vs-ML precision table used in Chapter 4 of the report.
+## 1. Technology Stack
 
-## Running the Project
+* **Backend:** Python 3.13, FastAPI 0.115, SQLAlchemy 2.0, SQLite (development) / PostgreSQL (production config)
+* **Machine Learning & Recommenders:** Scikit-learn (TF-IDF Vectorization, TruncatedSVD Matrix Factorization), NumPy
+* **Frontend:** React 19, Vite 8, React Router 7, Plain CSS (custom design system with CSS custom properties; no Tailwind)
+* **PWA & Offline:** Web App Manifest, Service Worker (`sw.js`), Cache API, RFC 5545 `.ics` generator
+* **Testing:** Pytest (Python backend), Node.js native test runner (`node --test` for frontend utilities)
 
-### Backend
-1. Navigate to the `backend` directory.
-2. Create a Python virtual environment:
-   ```cmd
+---
+
+## 2. Project Roadmap & Verification Matrix
+
+| # | Priority Feature | Status | Verification & Code Evidence |
+|---|---|:---:|---|
+| 1 | **Mobile-first swipeable card feed** | ✅ Done | `frontend/src/pages/EventsPage.jsx` & `frontend/src/components/TukioCard.jsx` (touch swipe, card flight, feed lock) |
+| 2 | **"Why recommended" explainability chip** | ✅ Done | `frontend/src/components/TukioCard.jsx:253`, `backend/app/ml/hybrid_engine.py:244` (tested in `tests/test_recommendations.py`) |
+| 3 | **Cold-start onboarding (3+ interests)** | ✅ Done | `frontend/src/pages/OnboardingPage.jsx`, `backend/app/routers/users.py:65` (tested in `tests/test_tukio_onboarding.py`) |
+| 4 | **Time-aware curation (Today / Weekend / For You / All)** | ✅ Done | `backend/app/services/time_utils.py`, `backend/app/routers/events.py:107` (tested in `tests/test_tukio_time_aware.py`) |
+| 5 | **Feedback loop ("Interested" / "Not for me")** | ✅ Done | `backend/app/routers/interactions.py`, `backend/app/models/event_feedback.py` (tested in `tests/test_tukio_feedback.py`) |
+| 6 | **WhatsApp share & .ics calendar download** | ✅ Done | `frontend/src/utils/calendar.js`, `frontend/src/components/TukioCard.jsx:340` (tested in `frontend/src/utils/calendar.test.js`) |
+| 7 | **Skeleton loaders, smooth transitions & dark mode** | ✅ Done | `frontend/src/components/TukioCard.css`, `frontend/src/context/ThemeContext.jsx` (tested in `frontend/src/utils/theme.test.js`) |
+| 8 | **PWA setup (manifest, service worker, install prompt)** | 🟡 Partial | `frontend/public/manifest.json`, `frontend/public/sw.js` (tested in `frontend/src/utils/pwa.test.js`; awaiting Vite hash precache in Step 3) |
+| 9 | **Offline evaluation benchmark (ML vs Baselines)** | 🟡 Partial | `backend/evaluate.py`, `backend/results/evaluation.json` (tested in `tests/test_tukio_evaluation.py`; awaiting coverage & docs chart in Step 4) |
+
+---
+
+## 3. DeKUT Venues Module
+
+Campus facilities are formalized in [`backend/app/venues.py`](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/backend/app/venues.py) as the single source of truth for event locations.
+
+* **Audited Venue Sources:**
+  * `"official"`: Verified against official university publications (`dkut.ac.ke`, University Profile 2021, Library portal).
+  * `"secondary"`: Verified via documented campus structures (e.g., Academic Block laboratories and halls).
+  * `"unverified"`: Plausible physical room that still requires physical verification.
+* **API Access:** `GET /venues` (optionally filtered with `?category=Sports` or `?category=Academic`).
+* **UI Location Picker:** Both [`CreateEventPage.jsx`](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/frontend/src/pages/CreateEventPage.jsx) and [`EditEventPage.jsx`](file:///c:/Users/ADMIN/Documents/SEM%204.1/PROJECT/antigravity%20iteration/frontend/src/pages/EditEventPage.jsx) provide a `<datalist id="venue-options">` auto-filtered by event category while allowing free text entry.
+
+---
+
+## 4. Known Limitations
+
+* **Synthetic Ground Truth Bias:**  
+  Relevance in `backend/seed_ground_truth.json` was generated in `seed.py` by matching category tags and tag overlaps. The heuristic **Rule-Based Baseline** therefore has an inherent structural advantage on this synthetic benchmark compared to unsupervised ML models.
+* **Campus Room Granularity:**  
+  Individual room numbers and seating capacities within the Resource Centre (RC phases 1–3) and Wildlife Conservancy conference wings are not published online by the university and must be physically confirmed on site.
+* **PWA Offline Asset Caching:**  
+  While the service worker handles runtime caching and public event queries, dynamic hashed chunks from Vite production builds are not yet statically precached during build.
+
+---
+
+## 5. Running the Project (Windows Setup)
+
+### Prerequisites
+* Python 3.11+ (Python 3.13 recommended)
+* Node.js 20+ (Node.js 22 tested)
+
+### Backend Setup & Execution
+1. Open PowerShell and navigate to the `backend` folder:
+   ```powershell
+   cd backend
+   ```
+2. Create and activate a Python virtual environment:
+   ```powershell
    python -m venv venv
+   .\venv\Scripts\Activate.ps1
    ```
-3. Activate the virtual environment:
-   ```cmd
-   venv\Scripts\activate
+3. Install dependencies:
+   ```powershell
+   python -m pip install -r requirements.txt
    ```
-4. Install dependencies:
-   ```cmd
-   pip install -r requirements.txt
+4. Run the database seed script:
+   ```powershell
+   python seed.py
    ```
-5. Run the FastAPI development server:
-   ```cmd
-   uvicorn main:app --reload
+5. Run the backend tests:
+   ```powershell
+   python -m pytest -q
    ```
-6. Open your browser and navigate to `http://127.0.0.1:8000/health`.
+6. Start the FastAPI development server:
+   ```powershell
+   python -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload
+   ```
+7. Verify operational health at `http://127.0.0.1:8000/health` and Swagger docs at `http://127.0.0.1:8000/docs`.
 
-### Frontend
-1. Navigate to the `frontend` directory.
-2. Install the node packages:
-   ```cmd
+### Frontend Setup & Execution
+1. Open a second PowerShell terminal and navigate to the `frontend` folder:
+   ```powershell
+   cd frontend
+   ```
+2. Install Node dependencies:
+   ```powershell
    npm install
    ```
-3. Run the Vite development server:
-   ```cmd
+3. Run the frontend unit tests:
+   ```powershell
+   npm test
+   ```
+4. Verify the production build:
+   ```powershell
+   npm run build
+   ```
+5. Launch the Vite development server:
+   ```powershell
    npm run dev
    ```
-4. Open the displayed local server URL (e.g. `http://localhost:5173`) in your browser.
+6. Open your browser at `http://localhost:5173`.

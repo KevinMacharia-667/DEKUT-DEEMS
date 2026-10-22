@@ -48,20 +48,13 @@ def create_rsvp(
         .filter(RSVP.user_id == current_user.id, RSVP.event_id == event_id)
         .first()
     )
-    if existing:
-        if existing.status == "confirmed":
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail="You have already RSVP'd to this event",
-            )
-        # Re-confirm a previously cancelled RSVP
-        existing.status = "confirmed"
-        db.commit()
-        db.refresh(existing)
-        log_interaction(db, event_id=event_id, interaction_type="rsvp", user_id=current_user.id)
-        return existing
+    if existing and existing.status == "confirmed":
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="You have already RSVP'd to this event",
+        )
 
-    # Check capacity
+    # Check capacity before confirming a new or re-activated RSVP
     if event.max_attendees is not None:
         confirmed_count = (
             db.query(RSVP)
@@ -73,6 +66,14 @@ def create_rsvp(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="This event has reached maximum capacity",
             )
+
+    if existing:
+        # Re-confirm a previously cancelled RSVP
+        existing.status = "confirmed"
+        db.commit()
+        db.refresh(existing)
+        log_interaction(db, event_id=event_id, interaction_type="rsvp", user_id=current_user.id)
+        return existing
 
     rsvp = RSVP(user_id=current_user.id, event_id=event_id)
     db.add(rsvp)
