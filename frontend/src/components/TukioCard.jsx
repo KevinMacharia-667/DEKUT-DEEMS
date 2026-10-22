@@ -126,6 +126,42 @@ export function TukioSkeletonCard() {
   );
 }
 
+/**
+ * "Up next" list shown beside the card on wide screens: the next few events in
+ * the deck, each jumping straight to its card when clicked.
+ */
+export function TukioUpNext({ events, currentIndex, onSelect, limit = 5 }) {
+  const upcoming = events
+    .map((event, index) => ({ event, index }))
+    .slice(currentIndex + 1, currentIndex + 1 + limit);
+  if (upcoming.length === 0) return null;
+
+  return (
+    <aside className="tukio-up-next" aria-label="Up next">
+      <h3 className="tukio-up-next-title">Up next</h3>
+      <ul className="tukio-up-next-list">
+        {upcoming.map(({ event, index }) => {
+          const style = CATEGORY_STYLES[event.category] || { emoji: '📌' };
+          return (
+            <li key={event.id}>
+              <button type="button" className="tukio-up-next-item" onClick={() => onSelect(index)}>
+                <span className="tukio-up-next-emoji" aria-hidden="true">{style.emoji}</span>
+                <span className="tukio-up-next-text">
+                  <span className="tukio-up-next-name">{event.title}</span>
+                  <span className="tukio-up-next-when">{formatEventTime(event.start_time).formatted}</span>
+                </span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+      {events.length > currentIndex + 1 + limit && (
+        <p className="tukio-up-next-more">+{events.length - currentIndex - 1 - limit} more in this feed</p>
+      )}
+    </aside>
+  );
+}
+
 export default function TukioCard({
   event,
   recommendation = null,

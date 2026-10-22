@@ -24,7 +24,8 @@ Versions 1 and 2 arrived in the same commit. The baseline was built as the compa
 | `3e7afff` | 13 Oct 2026 | **Version 3.** `hybrid_engine.py` added (355 lines). The API gains `strategy=hybrid` and makes it the default. `evaluate.py` now compares all three and adds MRR. |
 | `41bbf76` | 17 Oct 2026 | Hybrid gains the feedback loop: "Interested" signals feed the SVD matrix and the content profile, and "Not for me" applies a small category penalty. Negative RSVP weights are removed from SVD. Feedback, interaction and time-aware models, routers and tests are added. |
 | `bc4cac4` | 21 Oct 2026 | All three engines accept a fixed `reference_date` so evaluation is repeatable. The hybrid accepts `custom_weights` for validation-split tuning. `evaluate.py` becomes the multi-seed benchmark: 10 seeds, cold-start and warm cohorts, Recall, NDCG@10, and Random and Popularity floors. |
-| *current work* | 23 Oct 2026 | Benchmark adds a behaviour-based ground truth (simulated students with hidden preferences), catalog coverage and a sensitivity check. See [`evaluation.md`](evaluation.md). |
+| `7edb785` | 23 Oct 2026 | Benchmark adds a behaviour-based ground truth (simulated students with hidden preferences), catalog coverage and a sensitivity check. See [`evaluation.md`](evaluation.md). |
+| *current work* | 23 Oct 2026 | Hybrid: ended events get urgency 0 instead of maximum, and an optional MMR diversity re-rank is added. MMR was tested and left off because it lowered coverage. The benchmark reference date moves to the catalog's first day. See [`evaluation.md`](evaluation.md) §4.4–4.5. |
 
 ## Version 1: Rule-based baseline
 
@@ -80,18 +81,18 @@ Numbers below are NDCG@10 and Catalog Coverage@10 from the current benchmark (me
 
 | Version | NDCG@10 (behaviour-based) | NDCG@10 (tag-overlap, biased toward v1) | Coverage@10 (behaviour-based) |
 | :--- | :---: | :---: | :---: |
-| 1. Rule-based | 0.120 ± 0.018 | **0.825 ± 0.026** | 0.833 ± 0.034 |
+| 1. Rule-based | 0.119 ± 0.018 | **0.825 ± 0.029** | 0.826 ± 0.027 |
 | 2. TF-IDF | 0.138 ± 0.021 | 0.736 ± 0.025 | **0.901 ± 0.035** |
-| 3. Hybrid | **0.204 ± 0.025** | 0.730 ± 0.022 | 0.721 ± 0.011 |
+| 3. Hybrid | **0.187 ± 0.026** | 0.722 ± 0.018 | 0.737 ± 0.034 |
 
 **What each step bought**
-- **v1 → v2:** a small accuracy gain on behaviour data (+0.018 NDCG@10, about one seed standard deviation) and the widest coverage of the three. On cold-start students, TF-IDF is slightly *behind* the rule-based version (0.127 vs 0.131).
-- **v2 → v3:** a large accuracy gain on behaviour data (+0.066 NDCG@10, +48%) in both cold-start and warm cohorts. The cost is lower coverage, because popularity and collaborative signals pull many students toward the same events. The sensitivity check in [`evaluation.md`](evaluation.md) §4.3 shows that this gain shrinks to about one standard deviation when the simulator's department and popularity signals are removed.
+- **v1 → v2:** a small accuracy gain on behaviour data (+0.019 NDCG@10, about one seed standard deviation) and the widest coverage of the three. On cold-start students, TF-IDF is slightly *behind* the rule-based version (0.127 vs 0.131).
+- **v2 → v3:** a clear accuracy gain on behaviour data (+0.049 NDCG@10, +36%) in both cold-start and warm cohorts. The cost is lower coverage, because popularity and collaborative signals pull many students toward the same events. The sensitivity check in [`evaluation.md`](evaluation.md) §4.3 shows that this gain **disappears** (a tie on NDCG@10, a loss on MRR) when the simulator's department and popularity signals are removed.
 - **On the tag-overlap set,** each step *loses* accuracy against v1. That set uses v1's own rule as its answer key, so it shows how much the later versions move away from exact tag matching. It is not evidence that they are worse for students.
 
 ## Gaps in the historical record
 
 - **No benchmark numbers were saved when each version was built.** The July `evaluate.py` printed Precision@5/10 to the terminal, and nothing was committed to `results/` until the multi-seed benchmark. Every number above comes from today's benchmark, run on the current version of all three engines. Version 1 and 2 have only had small changes since July: a `reference_date` parameter and a null-weight guard in `bc4cac4`.
-- **One earlier result was saved.** The committed tag-overlap results from `bc4cac4` (before this benchmark update) match today's tag-overlap numbers to within 0.002. For example, hybrid NDCG@10 was 0.730 then and 0.730 now. So the old and new benchmark code agree on that set.
+- **One earlier result was saved.** The committed tag-overlap results from `bc4cac4` matched the first run of the rewritten benchmark to within 0.002 (hybrid NDCG@10 0.730 both times), so the old and new benchmark code agreed on that set. The numbers above are lower for the hybrid (0.722) because of the later reference-date correction ([`evaluation.md`](evaluation.md) §4.5).
 - **Some commit messages don't describe their changes.** `41bbf76` ("checkpoint before Tukio step 7") and `bc4cac4` ("wip: checkpoint before venues update") contain the feedback loop and the multi-seed benchmark respectively. The timeline above records what they actually changed.
 - **The earlier versions can be inspected directly.** For example, `git show 559609a:backend/app/ml/engine.py` shows TF-IDF as it was in July, and `git show 3e7afff:backend/app/ml/hybrid_engine.py` shows the first hybrid.

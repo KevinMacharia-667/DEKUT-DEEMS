@@ -164,7 +164,9 @@
 
 @media (max-width: 768px) {
   .navbar-toggle {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .navbar-nav {
@@ -228,10 +230,26 @@
   color: #0D4F0D;
 }
 
-.navbar-toggle,
-.navbar-toggle span {
+.navbar-toggle {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  line-height: 1;
   color: #FFFFFF;
-  background-color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: var(--radius-full);
+  transition: background var(--transition-fast);
+}
+
+.navbar-toggle:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+[data-theme="dark"] .navbar-toggle {
+  color: var(--text-primary);
+  background: var(--surface);
+  border-color: var(--border);
 }
 
 .navbar .btn-ghost {

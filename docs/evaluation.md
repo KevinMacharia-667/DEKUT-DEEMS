@@ -2,7 +2,7 @@
 
 > Script: `backend/evaluate.py` | Raw results: `backend/results/evaluation.json`, `backend/results/evaluation.csv`
 > Full generated tables (all cohorts, P@5 included): [`evaluation_results.md`](evaluation_results.md) | Chart: [`evaluation_chart.png`](evaluation_chart.png)
-> Run date reference: 17 Oct 2026 (fixed so time-based features are deterministic) | 10 seeds (42–51) | Catalog: 160 seeded events
+> Reference date: 7 Sep 2026, the day the seeded catalog starts, so every event is upcoming as in the live feed (fixed so time-based features are deterministic) | 10 seeds (42–51) | Catalog: 160 seeded events
 
 ![Benchmark chart](evaluation_chart.png)
 
@@ -50,6 +50,7 @@ The test relevance set is **only the student's held-out RSVPs**. The tag/categor
 - **Remaining RSVPs:** these are split 40% validation and 60% test.
 - **Leakage:** held-out events never enter the student's profile, the SVD interaction matrix or popularity counts. This is verified by `test_held_out_events_never_appear_in_training_inputs` and `test_behaviour_splits_have_no_leakage`.
 - **Candidates:** each student ranks the full catalog minus their own training events.
+- **Reference date:** "now" for the time-based features is midnight on the day the earliest catalog event starts (`catalog_reference_date` in `evaluate.py`), so every candidate is upcoming. The live feed never shows ended events, so this matches what students see. An earlier version of this benchmark used 17 Oct 2026, when 112 of the 160 events had already ended. See section 4.5.
 
 ### 3.3 Metrics
 
@@ -65,17 +66,17 @@ The test relevance set is **only the student's held-out RSVPs**. The tag/categor
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
 | Random | 0.029 ± 0.010 | 0.031 ± 0.004 | 0.068 ± 0.011 | 0.048 ± 0.006 | 0.077 ± 0.019 | 0.978 ± 0.013 |
 | Popularity | 0.035 ± 0.008 | 0.038 ± 0.006 | 0.078 ± 0.016 | 0.058 ± 0.014 | 0.103 ± 0.028 | 0.091 ± 0.006 |
-| Rule-Based | 0.078 ± 0.015 | 0.073 ± 0.008 | 0.156 ± 0.024 | 0.120 ± 0.018 | 0.189 ± 0.032 | 0.833 ± 0.034 |
+| Rule-Based | 0.079 ± 0.019 | 0.075 ± 0.008 | 0.161 ± 0.026 | 0.119 ± 0.018 | 0.173 ± 0.024 | 0.826 ± 0.027 |
 | TF-IDF Content | 0.088 ± 0.013 | 0.081 ± 0.008 | 0.178 ± 0.025 | 0.138 ± 0.021 | 0.217 ± 0.044 | **0.901 ± 0.035** |
-| Unified Hybrid | **0.127 ± 0.014** | **0.123 ± 0.011** | **0.271 ± 0.025** | **0.204 ± 0.025** | **0.284 ± 0.044** | 0.721 ± 0.011 |
+| Unified Hybrid | **0.116 ± 0.021** | **0.116 ± 0.010** | **0.253 ± 0.025** | **0.187 ± 0.026** | **0.258 ± 0.054** | 0.737 ± 0.034 |
 
 NDCG@10 by cohort:
 
 | Model | Cold-start | Warm |
 | :--- | :---: | :---: |
-| Rule-Based | 0.131 ± 0.023 | 0.115 ± 0.023 |
+| Rule-Based | 0.131 ± 0.017 | 0.113 ± 0.027 |
 | TF-IDF Content | 0.127 ± 0.013 | 0.145 ± 0.032 |
-| Unified Hybrid | **0.196 ± 0.029** | **0.208 ± 0.034** |
+| Unified Hybrid | **0.187 ± 0.036** | **0.187 ± 0.039** |
 
 ### 4.2 Tag-overlap ground truth (all 22 seeded users, biased toward the baseline)
 
@@ -83,9 +84,9 @@ NDCG@10 by cohort:
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
 | Random | 0.088 ± 0.018 | 0.097 ± 0.013 | 0.064 ± 0.010 | 0.097 ± 0.013 | 0.228 ± 0.042 | 0.747 ± 0.027 |
 | Popularity | 0.176 ± 0.057 | 0.161 ± 0.022 | 0.101 ± 0.017 | 0.165 ± 0.036 | 0.281 ± 0.081 | 0.111 ± 0.011 |
-| Rule-Based | **0.831 ± 0.033** | **0.812 ± 0.020** | **0.597 ± 0.019** | **0.825 ± 0.026** | **0.926 ± 0.035** | 0.692 ± 0.015 |
+| Rule-Based | **0.838 ± 0.040** | **0.807 ± 0.022** | **0.591 ± 0.021** | **0.825 ± 0.029** | **0.939 ± 0.032** | 0.681 ± 0.012 |
 | TF-IDF Content | 0.765 ± 0.041 | 0.707 ± 0.019 | 0.516 ± 0.013 | 0.736 ± 0.025 | 0.908 ± 0.049 | **0.744 ± 0.020** |
-| Unified Hybrid | 0.755 ± 0.036 | 0.710 ± 0.018 | 0.540 ± 0.020 | 0.730 ± 0.022 | 0.852 ± 0.037 | 0.638 ± 0.025 |
+| Unified Hybrid | 0.743 ± 0.025 | 0.713 ± 0.015 | 0.540 ± 0.013 | 0.722 ± 0.018 | 0.830 ± 0.037 | 0.646 ± 0.014 |
 
 ### 4.3 Sensitivity check: is the simulator rigged for the hybrid?
 
@@ -95,32 +96,62 @@ NDCG@10 and MRR, all users. "Default" is the 10-seed main run; the two variants 
 
 | Hidden utility | Rule-Based NDCG@10 | TF-IDF NDCG@10 | Hybrid NDCG@10 | Rule-Based MRR | TF-IDF MRR | Hybrid MRR | Hybrid Coverage@10 |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| Default (category .45, cluster .35, dept .10, appeal .10) | 0.120 ± 0.018 | 0.138 ± 0.021 | **0.204 ± 0.025** | 0.189 ± 0.032 | 0.217 ± 0.044 | **0.284 ± 0.044** | 0.721 ± 0.011 |
-| Category only (1.0) | 0.134 ± 0.020 | 0.165 ± 0.016 | **0.245 ± 0.043** | 0.189 ± 0.033 | 0.235 ± 0.026 | **0.299 ± 0.055** | 0.738 ± 0.022 |
-| No dept, no appeal (category .55, cluster .45) | 0.142 ± 0.031 | 0.157 ± 0.026 | **0.178 ± 0.025** | 0.236 ± 0.053 | 0.249 ± 0.058 | **0.250 ± 0.046** | 0.693 ± 0.021 |
+| Default (category .45, cluster .35, dept .10, appeal .10) | 0.119 ± 0.018 | 0.138 ± 0.021 | **0.187 ± 0.026** | 0.173 ± 0.024 | 0.217 ± 0.044 | **0.258 ± 0.054** | 0.737 ± 0.034 |
+| Category only (1.0) | 0.127 ± 0.014 | 0.165 ± 0.016 | **0.231 ± 0.033** | 0.189 ± 0.039 | 0.235 ± 0.026 | **0.297 ± 0.052** | 0.721 ± 0.100 |
+| No dept, no appeal (category .55, cluster .45) | 0.129 ± 0.031 | 0.157 ± 0.026 | **0.159 ± 0.017** | 0.201 ± 0.055 | **0.249 ± 0.058** | 0.225 ± 0.029 | 0.674 ± 0.086 |
 
-**Reading:** with category-only taste the hybrid still leads clearly. Its collaborative term and the category of the events a student RSVP'd to recover the hidden category taste better than declared interests do. But when the department and appeal signals are removed and the hidden cluster factor carries 45% of the utility, the hybrid's lead **shrinks to about one standard deviation** on NDCG@10 (0.178 vs 0.157 TF-IDF) and **disappears on MRR** (0.250 vs 0.249). So part of the default-run margin comes from simulator signals (department and campus-wide appeal) that the hybrid is built to exploit. The ordering Hybrid ≥ TF-IDF ≥ Rule-Based holds in every variant, but the size of the gap depends on assumptions about student behaviour that only real data can settle.
+**Reading:** with category-only taste the hybrid still leads clearly. Its collaborative term and the category of the events a student RSVP'd to recover the hidden category taste better than declared interests do. But when the department and appeal signals are removed and the hidden cluster factor carries 45% of the utility, the hybrid **only ties TF-IDF** on NDCG@10 (0.159 vs 0.157) and **loses to it on MRR** (0.225 vs 0.249). So the hybrid's advantage over TF-IDF in the default run depends on students actually favouring their own department's events and broadly popular events. Both models beat Rule-Based in every variant. Whether the hybrid's extra signals help real DeKUT students is something only real data can settle.
+
+### 4.4 Diversity re-ranking (tested, kept off)
+
+To address the hybrid's low coverage, the hybrid gained an optional Maximal Marginal Relevance (MMR) re-ranking step (`mmr_rerank` in `hybrid_engine.py`). It penalises an event for being textually similar to events already placed higher in the same list. The strength (`diversity`) was swept on the **validation** split (5 seeds, behaviour ground truth, `backend/evaluate_diversity.py`):
+
+| Diversity | Validation NDCG@10 | vs 0.0 | Coverage@10 |
+| :---: | :---: | :---: | :---: |
+| 0.0 (off) | 0.147 ± 0.026 | – | **0.718 ± 0.029** |
+| 0.1 | 0.143 ± 0.023 | −2.5% | 0.710 ± 0.023 |
+| 0.2 | 0.143 ± 0.024 | −2.7% | 0.709 ± 0.021 |
+| 0.3 | 0.140 ± 0.026 | −4.9% | 0.696 ± 0.020 |
+| 0.4 | 0.135 ± 0.026 | −7.9% | 0.689 ± 0.022 |
+| 0.5 | 0.138 ± 0.018 | −6.2% | 0.669 ± 0.025 |
+
+**MMR lowers both accuracy and catalog coverage**, so it is shipped switched off (`DEFAULT_DIVERSITY = 0.0`). The reason is that MMR diversifies *within* one student's list, not *across* students. On one seed it lowered the average similarity between events in a list (0.273 → 0.215 at diversity 0.5). But it also cut the number of distinct events shown across all 60 students from 109 to 93, and the most-shown event went from 16 students' lists to 23. The same "different" events get picked for many students. Raising coverage needs a cross-user fix instead, such as a smaller popularity weight or a cap on how many lists one event may appear in.
+
+**Selection rule, disclosed:** the rule was first set to "largest diversity within 5% of the NDCG@10 at 0". On the first sweep that rule picked 0.5 even though coverage fell, which defeats the purpose. The rule was then changed to also require a coverage gain larger than one seed standard deviation. No value meets it.
+
+### 4.5 Effect of the reference-date correction
+
+The first version of this benchmark used 17 Oct 2026 as "now", when 112 of the 160 seeded events had already ended. Two linked changes were made:
+- **Engine fix:** the hybrid used to treat ended events as *maximally* urgent, because the time-to-event was clamped at 0. It now gives them urgency 0, and in-progress events keep 1.0 (`compute_context_scores`). The live feed already excludes ended events, so students see no difference.
+- **Benchmark fix:** the reference date moved to the catalog's first day, so every event is upcoming.
+
+| Behaviour ground truth, all users | Hybrid NDCG@10 | Hybrid MRR | Hybrid Coverage@10 |
+| :--- | :---: | :---: | :---: |
+| Before (17 Oct, ended events maximally urgent) | 0.204 ± 0.025 | 0.284 ± 0.044 | 0.721 ± 0.011 |
+| After (7 Sep, all events upcoming) | 0.187 ± 0.026 | 0.258 ± 0.054 | 0.737 ± 0.034 |
+
+The hybrid's earlier score was inflated: most simulated RSVPs were for events that had "already ended", and the bug boosted exactly those events. The corrected numbers are the ones reported above. TF-IDF does not use time, so its numbers are unchanged. Rule-Based moves slightly because its "within 14 days" bonus now applies to different events.
 
 ## 5. Where the hybrid wins and where it does not
 
 **Wins**
-- **Accuracy on behaviour data:** on the behaviour-based ground truth the hybrid is best on every accuracy metric, overall and in both cohorts. Its NDCG@10 of 0.204 is +70% over Rule-Based (0.120) and +48% over TF-IDF (0.138). The gaps are several seed standard deviations wide.
-- **Cold-start:** the hybrid is clearly ahead for cold-start students too (NDCG@10 0.196 vs 0.131), even though they only have 1–2 RSVPs. This benchmark does not separate the contribution of each hybrid component. A per-component ablation would be needed to say which term drives the cold-start gain.
-- **Same order in every simulator variant:** in the sensitivity check, the order Hybrid ≥ TF-IDF ≥ Rule-Based holds in every variant, including category-only taste, the case closest to what the rule-based baseline assumes.
+- **Accuracy on behaviour data:** on the behaviour-based ground truth the hybrid is best on every accuracy metric, overall and in both cohorts. Its NDCG@10 of 0.187 is +57% over Rule-Based (0.119) and +36% over TF-IDF (0.138), roughly two seed standard deviations or more.
+- **Cold-start:** the hybrid is clearly ahead for cold-start students too (NDCG@10 0.187 vs 0.131), even though they only have 1–2 RSVPs. This benchmark does not separate the contribution of each hybrid component. A per-component ablation would be needed to say which term drives the cold-start gain.
+- **Category-only taste:** in the sensitivity variant closest to what the rule-based baseline assumes (students care only about categories), the hybrid still leads clearly (NDCG@10 0.231 vs TF-IDF 0.165 and Rule-Based 0.127).
 
 **Does not win**
-- **Lead shrinks without department and appeal signals:** in the sensitivity variant without them (§4.3), the hybrid's NDCG@10 lead over TF-IDF falls to about one standard deviation and MRR is a tie. The large default margin is partly a product of the simulator's assumptions.
-- **Tag-overlap ground truth:** on this set the **Rule-Based baseline wins every accuracy metric** (NDCG@10 0.825 vs 0.730 hybrid and 0.736 TF-IDF). The hybrid also loses to TF-IDF on MRR (0.852 vs 0.908) and is worst of the three for cold-start students (NDCG@10 0.647 vs 0.755). This is expected, because that set is defined by the baseline's own rule. It still shows that when declared interests really are a perfect description of what students want, a simple rule is hard to beat.
-- **Catalog coverage:** on **both** ground-truth sets the hybrid has the **lowest coverage** of the three main models (0.721 vs TF-IDF 0.901 on behaviour data; 0.638 vs 0.744 on tag-overlap). The popularity and collaborative terms pull many users toward the same events. TF-IDF surfaces the widest slice of the campus calendar. If discovery of niche events matters, the hybrid needs a diversity term (for example MMR re-ranking) or a smaller popularity weight.
+- **No better than TF-IDF without department and appeal signals:** in the sensitivity variant without them (§4.3), the hybrid ties TF-IDF on NDCG@10 (0.159 vs 0.157) and loses on MRR (0.225 vs 0.249). Its default-run margin over TF-IDF rests on the assumption that students favour their own department's events and popular events.
+- **Tag-overlap ground truth:** on this set the **Rule-Based baseline wins every accuracy metric** (NDCG@10 0.825 vs 0.722 hybrid and 0.736 TF-IDF). The hybrid also loses to TF-IDF on MRR (0.830 vs 0.908) and is worst of the three for cold-start students (NDCG@10 0.633 vs 0.764). This is expected, because that set is defined by the baseline's own rule. It still shows that when declared interests really are a perfect description of what students want, a simple rule is hard to beat.
+- **Catalog coverage:** on **both** ground-truth sets the hybrid has the **lowest coverage** of the three main models (0.737 vs TF-IDF 0.901 on behaviour data; 0.646 vs 0.744 on tag-overlap). The popularity and collaborative terms pull many users toward the same events. TF-IDF surfaces the widest slice of the campus calendar. MMR re-ranking was tried and made coverage worse (§4.4). A cross-user fix, such as a smaller popularity weight, is the next thing to try.
 - **TF-IDF alone is only a small step up:** on behaviour data TF-IDF beats Rule-Based by about 0.02 NDCG@10, which is about one seed standard deviation. Cold-start TF-IDF is slightly *below* Rule-Based (0.127 vs 0.131). Most of the gain comes from the hybrid's extra signals, not from TF-IDF.
 
 ## 6. Limitations
 
 1. **Both ground-truth sets are synthetic.** The behaviour simulator removes the baseline's structural advantage, but it is still a model of students that I designed. Its parameters (cluster count, noise, weights) were chosen by hand and are not fitted to DeKUT data. Section 4.3 shows the size of the hybrid's lead depends on those choices. Only real RSVP/click logs, or an online A/B test, can say how Tukio performs with real students.
-2. **Absolute accuracy on behaviour data is low.** The best model scores P@10 = 0.123, i.e. about 1 of the top 10 events is one the student RSVPs to. This reflects heavy noise and hidden factors that no model can see, by design. Compare models on this set against each other, not against the tag-overlap numbers.
-3. **Most catalog events are in the past relative to the reference date.** 112 of the 160 seeded events start before 17 Oct 2026. The hybrid's urgency term clamps past events to maximum urgency, which adds noise against the hybrid on both sets. In the live app the feed only shows upcoming events, so this does not affect users. A future re-seed should place events after the reference date.
+2. **Absolute accuracy on behaviour data is low.** The best model scores P@10 = 0.116, i.e. about 1 of the top 10 events is one the student RSVPs to. This reflects heavy noise and hidden factors that no model can see, by design. Compare models on this set against each other, not against the tag-overlap numbers.
+3. **Time-of-event signals are only lightly tested.** The simulated students' preferences contain no timing component, so the urgency term (and the Rule-Based "within 14 days" bonus) can only add noise on the behaviour set. Real students probably do prefer sooner events, which this benchmark cannot show.
 4. **Small populations.** There are 22 seeded students in the tag-overlap set and 60 simulated students per seed in the behaviour set. The ± values show seed-to-seed spread, not a significance test.
-5. **Weight selection is coarse.** The hybrid chooses between only three fixed weight sets on the validation split. The "high content" set was selected in 6 of 10 seeds on both ground truths.
+5. **Weight selection is coarse.** The hybrid chooses between only three fixed weight sets on the validation split. The "high content" set (content 0.58, collaborative 0.18) was selected in all 10 seeds on both ground truths, so the production default weights (content 0.42, collaborative 0.28) are not the best of the three on this data.
 6. **Coverage depends on the catalog.** Random reaches ~0.98 coverage, and coverage says nothing about relevance. Read it alongside the accuracy metrics.
 
 ## 7. Reproducing
@@ -131,5 +162,6 @@ $env:APP_ENV = "development"
 python seed.py       # only if the database is empty
 python evaluate.py   # about 8 minutes; writes results/ and docs/evaluation_results.md + evaluation_chart.png
 python evaluate_sensitivity.py   # about 4 minutes; prints the section 4.3 variants
+python evaluate_diversity.py     # about 4 minutes; prints the section 4.4 sweep
 python -m pytest tests/test_tukio_evaluation.py -q
 ```

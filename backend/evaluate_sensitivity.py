@@ -24,6 +24,7 @@ def main():
     db = SessionLocal()
     try:
         events = db.query(Event).order_by(Event.title, Event.start_time).all()
+        ev.use_catalog_reference_date(events)
         for name, weights in SCENARIOS.items():
             ev.SIM_UTILITY_WEIGHTS = weights
             trials = [ev.evaluate_trial(s, events, ev.build_behaviour_splits(s, events)) for s in SEEDS]

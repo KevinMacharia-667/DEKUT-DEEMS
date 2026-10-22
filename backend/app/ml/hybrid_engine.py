@@ -26,6 +26,14 @@ from app.models.user import User
 from app.models.user_interest import UserInterest
 
 
+# MMR diversity trade-off for the final list (0 = pure relevance). Kept off: on the
+# validation split MMR made each list more varied but lowered catalog coverage and NDCG@10
+# (backend/evaluate_diversity.py; docs/evaluation.md section 4.4).
+DEFAULT_DIVERSITY = 0.0
+# MMR re-ranks the top (top_n * MMR_POOL_FACTOR) events by relevance
+MMR_POOL_FACTOR = 4
+
+
 def _now_utc() -> datetime:
     return datetime.now(timezone.utc)
 
@@ -209,7 +217,7 @@ def compute_context_scores(
     """
     Compute contextual feature vectors for all candidate events:
     1. Department match (1.0 if department matches, 0.0 otherwise)
-    2. Time-urgency decay (higher score for upcoming events within 2-14 days)
+    2. Time-urgency decay (higher score for upcoming events within 2-14 days; 0.0 once ended)
     3. Popularity velocity (ratio of confirmed RSVPs relative to capacity)
     """
     now = reference_date if reference_date is not None else _now_utc()
@@ -233,14 +241,67 @@ def compute_context_scores(
                 dept_scores[i] = 1.0
 
         event_start = _as_utc(event.start_time)
-        delta_days = max(0.0, (event_start - now).total_seconds() / 86400.0)
-        urgency_scores[i] = math.exp(-delta_days / 12.0)
+        event_end = _as_utc(event.end_time) if event.end_time else event_start
+        if event_end < now:
+            # Already over: nothing left to be urgent about
+            urgency_scores[i] = 0.0
+        else:
+            # Upcoming decays with distance; in-progress events (delta 0) score 1.0
+            delta_days = max(0.0, (event_start - now).total_seconds() / 86400.0)
+            urgency_scores[i] = math.exp(-delta_days / 12.0)
 
         conf_count = rsvp_counts.get(event.id, 0)
         capacity = event.max_attendees if (event.max_attendees and event.max_attendees > 0) else 50
         pop_scores[i] = min(1.0, conf_count / float(capacity))
 
     return dept_scores, urgency_scores, pop_scores
+
+
+def compute_event_similarity(all_events: Sequence[Event]) -> np.ndarray:
+    """Pairwise TF-IDF cosine similarity between candidate events (for diversity re-ranking)."""
+    n_events = len(all_events)
+    if n_events == 0:
+        return np.zeros((0, 0))
+    vectorizer = TfidfVectorizer(stop_words="english")
+    try:
+        vecs = vectorizer.fit_transform([build_event_document(e) for e in all_events])
+    except ValueError:
+        return np.zeros((n_events, n_events))
+    return cosine_similarity(vecs)
+
+
+def mmr_rerank(
+    relevance: np.ndarray,
+    similarity: np.ndarray,
+    top_n: int,
+    diversity: float,
+) -> list[int]:
+    """
+    Maximal Marginal Relevance (Carbonell & Goldstein, 1998).
+
+    Greedily picks the item maximising
+        (1 - diversity) * relevance - diversity * max similarity to items already picked.
+    Relevance is rescaled to [0, 1] so both terms share a scale. diversity=0 returns the
+    plain relevance ranking.
+    """
+    order = list(relevance.argsort()[::-1])
+    if diversity <= 0 or len(order) <= 1:
+        return order[:top_n]
+
+    rel_max = relevance.max()
+    rel = relevance / rel_max if rel_max > 0 else relevance
+    selected: list[int] = []
+    remaining = order
+    while remaining and len(selected) < top_n:
+        if selected:
+            redundancy = similarity[np.ix_(remaining, selected)].max(axis=1)
+        else:
+            redundancy = np.zeros(len(remaining))
+        mmr = (1 - diversity) * rel[remaining] - diversity * redundancy
+        pick = remaining[int(np.argmax(mmr))]
+        selected.append(pick)
+        remaining = [i for i in remaining if i != pick]
+    return selected
 
 
 def assign_badge_and_reasons(
@@ -307,12 +368,16 @@ def recommend_hybrid(
     top_n: int = 10,
     reference_date: datetime | None = None,
     custom_weights: dict[str, float] | None = None,
+    diversity: float | None = None,
 ) -> list[dict]:
     """
     Unified Multi-Factor Hybrid Recommender:
     Simultaneously blends Content, Collaborative SVD, and Contextual Ranking.
     Uses positive signals (RSVPs and interested) in SVD and applies small content penalty for not_for_me.
+    The final list is MMR re-ranked for diversity (diversity=0 disables it; None uses DEFAULT_DIVERSITY).
     """
+    if diversity is None:
+        diversity = DEFAULT_DIVERSITY
     n_events = len(all_events)
     if n_events == 0:
         return []
@@ -383,7 +448,16 @@ def recommend_hybrid(
         + w_pop * pop_scores
     )
 
-    ranked_indices = composite_scores.argsort()[::-1]
+    if diversity > 0:
+        # Re-rank only a shortlist of the most relevant events to bound the pairwise cost
+        shortlist = composite_scores.argsort()[::-1][: max(top_n * MMR_POOL_FACTOR, top_n)]
+        pool_events = [all_events[i] for i in shortlist]
+        picked = mmr_rerank(
+            composite_scores[shortlist], compute_event_similarity(pool_events), top_n, diversity
+        )
+        ranked_indices = shortlist[picked]
+    else:
+        ranked_indices = composite_scores.argsort()[::-1]
 
     results: list[dict] = []
     for rank, idx in enumerate(ranked_indices[:top_n], start=1):

@@ -7,7 +7,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: var(--space-md, 16px) var(--space-sm, 8px) var(--space-2xl, 48px);
+  /* Top padding clears the fixed 64px navbar */
+  padding: calc(64px + var(--space-md, 16px)) var(--space-sm, 8px) var(--space-2xl, 48px);
   background: radial-gradient(circle at 50% 0%, var(--primary-tint) 0%, transparent 60%),
               var(--bg, #ffffff);
 }
@@ -130,6 +131,25 @@
 
 .tukio-category-bar-wrapper::-webkit-scrollbar {
   display: none; /* Chrome/Safari */
+}
+
+/* Edge fades hint that a row scrolls (classes set by useScrollFade) */
+.tukio-section-tabs-wrapper.fade-right,
+.tukio-category-bar-wrapper.fade-right {
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 36px), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 36px), transparent);
+}
+
+.tukio-section-tabs-wrapper.fade-left,
+.tukio-category-bar-wrapper.fade-left {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 36px);
+  mask-image: linear-gradient(to right, transparent, #000 36px);
+}
+
+.tukio-section-tabs-wrapper.fade-left.fade-right,
+.tukio-category-bar-wrapper.fade-left.fade-right {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 36px, #000 calc(100% - 36px), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 36px, #000 calc(100% - 36px), transparent);
 }
 
 .tukio-category-chips {
@@ -381,19 +401,63 @@
   transform: translateY(-1px);
 }
 
+/* ── Card Column + "Up next" Panel ────────────────────────────────── */
+
+.tukio-feed-body,
+.tukio-feed-main {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md, 16px);
+}
+
+.tukio-feed-side {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .tukio-feed-container {
+    max-width: 832px;
+  }
+
+  .tukio-feed-body {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    gap: var(--space-xl, 32px);
+  }
+
+  .tukio-feed-main {
+    flex: 0 1 480px;
+  }
+
+  .tukio-feed-side {
+    display: block;
+    flex: 0 0 300px;
+    position: sticky;
+    top: 88px;
+  }
+}
+
 /* ── Mobile Viewport Optimizations ────────────────────────────────── */
 
 @media (max-width: 480px) {
   .tukio-feed-page {
-    padding: var(--space-sm, 8px) var(--space-xs, 4px) var(--space-xl, 32px);
+    padding: calc(64px + var(--space-sm, 8px)) var(--space-xs, 4px) var(--space-xl, 32px);
   }
 
-  .tukio-feed-brand-title {
-    font-size: 1.6rem;
+  .tukio-feed-container {
+    gap: var(--space-sm, 8px);
+  }
+
+  /* The navbar already carries the brand; give the vertical space to the card */
+  .tukio-feed-header {
+    display: none;
   }
 
   .tukio-deck-stage {
-    min-height: 480px;
+    min-height: 0;
   }
 }
 

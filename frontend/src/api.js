@@ -3,6 +3,8 @@
  * All requests go through the Vite proxy (/api → FastAPI backend).
  */
 
+import { describeApiError, describeNetworkFailure } from './utils/apiErrors';
+
 const API_BASE = '/api';
 
 /**
@@ -26,20 +28,36 @@ async function request(endpoint, options = {}) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_BASE}${endpoint}`, {
-    ...options,
-    headers,
-  });
+  let response;
+  try {
+    response = await fetch(`${API_BASE}${endpoint}`, {
+      ...options,
+      headers,
+    });
+  } catch {
+    // No response at all: offline, or the server is not running
+    const error = new Error(
+      describeNetworkFailure(typeof navigator !== 'undefined' ? navigator.onLine : undefined)
+    );
+    error.status = 0;
+    throw error;
+  }
 
   // Handle no-content responses (e.g., DELETE 204)
   if (response.status === 204) {
     return null;
   }
 
-  const data = await response.json();
+  // Proxies return HTML or empty bodies (e.g. 502) when the backend is down
+  let data = null;
+  try {
+    data = await response.json();
+  } catch {
+    data = null;
+  }
 
-  if (!response.ok) {
-    const error = new Error(data.detail || 'Something went wrong');
+  if (!response.ok || data === null) {
+    const error = new Error(describeApiError(response.status, data));
     error.status = response.status;
     error.data = data;
     throw error;

@@ -2,7 +2,7 @@
 
 > **Current Date:** 22 October 2026  
 > **Status:** Stage 5: Pre-Defense Hardening & Polish  
-> **Test Suite:** **61/61 passing backend tests** (`pytest`, 93% coverage, see `docs/coverage.md`) | **14/14 passing frontend tests** (`node --test`)
+> **Test Suite:** **66/66 passing backend tests** (`pytest`, 93% coverage, see `docs/coverage.md`) | **19/19 passing frontend tests** (`node --test`)
 
 **Tukio** (*Swahili for "Event" / "Happening"*) is a mobile-first campus event recommendation application designed for Dedan Kimathi University of Technology (DeKUT). It pairs a swipeable, engagement-driven card feed with a multi-factor recommendation engine (TF-IDF content filtering, TruncatedSVD collaborative filtering, and contextual urgency) for frictionless campus discovery and one-tap RSVPs.
 
@@ -50,7 +50,7 @@ Campus facilities are formalized in [`backend/app/venues.py`](file:///c:/Users/A
 ## 4. Known Limitations
 
 * **Synthetic Evaluation Data:**  
-  The original `backend/seed_ground_truth.json` uses the same tag/category overlap rule as the Rule-Based baseline, which wins on that set. The primary benchmark now uses simulated per-user behaviour with hidden preferences, where the hybrid leads, but the size of that lead depends on simulator assumptions. See `docs/evaluation.md`. Real RSVP logs are still needed.
+  The original `backend/seed_ground_truth.json` uses the same tag/category overlap rule as the Rule-Based baseline, which wins on that set. The primary benchmark now uses simulated per-user behaviour with hidden preferences, where the hybrid leads, but without the simulator's department and popularity signals it only ties TF-IDF. See `docs/evaluation.md`. Real RSVP logs are still needed.
 * **Campus Room Granularity:**  
   Individual room numbers and seating capacities within the Resource Centre (RC phases 1–3) and Wildlife Conservancy conference wings are not published online by the university and must be physically confirmed on site.
 

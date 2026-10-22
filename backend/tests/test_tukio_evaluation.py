@@ -25,6 +25,7 @@ from evaluate import (
     ndcg_at_k,
     reciprocal_rank,
     catalog_coverage,
+    catalog_reference_date,
     recommend_popularity,
     recommend_random,
     simulate_behaviour_users,
@@ -254,3 +255,15 @@ def test_behaviour_splits_have_no_leakage():
         assert all(r.user_id == s["user"].id for r in s["train_rsvps"])
         if s["is_cold"]:
             assert 1 <= len(train) <= 2
+
+
+def test_catalog_reference_date_makes_every_event_upcoming():
+    """The benchmark reference date is midnight UTC on the first event's day."""
+    events = _synthetic_catalog()
+    events[3].start_time = datetime(2026, 9, 7, 16, 22)  # naive, as SQLite returns it
+    ref = catalog_reference_date(events)
+    assert ref == datetime(2026, 9, 7, 0, 0, tzinfo=timezone.utc)
+    assert all(
+        (e.start_time if e.start_time.tzinfo else e.start_time.replace(tzinfo=timezone.utc)) >= ref
+        for e in events
+    )

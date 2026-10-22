@@ -49,7 +49,9 @@ from app.models.rsvp import RSVP
 from app.models.user import User
 from app.models.user_interest import UserInterest
 
-# Fixed reference date ensures temporal urgency features remain deterministic
+# Fixed reference date ensures temporal urgency features remain deterministic.
+# The benchmark scripts replace it with catalog_reference_date() so every catalog
+# event is still upcoming, as in the live feed (which never shows ended events).
 FIXED_REFERENCE_DATE = datetime(2026, 10, 17, 12, 0, 0, tzinfo=timezone.utc)
 SEEDS = [42, 43, 44, 45, 46, 47, 48, 49, 50, 51]
 GROUND_TRUTH_FILE = "seed_ground_truth.json"
@@ -94,6 +96,22 @@ CATEGORY_DEPARTMENTS = {
     "Tech":      "School of Computer Science & IT",
     "Career":    "School of Business",
 }
+
+
+def catalog_reference_date(events: Sequence[Event]) -> datetime:
+    """Midnight UTC on the day the earliest catalog event starts: every event is upcoming."""
+    earliest = min(
+        e.start_time if e.start_time.tzinfo else e.start_time.replace(tzinfo=timezone.utc)
+        for e in events
+    )
+    return earliest.replace(hour=0, minute=0, second=0, microsecond=0)
+
+
+def use_catalog_reference_date(events: Sequence[Event]) -> datetime:
+    """Point FIXED_REFERENCE_DATE at the catalog's start (called by the benchmark scripts)."""
+    global FIXED_REFERENCE_DATE
+    FIXED_REFERENCE_DATE = catalog_reference_date(events)
+    return FIXED_REFERENCE_DATE
 
 
 # ── Metric Formulations ────────────────────────────────────────────────────────
@@ -644,6 +662,7 @@ def main():
         if not all_events:
             print("Error: No events found in database. Run python seed.py first.")
             return
+        use_catalog_reference_date(all_events)
 
         print("=" * 100)
         print("  TUKIO RECOMMENDATION ENGINE: MULTI-SEED OFFLINE BENCHMARK")

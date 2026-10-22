@@ -14,9 +14,10 @@ import {
 } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/Toast';
-import TukioCard, { TukioSkeletonCard } from '../components/TukioCard';
+import TukioCard, { TukioSkeletonCard, TukioUpNext } from '../components/TukioCard';
 import { openWhatsAppShare } from '../utils/share';
 import { downloadEventICS } from '../utils/calendar';
+import { useScrollFade, scrollSelectedIntoView } from '../utils/useScrollFade';
 import './EventsPage.css';
 
 const SECTIONS = [
@@ -70,6 +71,19 @@ export default function EventsPage() {
   // Card flight transition state & navigation lock
   const [transitionClass, setTransitionClass] = useState('');
   const isTransitioningRef = useRef(false);
+
+  // Edge fades on the horizontally scrolling tab and chip rows
+  const [tabsRef, tabsFadeClass] = useScrollFade();
+  const [chipsRef, chipsFadeClass] = useScrollFade();
+
+  // Keep the active tab / chip visible when it changes (e.g. feed opens on "Today")
+  useEffect(() => {
+    scrollSelectedIntoView(tabsRef.current, '[aria-selected="true"]');
+  }, [activeSection, tabsRef]);
+
+  useEffect(() => {
+    scrollSelectedIntoView(chipsRef.current, '.tukio-chip.active');
+  }, [activeCategory, chipsRef]);
 
   // ── Fetch User RSVPs ──────────────────────────────────────────────
   const loadUserRsvps = useCallback(async () => {
@@ -609,7 +623,12 @@ export default function EventsPage() {
         )}
 
         {/* ── Time-Aware Section Tabs ──────────────────────────────── */}
-        <div className="tukio-section-tabs-wrapper" role="tablist" aria-label="Event Feeds">
+        <div
+          ref={tabsRef}
+          className={`tukio-section-tabs-wrapper ${tabsFadeClass}`.trim()}
+          role="tablist"
+          aria-label="Event Feeds"
+        >
           {SECTIONS.map((sec) => (
             <button
               key={sec.id}
@@ -631,7 +650,7 @@ export default function EventsPage() {
         </div>
 
         {/* ── Horizontal Category Chips Bar ────────────────────────── */}
-        <div className="tukio-category-bar-wrapper">
+        <div ref={chipsRef} className={`tukio-category-bar-wrapper ${chipsFadeClass}`.trim()}>
           <div className="tukio-category-chips">
             {CATEGORIES.map((cat) => (
               <button
@@ -646,187 +665,198 @@ export default function EventsPage() {
           </div>
         </div>
 
-        {/* ── Main Deck Stage ──────────────────────────────────────── */}
-        <div className="tukio-deck-stage">
-          {loading ? (
-            <div className="tukio-card-wrapper animate-fade-in">
-              <TukioSkeletonCard />
-            </div>
-          ) : apiError ? (
-            <div className="tukio-error-state animate-fade-in">
-              <span className="tukio-error-icon" role="img" aria-label="Warning">
-                ⚠️
-              </span>
-              <h3 className="tukio-error-title">Unable to Load Feed</h3>
-              <p className="tukio-error-msg">{apiError}</p>
-              <button
-                type="button"
-                className="tukio-retry-btn"
-                onClick={() => loadEventsForSection(activeSection, activeCategory)}
-              >
-                Retry
-              </button>
-            </div>
-          ) : events.length === 0 ? (
-            <div className="tukio-caught-up-card animate-fade-in">
-              <span className="tukio-caught-up-icon" role="img" aria-label="Calendar">
-                📭
-              </span>
-              <h3 className="tukio-caught-up-title">
-                {activeSection === 'today'
-                  ? 'No Events Happening Today'
-                  : activeSection === 'weekend'
-                  ? 'No Events This Weekend'
-                  : `No Events in ${activeCategory}`}
-              </h3>
-              <p className="tukio-caught-up-desc">
-                {activeSection === 'today'
-                  ? 'There are no events scheduled for today. Check out what is happening this weekend or browse your recommendations.'
-                  : activeSection === 'weekend'
-                  ? 'There are no events scheduled for this weekend yet. Explore all upcoming events or check your recommendations.'
-                  : `There are no upcoming events listed under ${activeCategory} right now.`}
-              </p>
-              <div className="tukio-caught-up-actions">
-                {activeSection === 'today' && (
+        <div className="tukio-feed-body">
+          <div className="tukio-feed-main">
+            {/* ── Main Deck Stage ──────────────────────────────────────── */}
+            <div className="tukio-deck-stage">
+              {loading ? (
+                <div className="tukio-card-wrapper animate-fade-in">
+                  <TukioSkeletonCard />
+                </div>
+              ) : apiError ? (
+                <div className="tukio-error-state animate-fade-in">
+                  <span className="tukio-error-icon" role="img" aria-label="Warning">
+                    ⚠️
+                  </span>
+                  <h3 className="tukio-error-title">Unable to Load Feed</h3>
+                  <p className="tukio-error-msg">{apiError}</p>
                   <button
                     type="button"
-                    className="btn btn-primary"
-                    onClick={() => handleSectionChange('weekend')}
+                    className="tukio-retry-btn"
+                    onClick={() => loadEventsForSection(activeSection, activeCategory)}
                   >
-                    View This Weekend 🌴
+                    Retry
                   </button>
-                )}
-                {activeSection === 'weekend' && (
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={() => handleSectionChange('for-you')}
-                  >
-                    View For You ✨
-                  </button>
-                )}
-                {activeCategory !== 'All' && (
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => handleCategoryClick('All')}
-                  >
-                    Show All Categories
-                  </button>
-                )}
-              </div>
-            </div>
-          ) : isEndOfDeck ? (
-            <div className="tukio-caught-up-card animate-fade-in">
-              <span className="tukio-caught-up-icon" role="img" aria-label="Party">
-                🎉
-              </span>
-              <h3 className="tukio-caught-up-title">You&apos;re All Caught Up!</h3>
-              <p className="tukio-caught-up-desc">
-                You&apos;ve checked out all events in{' '}
-                {activeSection === 'today'
-                  ? 'Happening Today'
-                  : activeSection === 'weekend'
-                  ? 'This Weekend'
-                  : activeCategory === 'All'
-                  ? 'this feed'
-                  : activeCategory}
-                .
-              </p>
-              <div className="tukio-caught-up-actions">
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={() => setCurrentIndex(0)}
+                </div>
+              ) : events.length === 0 ? (
+                <div className="tukio-caught-up-card animate-fade-in">
+                  <span className="tukio-caught-up-icon" role="img" aria-label="Calendar">
+                    📭
+                  </span>
+                  <h3 className="tukio-caught-up-title">
+                    {activeSection === 'today'
+                      ? 'No Events Happening Today'
+                      : activeSection === 'weekend'
+                      ? 'No Events This Weekend'
+                      : `No Events in ${activeCategory}`}
+                  </h3>
+                  <p className="tukio-caught-up-desc">
+                    {activeSection === 'today'
+                      ? 'There are no events scheduled for today. Check out what is happening this weekend or browse your recommendations.'
+                      : activeSection === 'weekend'
+                      ? 'There are no events scheduled for this weekend yet. Explore all upcoming events or check your recommendations.'
+                      : `There are no upcoming events listed under ${activeCategory} right now.`}
+                  </p>
+                  <div className="tukio-caught-up-actions">
+                    {activeSection === 'today' && (
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={() => handleSectionChange('weekend')}
+                      >
+                        View This Weekend 🌴
+                      </button>
+                    )}
+                    {activeSection === 'weekend' && (
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={() => handleSectionChange('for-you')}
+                      >
+                        View For You ✨
+                      </button>
+                    )}
+                    {activeCategory !== 'All' && (
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => handleCategoryClick('All')}
+                      >
+                        Show All Categories
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ) : isEndOfDeck ? (
+                <div className="tukio-caught-up-card animate-fade-in">
+                  <span className="tukio-caught-up-icon" role="img" aria-label="Party">
+                    🎉
+                  </span>
+                  <h3 className="tukio-caught-up-title">You&apos;re All Caught Up!</h3>
+                  <p className="tukio-caught-up-desc">
+                    You&apos;ve checked out all events in{' '}
+                    {activeSection === 'today'
+                      ? 'Happening Today'
+                      : activeSection === 'weekend'
+                      ? 'This Weekend'
+                      : activeCategory === 'All'
+                      ? 'this feed'
+                      : activeCategory}
+                    .
+                  </p>
+                  <div className="tukio-caught-up-actions">
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={() => setCurrentIndex(0)}
+                    >
+                      Start Over
+                    </button>
+                    {activeSection !== 'all' && (
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => handleSectionChange('all')}
+                      >
+                        Explore All Events 📅
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div
+                  className="tukio-card-wrapper"
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
                 >
-                  Start Over
-                </button>
-                {activeSection !== 'all' && (
+                  <TukioCard
+                    event={currentEvent}
+                    recommendation={recommendationsMap[currentEvent.id] || null}
+                    isAttending={myRsvps.has(currentEvent.id)}
+                    isInterested={interestedSet.has(currentEvent.id)}
+                    onRsvpToggle={handleRsvpToggle}
+                    onFeedback={handleFeedback}
+                    feedbackLoading={feedbackLoadingId === currentEvent.id}
+                    onShare={handleShare}
+                    onAddToCalendar={handleAddToCalendar}
+                    isAuthenticated={isAuthenticated}
+                    rsvpLoading={rsvpLoadingId === currentEvent.id}
+                    isDragging={isDragging}
+                    dragOffset={dragOffset}
+                    transitionClass={transitionClass}
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* ── Navigation Controls & Progress Pill ──────────────────── */}
+            {!loading && !apiError && events.length > 0 && (
+              <>
+                <div className="tukio-nav-controls">
                   <button
                     type="button"
-                    className="btn btn-secondary"
-                    onClick={() => handleSectionChange('all')}
+                    className="tukio-nav-btn"
+                    onClick={goPrev}
+                    disabled={currentIndex === 0 || Boolean(transitionClass)}
+                    aria-label="Previous event card"
+                    title="Previous (Arrow Left)"
                   >
-                    Explore All Events 📅
+                    ←
                   </button>
-                )}
-              </div>
-            </div>
-          ) : (
-            <div
-              className="tukio-card-wrapper"
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-            >
-              <TukioCard
-                event={currentEvent}
-                recommendation={recommendationsMap[currentEvent.id] || null}
-                isAttending={myRsvps.has(currentEvent.id)}
-                isInterested={interestedSet.has(currentEvent.id)}
-                onRsvpToggle={handleRsvpToggle}
-                onFeedback={handleFeedback}
-                feedbackLoading={feedbackLoadingId === currentEvent.id}
-                onShare={handleShare}
-                onAddToCalendar={handleAddToCalendar}
-                isAuthenticated={isAuthenticated}
-                rsvpLoading={rsvpLoadingId === currentEvent.id}
-                isDragging={isDragging}
-                dragOffset={dragOffset}
-                transitionClass={transitionClass}
-              />
+
+                  <div className="tukio-progress-pill">
+                    <span>
+                      {Math.min(currentIndex + 1, events.length)} of {events.length}
+                    </span>
+                    <div className="tukio-progress-dots">
+                      {events.slice(0, 7).map((ev, idx) => (
+                        <span
+                          key={ev.id}
+                          className={`tukio-dot ${
+                            idx === (currentIndex % 7) ? 'active' : ''
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="tukio-nav-btn"
+                    onClick={goNext}
+                    disabled={isEndOfDeck || Boolean(transitionClass)}
+                    aria-label="Next event card"
+                    title="Next (Arrow Right)"
+                  >
+                    →
+                  </button>
+                </div>
+
+                <span className="tukio-swipe-hint">
+                  <span>👈</span> Swipe or use arrow keys <span>👉</span>
+                </span>
+              </>
+            )}
+          </div>
+
+          {/* ── "Up next" panel (wide screens only, hidden by CSS below 1024px) ── */}
+          {!loading && !apiError && !isEndOfDeck && (
+            <div className="tukio-feed-side">
+              <TukioUpNext events={events} currentIndex={currentIndex} onSelect={setCurrentIndex} />
             </div>
           )}
         </div>
-
-        {/* ── Navigation Controls & Progress Pill ──────────────────── */}
-        {!loading && !apiError && events.length > 0 && (
-          <>
-            <div className="tukio-nav-controls">
-              <button
-                type="button"
-                className="tukio-nav-btn"
-                onClick={goPrev}
-                disabled={currentIndex === 0 || Boolean(transitionClass)}
-                aria-label="Previous event card"
-                title="Previous (Arrow Left)"
-              >
-                ←
-              </button>
-
-              <div className="tukio-progress-pill">
-                <span>
-                  {Math.min(currentIndex + 1, events.length)} of {events.length}
-                </span>
-                <div className="tukio-progress-dots">
-                  {events.slice(0, 7).map((ev, idx) => (
-                    <span
-                      key={ev.id}
-                      className={`tukio-dot ${
-                        idx === (currentIndex % 7) ? 'active' : ''
-                      }`}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              <button
-                type="button"
-                className="tukio-nav-btn"
-                onClick={goNext}
-                disabled={isEndOfDeck || Boolean(transitionClass)}
-                aria-label="Next event card"
-                title="Next (Arrow Right)"
-              >
-                →
-              </button>
-            </div>
-
-            <span className="tukio-swipe-hint">
-              <span>👈</span> Swipe or use arrow keys <span>👉</span>
-            </span>
-          </>
-        )}
       </div>
     </div>
   );

@@ -2,7 +2,7 @@
 
 > **Date:** 22 October 2026  
 > **Status:** Stage 5: Pre-Defense Hardening & Polish (Feature Complete & Tested)  
-> **Test Suite Counts:** **61/61 passing backend tests** (`pytest`, **93% code coverage**, see `docs/coverage.md`) | **14/14 passing frontend tests** (`node --test`)
+> **Test Suite Counts:** **66/66 passing backend tests** (`pytest`, **93% code coverage**, see `docs/coverage.md`) | **19/19 passing frontend tests** (`node --test`)
 
 ---
 
@@ -14,7 +14,7 @@
 |---|---|---|
 | **Models** | `user.py`, `event.py`, `rsvp.py`, `user_interest.py`, `event_feedback.py`, `interaction_event.py` | ✅ Complete — Verified via `tests/test_auth.py`, `tests/test_events.py`, `tests/test_tukio_rsvp.py` |
 | **Schemas** | `user.py`, `event.py`, `rsvp.py`, `token.py`, `user_interest.py`, `recommendation.py`, `interaction.py` | ✅ Complete — Pydantic v2 validation models across all endpoints |
-| **Routers** | `auth.py`, `events.py`, `rsvps.py`, `users.py`, `recommendations.py`, `interactions.py`, `venues.py` | ✅ Complete — Full CRUD, feedback logging, time-aware filtering, venues API (`pytest` 61 passed, 93% coverage) |
+| **Routers** | `auth.py`, `events.py`, `rsvps.py`, `users.py`, `recommendations.py`, `interactions.py`, `venues.py` | ✅ Complete — Full CRUD, feedback logging, time-aware filtering, venues API (`pytest` 66 passed, 93% coverage) |
 | **Auth & Security** | `services/auth.py`, `dependencies.py`, `config.py` | ✅ Complete — JWT + bcrypt, role guards, trusted CORS whitelist, production secret validator |
 | **Venues Module** | `venues.py`, `routers/venues.py` | ✅ Complete — Official DeKUT campus spaces with source tags; tested in `tests/test_venues.py` |
 | **Recommender** | `ml/baseline.py`, `ml/engine.py`, `ml/hybrid_engine.py` | ✅ Complete — Heuristic rule baseline, TF-IDF content model, and multi-factor hybrid engine |
@@ -54,7 +54,7 @@
 8. ✅ **PWA setup (manifest, service worker, install prompt)**  
    *Evidence:* `frontend/public/manifest.json`, `frontend/dist/sw.js`, `frontend/vite.config.js` (verified in `frontend/src/utils/pwa.test.js`; precaches hashed chunks, offline navigation fallback).
 9. ✅ **Offline evaluation benchmark (Precision@K, Recall@K, NDCG@K, MRR, Catalog Coverage)**  
-   *Evidence:* `backend/evaluate.py`, `docs/evaluation.md`, `docs/evaluation_results.md`, `docs/evaluation_chart.png`, `docs/iterations.md` (rule-based → TF-IDF → hybrid history) (verified in `tests/test_tukio_evaluation.py`). On behaviour-based ground truth the hybrid leads (NDCG@10 0.204 vs 0.120 rule-based); on tag-overlap ground truth the rule-based baseline wins (0.825 vs 0.730).
+   *Evidence:* `backend/evaluate.py`, `docs/evaluation.md`, `docs/evaluation_results.md`, `docs/evaluation_chart.png`, `docs/iterations.md` (rule-based → TF-IDF → hybrid history) (verified in `tests/test_tukio_evaluation.py`). On behaviour-based ground truth the hybrid leads (NDCG@10 0.187 vs 0.138 TF-IDF vs 0.119 rule-based); on tag-overlap ground truth the rule-based baseline wins (0.825 vs 0.722).
 
 ---
 
@@ -74,7 +74,7 @@
 ## 4. Known Limitations & Defense Considerations
 
 1. **Synthetic Ground Truth:**  
-   `seed_ground_truth.json` uses the Rule-Based baseline's own tag/category rule, so the baseline wins on it. The primary benchmark uses simulated per-user behaviour with hidden preferences, where the hybrid leads, but the lead shrinks to about one standard deviation when the simulator's department and appeal signals are removed (`docs/evaluation.md` §4.3). The hybrid also has the lowest catalog coverage of the three main models. Online A/B telemetry (CTR, RSVP retention) is required for unbiased production assessment.
+   `seed_ground_truth.json` uses the Rule-Based baseline's own tag/category rule, so the baseline wins on it. The primary benchmark uses simulated per-user behaviour with hidden preferences, where the hybrid leads. But when the simulator's department and popularity signals are removed, the hybrid only ties TF-IDF on NDCG@10 and loses on MRR (`docs/evaluation.md` §4.3). The hybrid also has the lowest catalog coverage of the three main models, and MMR diversity re-ranking made that worse (§4.4). Online A/B telemetry (CTR, RSVP retention) is required for unbiased production assessment.
 2. **DeKUT Venue Room Granularity:**  
    Specific room subdivisions and individual capacities within the Resource Centre (RC) phases and Wildlife Conservancy conference wings are not published online by the university and require physical verification on site.
 3. **Database Configuration:**  

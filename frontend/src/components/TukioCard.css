@@ -782,3 +782,175 @@
     opacity: 1 !important;
   }
 }
+
+/* ── Phone Layout: keep the RSVP action on screen ─────────────────────
+   On narrow screens the card is compacted so the whole card, RSVP
+   included, fits a 360x640 viewport. WhatsApp and Calendar become
+   icon-only buttons in the feedback row (their aria-labels stay).
+   ─────────────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .tukio-card {
+    min-height: 0;
+  }
+
+  .tukio-card-media {
+    height: 112px;
+  }
+
+  .tukio-card-fallback-emoji {
+    font-size: 3rem;
+  }
+
+  .tukio-card-body {
+    padding: 12px 16px;
+    gap: 8px;
+  }
+
+  .tukio-card-title {
+    font-size: 1.15rem;
+  }
+
+  .tukio-card-title-row {
+    gap: 2px;
+  }
+
+  .tukio-card-meta {
+    padding: 8px 12px;
+    gap: 4px;
+  }
+
+  .tukio-meta-item {
+    font-size: 0.84rem;
+  }
+
+  .tukio-card-description.clamped {
+    -webkit-line-clamp: 1;
+  }
+
+  .tukio-card-footer {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 16px 12px;
+  }
+
+  /* Flatten feedback + utility rows into one line (0-2 feedback buttons
+     depending on sign-in and RSVP state, then the two icon buttons) */
+  .tukio-feedback-row,
+  .tukio-card-utility-row {
+    display: contents;
+  }
+
+  .tukio-feedback-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 8px 10px;
+    white-space: nowrap;
+  }
+
+  .tukio-utility-btn {
+    flex: 0 0 38px;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+  }
+
+  .tukio-utility-btn > span:not(.tukio-utility-icon) {
+    display: none;
+  }
+
+  .tukio-utility-icon {
+    font-size: 1rem;
+  }
+
+  .tukio-card-cta-row {
+    flex-basis: 100%;
+  }
+
+  .tukio-rsvp-btn {
+    padding: 12px 18px;
+  }
+
+  .tukio-details-link-btn {
+    padding: 11px 14px;
+  }
+}
+
+/* ── "Up next" Side Panel (wide screens only; layout in EventsPage.css) ── */
+.tukio-up-next {
+  width: 100%;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-light, #d8e5d8);
+  border-radius: var(--radius-lg, 16px);
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(15, 42, 15, 0.08);
+}
+
+.tukio-up-next-title {
+  font-family: var(--font-heading, system-ui, sans-serif);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0 0 10px;
+}
+
+.tukio-up-next-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tukio-up-next-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md, 10px);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.16s ease, border-color 0.16s ease;
+}
+
+.tukio-up-next-item:hover,
+.tukio-up-next-item:focus-visible {
+  background: var(--surface, #f7faf7);
+  border-color: var(--border-light, #d8e5d8);
+}
+
+.tukio-up-next-emoji {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.tukio-up-next-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.tukio-up-next-name {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text-primary, #0f172a);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tukio-up-next-when {
+  font-size: 0.76rem;
+  color: var(--text-muted, #64748b);
+}
+
+.tukio-up-next-more {
+  margin: 10px 0 0;
+  font-size: 0.76rem;
+  color: var(--text-muted, #64748b);
+  text-align: center;
+}
