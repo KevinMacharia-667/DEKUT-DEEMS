@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
   getEvents,
@@ -25,10 +25,12 @@ import {
   Hand,
   Inbox,
   PartyPopper,
+  Search,
   Sparkles,
   Target,
   TreePalm,
   TriangleAlert,
+  X,
   Zap,
 } from 'lucide-react';
 import './EventsPage.css';
@@ -63,6 +65,11 @@ export default function EventsPage() {
   const [loading, setLoading] = useState(true);
   const [apiError, setApiError] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Search & venue filters, applied to whichever section is loaded
+  const [query, setQuery] = useState('');
+  const [venue, setVenue] = useState('');
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   // Set of event IDs the current logged-in user has RSVP'd to
   const [myRsvps, setMyRsvps] = useState(new Set());
@@ -308,8 +315,45 @@ export default function EventsPage() {
     loadEventsForSection(activeSection, cat);
   }
 
-  const currentEvent = events[currentIndex];
-  const isEndOfDeck = events.length > 0 && currentIndex >= events.length;
+  // ── Search & Venue Filters ────────────────────────────────────────
+  const venueOptions = useMemo(
+    () => [...new Set(events.map((e) => e.location).filter(Boolean))].sort((a, b) => a.localeCompare(b)),
+    [events]
+  );
+  const filtersActive = query.trim() !== '' || venue !== '';
+
+  // The swipe deck: loaded events narrowed by search text and venue
+  const deck = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return events.filter((e) => {
+      if (venue && e.location !== venue) return false;
+      if (!q) return true;
+      return [e.title, e.description, e.tags, e.location, e.category, e.organizer?.full_name, e.organizer?.username]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase()
+        .includes(q);
+    });
+  }, [events, query, venue]);
+
+  function handleQueryChange(value) {
+    setQuery(value);
+    setCurrentIndex(0);
+  }
+
+  function handleVenueChange(value) {
+    setVenue(value);
+    setCurrentIndex(0);
+  }
+
+  function clearFilters() {
+    setQuery('');
+    setVenue('');
+    setCurrentIndex(0);
+  }
+
+  const currentEvent = deck[currentIndex];
+  const isEndOfDeck = deck.length > 0 && currentIndex >= deck.length;
 
   // ── Telemetry: Log Impression when active card changes ────────────
   useEffect(() => {
@@ -322,7 +366,7 @@ export default function EventsPage() {
   // ── Navigation in Deck (with telemetry skip logging & animation lock) ───────────────
   const goNext = useCallback(() => {
     if (isTransitioningRef.current) return;
-    if (currentIndex >= events.length) return;
+    if (currentIndex >= deck.length) return;
 
     if (currentEvent && currentEvent.id) {
       const isAttending = myRsvps.has(currentEvent.id);
@@ -338,7 +382,7 @@ export default function EventsPage() {
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (reducedMotion) {
-      setCurrentIndex((prev) => Math.min(prev + 1, events.length));
+      setCurrentIndex((prev) => Math.min(prev + 1, deck.length));
       return;
     }
 
@@ -346,7 +390,7 @@ export default function EventsPage() {
     setTransitionClass('slide-out-left');
 
     setTimeout(() => {
-      setCurrentIndex((prev) => Math.min(prev + 1, events.length));
+      setCurrentIndex((prev) => Math.min(prev + 1, deck.length));
       setDragOffset({ x: 0, y: 0 });
       setTransitionClass('card-entering');
 
@@ -355,7 +399,7 @@ export default function EventsPage() {
         isTransitioningRef.current = false;
       }, 200);
     }, 180);
-  }, [currentIndex, currentEvent, events.length, myRsvps, interestedSet]);
+  }, [currentIndex, currentEvent, deck.length, myRsvps, interestedSet]);
 
   const goPrev = useCallback(() => {
     if (isTransitioningRef.current) return;
@@ -665,6 +709,17 @@ export default function EventsPage() {
         {/* ── Horizontal Category Chips Bar ────────────────────────── */}
         <div ref={chipsRef} className={`tukio-category-bar-wrapper ${chipsFadeClass}`.trim()}>
           <div className="tukio-category-chips">
+            <button
+              type="button"
+              className={`tukio-chip tukio-filter-toggle ${filtersOpen || filtersActive ? 'active' : ''}`}
+              onClick={() => setFiltersOpen((open) => !open)}
+              aria-expanded={filtersOpen}
+              aria-controls="feed-filters"
+              aria-label={filtersActive ? 'Search and venue filters (active)' : 'Search and venue filters'}
+            >
+              <Search size={16} aria-hidden="true" />
+              {filtersActive && <span className="tukio-filter-dot" aria-hidden="true" />}
+            </button>
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}
@@ -677,6 +732,38 @@ export default function EventsPage() {
             ))}
           </div>
         </div>
+
+        {filtersOpen && (
+          <div id="feed-filters" className="tukio-filter-panel" role="search">
+            <label className="tukio-filter-field tukio-filter-search">
+              <span className="sr-only">Search events</span>
+              <Search size={16} aria-hidden="true" />
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => handleQueryChange(e.target.value)}
+                placeholder="Search title, organiser, tag…"
+                autoComplete="off"
+              />
+            </label>
+            <label className="tukio-filter-field">
+              <span className="sr-only">Venue</span>
+              <select value={venue} onChange={(e) => handleVenueChange(e.target.value)}>
+                <option value="">All venues</option>
+                {venueOptions.map((v) => (
+                  <option key={v} value={v}>
+                    {v}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {filtersActive && (
+              <button type="button" className="tukio-filter-clear" onClick={clearFilters}>
+                <X size={16} aria-hidden="true" /> Clear
+              </button>
+            )}
+          </div>
+        )}
 
         <div className="tukio-feed-body">
           <div className="tukio-feed-main">
@@ -700,6 +787,22 @@ export default function EventsPage() {
                   >
                     Retry
                   </button>
+                </div>
+              ) : events.length > 0 && deck.length === 0 ? (
+                <div className="tukio-caught-up-card animate-fade-in">
+                  <span className="tukio-caught-up-icon" aria-hidden="true">
+                    <Search size={40} strokeWidth={1.5} />
+                  </span>
+                  <h3 className="tukio-caught-up-title">No events match your filters</h3>
+                  <p className="tukio-caught-up-desc">
+                    {query.trim() ? `Nothing in this feed matches "${query.trim()}"` : 'Nothing in this feed is'}
+                    {venue ? ` at ${venue}` : ''}.
+                  </p>
+                  <div className="tukio-caught-up-actions">
+                    <button type="button" className="btn btn-primary" onClick={clearFilters}>
+                      <X size={16} aria-hidden="true" /> Clear filters
+                    </button>
+                  </div>
                 </div>
               ) : events.length === 0 ? (
                 <div className="tukio-caught-up-card animate-fade-in">
@@ -814,7 +917,7 @@ export default function EventsPage() {
             </div>
 
             {/* ── Navigation Controls & Progress Pill ──────────────────── */}
-            {!loading && !apiError && events.length > 0 && (
+            {!loading && !apiError && deck.length > 0 && (
               <>
                 <div className="tukio-nav-controls">
                   <button
@@ -830,10 +933,10 @@ export default function EventsPage() {
 
                   <div className="tukio-progress-pill">
                     <span>
-                      {Math.min(currentIndex + 1, events.length)} of {events.length}
+                      {Math.min(currentIndex + 1, deck.length)} of {deck.length}
                     </span>
                     <div className="tukio-progress-dots">
-                      {events.slice(0, 7).map((ev, idx) => (
+                      {deck.slice(0, 7).map((ev, idx) => (
                         <span
                           key={ev.id}
                           className={`tukio-dot ${
@@ -866,7 +969,7 @@ export default function EventsPage() {
           {/* ── "Up next" panel (wide screens only, hidden by CSS below 1024px) ── */}
           {!loading && !apiError && !isEndOfDeck && (
             <div className="tukio-feed-side">
-              <TukioUpNext events={events} currentIndex={currentIndex} onSelect={setCurrentIndex} />
+              <TukioUpNext events={deck} currentIndex={currentIndex} onSelect={setCurrentIndex} />
             </div>
           )}
         </div>
