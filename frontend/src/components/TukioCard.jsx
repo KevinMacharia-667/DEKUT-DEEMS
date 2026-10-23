@@ -22,32 +22,10 @@ import {
   campusWeekdayAndHour,
   formatCampusTime,
   formatCampusDate,
+  campusDateParts,
 } from '../utils/dates';
-import { categoryIcon, splitBadge } from '../utils/icons';
-
-const CATEGORY_STYLES = {
-  Academic: {
-    gradient: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
-  },
-  Tech: {
-    gradient: 'linear-gradient(135deg, #064e3b 0%, #10b981 100%)',
-  },
-  Social: {
-    gradient: 'linear-gradient(135deg, #78350f 0%, #f59e0b 100%)',
-  },
-  Sports: {
-    gradient: 'linear-gradient(135deg, #7f1d1d 0%, #ef4444 100%)',
-  },
-  Workshop: {
-    gradient: 'linear-gradient(135deg, #4c1d95 0%, #8b5cf6 100%)',
-  },
-  Cultural: {
-    gradient: 'linear-gradient(135deg, #701a75 0%, #ec4899 100%)',
-  },
-  Career: {
-    gradient: 'linear-gradient(135deg, #134e4a 0%, #14b8a6 100%)',
-  },
-};
+import { categoryCover, categoryIcon, splitBadge } from '../utils/icons';
+import { describeAttendance } from '../utils/attendance';
 
 function formatEventTime(dateStr) {
   const eventDate = parseApiDate(dateStr);
@@ -103,7 +81,7 @@ function formatEventTime(dateStr) {
 
   return {
     formatted: `${dateString} · ${timeString}`,
-    statusBadge: dateString,
+    statusBadge: null,
     isToday: false,
     isWeekend: false,
     deltaDays,
@@ -185,10 +163,6 @@ export default function TukioCard({
 
   if (!event) return null;
 
-  const catStyle = CATEGORY_STYLES[event.category] || {
-    gradient: 'linear-gradient(135deg, #1f2937 0%, #4b5563 100%)',
-  };
-
   const { formatted: formattedDate, statusBadge, isToday, isWeekend, deltaDays } = formatEventTime(event.start_time);
 
   // Dynamic drag transform
@@ -233,6 +207,8 @@ export default function TukioCard({
 
   const { Icon: WhyIcon, label: whyLabel } = splitBadge(whyBadge);
   const CategoryIcon = categoryIcon(event.category);
+  const dateParts = campusDateParts(event.start_time);
+  const attendance = describeAttendance(attendeeCount, event.max_attendees);
 
   return (
     <div
@@ -255,10 +231,16 @@ export default function TukioCard({
         ) : (
           <div
             className="tukio-card-fallback-media"
-            style={{ background: catStyle.gradient }}
+            style={{ background: categoryCover(event.category) }}
           >
+            {dateParts && (
+              <span className="tukio-date-block" aria-hidden="true">
+                <span className="tukio-date-day">{dateParts.day}</span>
+                <span className="tukio-date-month">{dateParts.month}</span>
+              </span>
+            )}
             <span className="tukio-card-fallback-emoji" aria-hidden="true">
-              <CategoryIcon size={56} strokeWidth={1.5} />
+              <CategoryIcon size={28} strokeWidth={1.75} />
             </span>
           </div>
         )}
@@ -320,10 +302,10 @@ export default function TukioCard({
           )}
           <div className="tukio-meta-item">
             <span className="tukio-meta-icon" aria-hidden="true"><Users size={16} /></span>
-            <span className="tukio-meta-text">
-              {attendeeCount} {attendeeCount === 1 ? 'attendee' : 'attendees'}
-              {event.max_attendees ? ` · limit ${event.max_attendees}` : ''}
-            </span>
+            <span className="tukio-meta-text">{attendance.text}</span>
+            {attendance.status && (
+              <span className={`tukio-seats-flag ${attendance.status}`}>{attendance.statusText}</span>
+            )}
           </div>
         </div>
 

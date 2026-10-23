@@ -17,6 +17,17 @@
   --text-muted: #64748B;
   --border: #D8E5D8;
 
+  /* Event categories: cover fills behind white text. Each base/deep pair
+     keeps white text at WCAG AA or better (lowest: social base, 5.0:1). */
+  --cat-academic: #1D4ED8;  --cat-academic-deep: #1E3A8A;
+  --cat-tech: #047857;      --cat-tech-deep: #064E3B;
+  --cat-social: #B45309;    --cat-social-deep: #78350F;
+  --cat-sports: #B91C1C;    --cat-sports-deep: #7F1D1D;
+  --cat-workshop: #6D28D9;  --cat-workshop-deep: #4C1D95;
+  --cat-cultural: #A21CAF;  --cat-cultural-deep: #701A75;
+  --cat-career: #0F766E;    --cat-career-deep: #134E4A;
+  --cat-default: #374151;   --cat-default-deep: #1F2937;
+
   /* Radii */
   --radius-sm: 6px;
   --radius-md: 10px;

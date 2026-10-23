@@ -80,14 +80,58 @@
   position: relative;
 }
 
-.tukio-card-fallback-emoji {
-  font-size: 4rem;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
-  transition: transform 0.3s ease;
+/* Calendar-style date block on covers without an image */
+.tukio-date-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+  color: #ffffff;
 }
 
-.tukio-card:hover .tukio-card-fallback-emoji {
-  transform: scale(1.1);
+.tukio-date-day {
+  font-family: var(--font-heading, system-ui, sans-serif);
+  font-size: 3.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.tukio-date-month {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Category icon sits quietly in the cover's corner */
+.tukio-card-fallback-emoji {
+  position: absolute;
+  right: 16px;
+  bottom: 14px;
+  opacity: 0.7;
+}
+
+/* Seat availability next to the attendance count */
+.tukio-seats-flag {
+  margin-left: auto;
+  padding: 2px 8px;
+  border-radius: var(--radius-full, 9999px);
+  font-size: 0.74rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.tukio-seats-flag.few {
+  background: rgba(234, 179, 8, 0.16);
+  color: var(--text-primary, #0f172a);
+  border: 1px solid rgba(234, 179, 8, 0.55);
+}
+
+.tukio-seats-flag.full {
+  background: rgba(200, 16, 46, 0.12);
+  color: var(--text-primary, #0f172a);
+  border: 1px solid rgba(200, 16, 46, 0.45);
 }
 
 .tukio-card-gradient-overlay {
@@ -798,8 +842,12 @@
     height: 112px;
   }
 
-  .tukio-card-fallback-emoji {
-    font-size: 3rem;
+  .tukio-date-day {
+    font-size: 2.4rem;
+  }
+
+  .tukio-date-month {
+    font-size: 0.75rem;
   }
 
   .tukio-card-body {

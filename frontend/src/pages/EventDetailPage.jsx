@@ -9,6 +9,7 @@ import { CalendarDays, CalendarPlus, Check, Flag, MapPin, MessageCircle, Users }
 import './EventDetailPage.css';
 import { formatCampusDateTime } from '../utils/dates';
 import { categoryIcon } from '../utils/icons';
+import { describeAttendance } from '../utils/attendance';
 
 function formatDateTime(dateStr) {
   return formatCampusDateTime(dateStr, { fallback: '—', long: true, withYear: true });
@@ -95,6 +96,7 @@ export default function EventDetailPage() {
   if (!event) return null;
 
   const CategoryIcon = categoryIcon(event.category);
+  const attendance = describeAttendance(event.rsvp_count, event.max_attendees);
 
   return (
     <div className="page">
@@ -155,8 +157,8 @@ export default function EventDetailPage() {
             <div className="event-meta-info">
               <h4>Attendees</h4>
               <p>
-                {event.rsvp_count}
-                {event.max_attendees ? ` / ${event.max_attendees}` : ''}
+                {attendance.text}
+                {attendance.statusText && ` · ${attendance.statusText}`}
               </p>
             </div>
           </div>

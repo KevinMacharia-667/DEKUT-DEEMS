@@ -66,6 +66,19 @@ function dateParts(date, { long = false, withYear = false } = {}) {
     .join(' ');
 }
 
+/** { day: "27", month: "Oct" } in campus time, for calendar-style date blocks. */
+export function campusDateParts(value) {
+  const date = parseApiDate(value);
+  if (!date) return null;
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: CAMPUS_TZ,
+    day: 'numeric',
+    month: 'short',
+  }).formatToParts(date);
+  const get = (type) => parts.find((p) => p.type === type)?.value ?? '';
+  return { day: get('day'), month: get('month') };
+}
+
 /** "14:30" in campus time. */
 export function formatCampusTime(value) {
   const date = parseApiDate(value);

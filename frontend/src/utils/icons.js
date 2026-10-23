@@ -35,6 +35,12 @@ export function categoryIcon(category) {
   return CATEGORY_ICONS[category] || CalendarDays;
 }
 
+/** Cover background for an event without an image, from the --cat-* tokens in index.css. */
+export function categoryCover(category) {
+  const key = CATEGORY_ICONS[category] ? category.toLowerCase() : 'default';
+  return `linear-gradient(135deg, var(--cat-${key}-deep) 0%, var(--cat-${key}) 100%)`;
+}
+
 // Leading emoji / symbols the backend puts on badge strings ("🔥 Trending on Campus")
 // (pictographs, optionally joined by ZWJ / followed by a variation selector)
 const LEADING_SYMBOLS = /^(?:\p{Extended_Pictographic}|‍|️|\s)+/u;

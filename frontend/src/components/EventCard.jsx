@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
 import { CalendarDays, MapPin } from 'lucide-react';
 import './EventCard.css';
-import { formatCampusDateTime } from '../utils/dates';
-import { categoryIcon } from '../utils/icons';
+import { campusDateParts, formatCampusDateTime } from '../utils/dates';
+import { categoryCover, categoryIcon } from '../utils/icons';
+import { describeAttendance } from '../utils/attendance';
 
 function formatDate(dateStr) {
   return formatCampusDateTime(dateStr);
@@ -10,14 +11,27 @@ function formatDate(dateStr) {
 
 export default function EventCard({ event }) {
   const CategoryIcon = categoryIcon(event.category);
+  const dateParts = campusDateParts(event.start_time);
+  const attendance = describeAttendance(event.rsvp_count, event.max_attendees);
 
   return (
     <Link to={`/events/${event.id}`} className="glass-card event-card">
-      <div className="event-card-image">
+      <div
+        className="event-card-image"
+        style={event.image_url ? undefined : { background: categoryCover(event.category) }}
+      >
         {event.image_url ? (
           <img src={event.image_url} alt={event.title} />
         ) : (
-          <CategoryIcon size={44} strokeWidth={1.5} aria-hidden="true" />
+          <>
+            {dateParts && (
+              <span className="event-card-date-block" aria-hidden="true">
+                <span className="event-card-date-day">{dateParts.day}</span>
+                <span className="event-card-date-month">{dateParts.month}</span>
+              </span>
+            )}
+            <CategoryIcon className="event-card-cover-icon" size={22} strokeWidth={1.75} aria-hidden="true" />
+          </>
         )}
         {event.category && (
           <span className="badge badge-accent event-card-category">
@@ -45,7 +59,10 @@ export default function EventCard({ event }) {
 
       <div className="event-card-footer">
         <span className="event-card-attendees">
-          {event.rsvp_count} {event.rsvp_count === 1 ? 'attendee' : 'attendees'}
+          {attendance.text}
+          {attendance.status && (
+            <span className={`event-card-seats-flag ${attendance.status}`}> · {attendance.statusText}</span>
+          )}
         </span>
         <span className="event-card-organizer">
           by {event.organizer?.full_name || event.organizer?.username}
