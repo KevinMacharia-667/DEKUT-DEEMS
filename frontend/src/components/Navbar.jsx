@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { Menu, Moon, Sun, Target, X } from 'lucide-react';
 import Logo from './Logo';
 import './Navbar.css';
 
@@ -46,7 +47,7 @@ export default function Navbar() {
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle navigation"
         >
-          {mobileOpen ? '✕' : '☰'}
+          {mobileOpen ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
         </button>
 
         {/* Nav links */}
@@ -93,7 +94,7 @@ export default function Navbar() {
             aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
             title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
           >
-            {isDark ? '☀️' : '🌙'}
+            {isDark ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
           </button>
 
           {isAuthenticated ? (
@@ -126,7 +127,7 @@ export default function Navbar() {
                     className="navbar-dropdown-item"
                     onClick={() => setDropdownOpen(false)}
                   >
-                    🎯 My Interests & Preferences
+                    <Target size={15} aria-hidden="true" /> My interests & preferences
                   </Link>
                   <button
                     type="button"
@@ -136,7 +137,7 @@ export default function Navbar() {
                       setDropdownOpen(false);
                     }}
                   >
-                    {isDark ? '☀️ Light Theme' : '🌙 Dark Theme'}
+                    {isDark ? <><Sun size={15} aria-hidden="true" /> Light theme</> : <><Moon size={15} aria-hidden="true" /> Dark theme</>}
                   </button>
                   <div className="navbar-dropdown-divider" />
                   <button

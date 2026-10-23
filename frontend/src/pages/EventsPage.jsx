@@ -18,13 +18,26 @@ import TukioCard, { TukioSkeletonCard, TukioUpNext } from '../components/TukioCa
 import { openWhatsAppShare } from '../utils/share';
 import { downloadEventICS } from '../utils/calendar';
 import { useScrollFade, scrollSelectedIntoView } from '../utils/useScrollFade';
+import {
+  ArrowLeft,
+  ArrowRight,
+  CalendarDays,
+  Hand,
+  Inbox,
+  PartyPopper,
+  Sparkles,
+  Target,
+  TreePalm,
+  TriangleAlert,
+  Zap,
+} from 'lucide-react';
 import './EventsPage.css';
 
 const SECTIONS = [
-  { id: 'today', label: 'Happening Today', icon: '⚡' },
-  { id: 'weekend', label: 'This Weekend', icon: '🌴' },
-  { id: 'for-you', label: 'For You', icon: '✨' },
-  { id: 'all', label: 'All Events', icon: '📅' },
+  { id: 'today', label: 'Happening Today', Icon: Zap },
+  { id: 'weekend', label: 'This Weekend', Icon: TreePalm },
+  { id: 'for-you', label: 'For You', Icon: Sparkles },
+  { id: 'all', label: 'All Events', Icon: CalendarDays },
 ];
 
 const CATEGORIES = [
@@ -615,9 +628,9 @@ export default function EventsPage() {
         {/* ── Cold-Start Personalization Banner ─────────────────────── */}
         {isAuthenticated && !hasInterests && (
           <div className="tukio-cold-start-banner animate-fade-in">
-            <span>🎯 Personalize your feed — pick your interests for custom AI recommendations</span>
+            <span className="tukio-cold-start-text"><Target size={16} aria-hidden="true" /> Personalize your feed: pick your interests for better recommendations</span>
             <Link to="/onboarding" className="tukio-cold-start-link">
-              Pick Interests →
+              Pick interests <ArrowRight size={14} aria-hidden="true" />
             </Link>
           </div>
         )}
@@ -638,7 +651,7 @@ export default function EventsPage() {
               className={`tukio-section-tab ${activeSection === sec.id ? 'active' : ''}`}
               onClick={() => handleSectionChange(sec.id)}
             >
-              <span className="tukio-section-tab-icon">{sec.icon}</span>
+              <span className="tukio-section-tab-icon" aria-hidden="true"><sec.Icon size={16} /></span>
               <span className="tukio-section-tab-label">{sec.label}</span>
               {sec.id === 'today' && todayCount > 0 && (
                 <span className="tukio-section-tab-count" title={`${todayCount} events today`}>
@@ -675,8 +688,8 @@ export default function EventsPage() {
                 </div>
               ) : apiError ? (
                 <div className="tukio-error-state animate-fade-in">
-                  <span className="tukio-error-icon" role="img" aria-label="Warning">
-                    ⚠️
+                  <span className="tukio-error-icon" aria-hidden="true">
+                    <TriangleAlert size={40} strokeWidth={1.5} />
                   </span>
                   <h3 className="tukio-error-title">Unable to Load Feed</h3>
                   <p className="tukio-error-msg">{apiError}</p>
@@ -690,8 +703,8 @@ export default function EventsPage() {
                 </div>
               ) : events.length === 0 ? (
                 <div className="tukio-caught-up-card animate-fade-in">
-                  <span className="tukio-caught-up-icon" role="img" aria-label="Calendar">
-                    📭
+                  <span className="tukio-caught-up-icon" aria-hidden="true">
+                    <Inbox size={40} strokeWidth={1.5} />
                   </span>
                   <h3 className="tukio-caught-up-title">
                     {activeSection === 'today'
@@ -714,7 +727,7 @@ export default function EventsPage() {
                         className="btn btn-primary"
                         onClick={() => handleSectionChange('weekend')}
                       >
-                        View This Weekend 🌴
+                        View this weekend <TreePalm size={16} aria-hidden="true" />
                       </button>
                     )}
                     {activeSection === 'weekend' && (
@@ -723,7 +736,7 @@ export default function EventsPage() {
                         className="btn btn-primary"
                         onClick={() => handleSectionChange('for-you')}
                       >
-                        View For You ✨
+                        View For You <Sparkles size={16} aria-hidden="true" />
                       </button>
                     )}
                     {activeCategory !== 'All' && (
@@ -739,8 +752,8 @@ export default function EventsPage() {
                 </div>
               ) : isEndOfDeck ? (
                 <div className="tukio-caught-up-card animate-fade-in">
-                  <span className="tukio-caught-up-icon" role="img" aria-label="Party">
-                    🎉
+                  <span className="tukio-caught-up-icon" aria-hidden="true">
+                    <PartyPopper size={40} strokeWidth={1.5} />
                   </span>
                   <h3 className="tukio-caught-up-title">You&apos;re All Caught Up!</h3>
                   <p className="tukio-caught-up-desc">
@@ -768,7 +781,7 @@ export default function EventsPage() {
                         className="btn btn-secondary"
                         onClick={() => handleSectionChange('all')}
                       >
-                        Explore All Events 📅
+                        Explore all events <CalendarDays size={16} aria-hidden="true" />
                       </button>
                     )}
                   </div>
@@ -812,7 +825,7 @@ export default function EventsPage() {
                     aria-label="Previous event card"
                     title="Previous (Arrow Left)"
                   >
-                    ←
+                    <ArrowLeft size={20} aria-hidden="true" />
                   </button>
 
                   <div className="tukio-progress-pill">
@@ -839,12 +852,12 @@ export default function EventsPage() {
                     aria-label="Next event card"
                     title="Next (Arrow Right)"
                   >
-                    →
+                    <ArrowRight size={20} aria-hidden="true" />
                   </button>
                 </div>
 
                 <span className="tukio-swipe-hint">
-                  <span>👈</span> Swipe or use arrow keys <span>👉</span>
+                  <Hand size={14} aria-hidden="true" /> Swipe or use arrow keys
                 </span>
               </>
             )}

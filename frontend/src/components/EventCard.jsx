@@ -1,23 +1,15 @@
 import { Link } from 'react-router-dom';
+import { CalendarDays, MapPin } from 'lucide-react';
 import './EventCard.css';
 import { formatCampusDateTime } from '../utils/dates';
-
-const CATEGORY_EMOJI = {
-  Academic: '📚',
-  Social: '🎉',
-  Sports: '⚽',
-  Workshop: '🔧',
-  Cultural: '🎭',
-  Tech: '💻',
-  Career: '💼',
-};
+import { categoryIcon } from '../utils/icons';
 
 function formatDate(dateStr) {
   return formatCampusDateTime(dateStr);
 }
 
 export default function EventCard({ event }) {
-  const emoji = CATEGORY_EMOJI[event.category] || '📅';
+  const CategoryIcon = categoryIcon(event.category);
 
   return (
     <Link to={`/events/${event.id}`} className="glass-card event-card">
@@ -25,7 +17,7 @@ export default function EventCard({ event }) {
         {event.image_url ? (
           <img src={event.image_url} alt={event.title} />
         ) : (
-          <span>{emoji}</span>
+          <CategoryIcon size={44} strokeWidth={1.5} aria-hidden="true" />
         )}
         {event.category && (
           <span className="badge badge-accent event-card-category">
@@ -39,12 +31,12 @@ export default function EventCard({ event }) {
 
         <div className="event-card-meta">
           <span className="event-card-meta-item">
-            <span className="event-card-meta-icon">📅</span>
+            <CalendarDays className="event-card-meta-icon" size={15} aria-hidden="true" />
             {formatDate(event.start_time)}
           </span>
           {event.location && (
             <span className="event-card-meta-item">
-              <span className="event-card-meta-icon">📍</span>
+              <MapPin className="event-card-meta-icon" size={15} aria-hidden="true" />
               {event.location}
             </span>
           )}

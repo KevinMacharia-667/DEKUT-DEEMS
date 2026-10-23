@@ -1,7 +1,18 @@
 import { useState, useEffect } from 'react';
 import { getRecommendations } from '../api';
 import EventCard from './EventCard';
+import { splitBadge } from '../utils/icons';
 import './RecommendedEvents.css';
+
+/** Engine badge ("🔥 Trending on Campus") shown as an icon plus text. */
+function RecBadge({ text }) {
+  const { Icon, label } = splitBadge(text);
+  return (
+    <span className="rec-highlight-badge">
+      <Icon size={13} aria-hidden="true" /> {label}
+    </span>
+  );
+}
 
 /**
  * "Recommended for you" section.
@@ -42,9 +53,9 @@ export default function RecommendedEvents({ k = 6, refreshTrigger = 0 }) {
         <div className="recommended-title-group">
           <h2>Recommended for you</h2>
           <span className="strategy-indicator">
-            {strategy === 'hybrid' && '⚡ Multi-Factor Hybrid (Content + Collaborative + Context)'}
-            {strategy === 'ml' && '📄 Content-Based Filtering (TF-IDF)'}
-            {strategy === 'baseline' && '📏 Rule-Based Scoring (Baseline)'}
+            {strategy === 'hybrid' && 'Multi-factor hybrid (content + collaborative + context)'}
+            {strategy === 'ml' && 'Content-based filtering (TF-IDF)'}
+            {strategy === 'baseline' && 'Rule-based scoring (baseline)'}
           </span>
         </div>
         <div className="strategy-toggle" role="group" aria-label="Recommendation strategy">
@@ -86,7 +97,7 @@ export default function RecommendedEvents({ k = 6, refreshTrigger = 0 }) {
         {items.map(({ event, score, badge, reasons }) => (
           <div className="recommended-item" key={event.id}>
             <div className="recommended-card-wrapper">
-              {badge && <span className="rec-highlight-badge">{badge}</span>}
+              {badge && <RecBadge text={badge} />}
               <EventCard event={event} />
             </div>
             <div className="recommended-why">

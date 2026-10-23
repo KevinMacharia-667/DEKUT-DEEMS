@@ -1,3 +1,4 @@
+import { WifiOff } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { isStandaloneMode, isPromptDismissed, dismissInstallPrompt, isIOS } from '../utils/pwa';
 import './PWAInstallPrompt.css';
@@ -88,7 +89,7 @@ export default function PWAInstallPrompt() {
       {/* Offline Status Pill */}
       {isOffline && (
         <div className="tukio-offline-banner animate-fade-in" role="status">
-          <span className="tukio-offline-icon">⚡</span>
+          <span className="tukio-offline-icon" aria-hidden="true"><WifiOff size={16} /></span>
           <span>You&apos;re currently offline. Viewing cached events.</span>
         </div>
       )}

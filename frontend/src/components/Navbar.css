@@ -125,7 +125,9 @@
 }
 
 .navbar-dropdown-item {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   width: 100%;
   padding: 8px 14px;
   font-size: 0.85rem;

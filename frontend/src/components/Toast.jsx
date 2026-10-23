@@ -1,12 +1,13 @@
 import { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import { Check, Info, X } from 'lucide-react';
 import './Toast.css';
 
 const ToastContext = createContext(null);
 
 const ICONS = {
-  success: '✓',
-  error: '✕',
-  info: 'ℹ',
+  success: <Check size={16} aria-hidden="true" />,
+  error: <X size={16} aria-hidden="true" />,
+  info: <Info size={16} aria-hidden="true" />,
 };
 
 let toastId = 0;
@@ -67,7 +68,7 @@ export function ToastProvider({ children }) {
               onClick={() => removeToast(t.id)}
               aria-label="Close"
             >
-              ✕
+              <X size={16} aria-hidden="true" />
             </button>
           </div>
         ))}

@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/Toast';
 import { getEvents, getMyRsvps, getEvent, getMyInterests, updateMyInterests, updateMe, cancelRsvp } from '../api';
 import RecommendedEvents from '../components/RecommendedEvents';
+import { CalendarDays, Check, GraduationCap, Pencil, RefreshCw, Target, Ticket } from 'lucide-react';
 import './DashboardPage.css';
 import { formatCampusDateTime } from '../utils/dates';
 
@@ -222,7 +223,7 @@ export default function DashboardPage() {
             }}
             title="Refresh dashboard and recommendations in real time"
           >
-            🔄 Refresh Live
+            <RefreshCw size={15} aria-hidden="true" /> Refresh
           </button>
         </div>
 
@@ -246,7 +247,7 @@ export default function DashboardPage() {
 
                   {user?.department && (
                     <div className="profile-department-badge" title="Academic Department">
-                      🎓 {user.department}
+                      <GraduationCap size={15} aria-hidden="true" /> {user.department}
                     </div>
                   )}
 
@@ -258,7 +259,7 @@ export default function DashboardPage() {
                       className="btn btn-secondary btn-sm"
                       onClick={() => setIsEditingProfile(true)}
                     >
-                      ✏️ Edit Profile
+                      <Pencil size={15} aria-hidden="true" /> Edit profile
                     </button>
                   </div>
                 </>
@@ -346,10 +347,10 @@ export default function DashboardPage() {
                   className="btn btn-secondary btn-sm"
                   style={{ padding: '3px 10px', fontSize: '0.78rem' }}
                 >
-                  🎯 Edit Preferences
+                  <Target size={15} aria-hidden="true" /> Edit preferences
                 </Link>
                 {savingInterests && <span className="spinner interests-spinner" />}
-                {interestsSaved && <span className="interests-saved">✓ Saved</span>}
+                {interestsSaved && <span className="interests-saved"><Check size={14} aria-hidden="true" /> Saved</span>}
               </div>
               <p className="interests-hint">
                 Select topics you&apos;re interested in. We&apos;ll recommend matching events.
@@ -422,7 +423,7 @@ export default function DashboardPage() {
                       to={`/events/${event.id}`}
                       className="glass-card dashboard-item"
                     >
-                      <div className="dashboard-item-icon">📅</div>
+                      <div className="dashboard-item-icon" aria-hidden="true"><CalendarDays size={20} /></div>
                       <div className="dashboard-item-body">
                         <div className="dashboard-item-title">{event.title}</div>
                         <div className="dashboard-item-meta">
@@ -462,7 +463,7 @@ export default function DashboardPage() {
                         style={{ flex: 1, border: 'none', background: 'transparent' }}
                       >
                         <div className="dashboard-item-icon" style={{ background: 'var(--gold-bg)' }}>
-                          🎟️
+                          <Ticket size={20} aria-hidden="true" />
                         </div>
                         <div className="dashboard-item-body">
                           <div className="dashboard-item-title">{event.title}</div>

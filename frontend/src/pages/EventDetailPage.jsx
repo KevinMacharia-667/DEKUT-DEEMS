@@ -5,13 +5,10 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/Toast';
 import { openWhatsAppShare } from '../utils/share';
 import { downloadEventICS } from '../utils/calendar';
+import { CalendarDays, CalendarPlus, Check, Flag, MapPin, MessageCircle, Users } from 'lucide-react';
 import './EventDetailPage.css';
 import { formatCampusDateTime } from '../utils/dates';
-
-const CATEGORY_EMOJI = {
-  Academic: '📚', Social: '🎉', Sports: '⚽', Workshop: '🔧',
-  Cultural: '🎭', Tech: '💻', Career: '💼',
-};
+import { categoryIcon } from '../utils/icons';
 
 function formatDateTime(dateStr) {
   return formatCampusDateTime(dateStr, { fallback: '—', long: true, withYear: true });
@@ -97,7 +94,7 @@ export default function EventDetailPage() {
 
   if (!event) return null;
 
-  const emoji = CATEGORY_EMOJI[event.category] || '📅';
+  const CategoryIcon = categoryIcon(event.category);
 
   return (
     <div className="page">
@@ -107,7 +104,7 @@ export default function EventDetailPage() {
           {event.image_url ? (
             <img src={event.image_url} alt={event.title} />
           ) : (
-            <span>{emoji}</span>
+            <CategoryIcon size={72} strokeWidth={1.25} aria-hidden="true" />
           )}
         </div>
 
@@ -129,7 +126,7 @@ export default function EventDetailPage() {
         {/* Meta cards */}
         <div className="event-detail-meta">
           <div className="glass-card event-meta-card">
-            <div className="event-meta-icon">📅</div>
+            <div className="event-meta-icon" aria-hidden="true"><CalendarDays size={22} /></div>
             <div className="event-meta-info">
               <h4>Starts</h4>
               <p>{formatDateTime(event.start_time)}</p>
@@ -137,7 +134,7 @@ export default function EventDetailPage() {
           </div>
           {event.end_time && (
             <div className="glass-card event-meta-card">
-              <div className="event-meta-icon">🏁</div>
+              <div className="event-meta-icon" aria-hidden="true"><Flag size={22} /></div>
               <div className="event-meta-info">
                 <h4>Ends</h4>
                 <p>{formatDateTime(event.end_time)}</p>
@@ -146,7 +143,7 @@ export default function EventDetailPage() {
           )}
           {event.location && (
             <div className="glass-card event-meta-card">
-              <div className="event-meta-icon">📍</div>
+              <div className="event-meta-icon" aria-hidden="true"><MapPin size={22} /></div>
               <div className="event-meta-info">
                 <h4>Location</h4>
                 <p>{event.location}</p>
@@ -154,7 +151,7 @@ export default function EventDetailPage() {
             </div>
           )}
           <div className="glass-card event-meta-card">
-            <div className="event-meta-icon">👥</div>
+            <div className="event-meta-icon" aria-hidden="true"><Users size={22} /></div>
             <div className="event-meta-info">
               <h4>Attendees</h4>
               <p>
@@ -173,7 +170,7 @@ export default function EventDetailPage() {
               onClick={handleCancelRsvp}
               disabled={rsvpLoading}
             >
-              {rsvpLoading ? <span className="spinner" /> : '✓ Attending — Cancel'}
+              {rsvpLoading ? <span className="spinner" /> : <><Check size={18} aria-hidden="true" /> Attending · Cancel</>}
             </button>
           ) : (
             <button
@@ -193,7 +190,7 @@ export default function EventDetailPage() {
             }}
             title="Share via WhatsApp"
           >
-            💬 Share
+            <MessageCircle size={18} aria-hidden="true" /> Share
           </button>
           <button
             type="button"
@@ -205,7 +202,7 @@ export default function EventDetailPage() {
             }}
             title="Add to Calendar (.ics)"
           >
-            📅 Calendar
+            <CalendarPlus size={18} aria-hidden="true" /> Calendar
           </button>
           {(isOwner || isAdmin) && (
             <>

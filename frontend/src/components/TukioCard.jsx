@@ -1,5 +1,20 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import {
+  ArrowUpRight,
+  CalendarDays,
+  CalendarPlus,
+  Check,
+  Info,
+  MapPin,
+  MessageCircle,
+  Sparkles,
+  Star,
+  ThumbsDown,
+  ThumbsUp,
+  Users,
+  X,
+} from 'lucide-react';
 import './TukioCard.css';
 import {
   parseApiDate,
@@ -8,35 +23,29 @@ import {
   formatCampusTime,
   formatCampusDate,
 } from '../utils/dates';
+import { categoryIcon, splitBadge } from '../utils/icons';
 
 const CATEGORY_STYLES = {
   Academic: {
     gradient: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
-    emoji: '📚',
   },
   Tech: {
     gradient: 'linear-gradient(135deg, #064e3b 0%, #10b981 100%)',
-    emoji: '💻',
   },
   Social: {
     gradient: 'linear-gradient(135deg, #78350f 0%, #f59e0b 100%)',
-    emoji: '🎉',
   },
   Sports: {
     gradient: 'linear-gradient(135deg, #7f1d1d 0%, #ef4444 100%)',
-    emoji: '⚽',
   },
   Workshop: {
     gradient: 'linear-gradient(135deg, #4c1d95 0%, #8b5cf6 100%)',
-    emoji: '🔧',
   },
   Cultural: {
     gradient: 'linear-gradient(135deg, #701a75 0%, #ec4899 100%)',
-    emoji: '🎭',
   },
   Career: {
     gradient: 'linear-gradient(135deg, #134e4a 0%, #14b8a6 100%)',
-    emoji: '💼',
   },
 };
 
@@ -83,7 +92,7 @@ function formatEventTime(dateStr) {
     const dayName = formatCampusDate(eventDate).split(' ')[0];
     return {
       formatted: `This Weekend (${dayName}) · ${timeString}`,
-      statusBadge: `🌴 Weekend • ${dayName}`,
+      statusBadge: `Weekend · ${dayName}`,
       isToday: false,
       isWeekend: true,
       deltaDays,
@@ -133,11 +142,11 @@ export function TukioUpNext({ events, currentIndex, onSelect, limit = 5 }) {
       <h3 className="tukio-up-next-title">Up next</h3>
       <ul className="tukio-up-next-list">
         {upcoming.map(({ event, index }) => {
-          const style = CATEGORY_STYLES[event.category] || { emoji: '📌' };
+          const CategoryIcon = categoryIcon(event.category);
           return (
             <li key={event.id}>
               <button type="button" className="tukio-up-next-item" onClick={() => onSelect(index)}>
-                <span className="tukio-up-next-emoji" aria-hidden="true">{style.emoji}</span>
+                <span className="tukio-up-next-emoji" aria-hidden="true"><CategoryIcon size={18} /></span>
                 <span className="tukio-up-next-text">
                   <span className="tukio-up-next-name">{event.title}</span>
                   <span className="tukio-up-next-when">{formatEventTime(event.start_time).formatted}</span>
@@ -178,7 +187,6 @@ export default function TukioCard({
 
   const catStyle = CATEGORY_STYLES[event.category] || {
     gradient: 'linear-gradient(135deg, #1f2937 0%, #4b5563 100%)',
-    emoji: '📅',
   };
 
   const { formatted: formattedDate, statusBadge, isToday, isWeekend, deltaDays } = formatEventTime(event.start_time);
@@ -203,25 +211,28 @@ export default function TukioCard({
 
   if (!hasEngineSignal) {
     if (attendeeCount >= 5) {
-      whyBadge = '🔥 Trending on Campus';
+      whyBadge = 'Trending on Campus';
       whyReasons = [
         `${attendeeCount} students attending`,
         'Popular with students this week',
       ];
     } else if (deltaDays !== null && deltaDays >= 0 && deltaDays <= 3) {
-      whyBadge = '⚡ Happening Soon';
+      whyBadge = 'Happening Soon';
       whyReasons = [
         `Starts in ${deltaDays === 0 ? 'a few hours' : `${deltaDays} days`}`,
         'Open to all DeKUT students',
       ];
     } else {
-      whyBadge = '📌 Recommended';
+      whyBadge = 'Recommended';
       whyReasons = [
         `Campus event in ${event.category || 'General'}`,
         'Discover activities happening at DeKUT',
       ];
     }
   }
+
+  const { Icon: WhyIcon, label: whyLabel } = splitBadge(whyBadge);
+  const CategoryIcon = categoryIcon(event.category);
 
   return (
     <div
@@ -246,8 +257,8 @@ export default function TukioCard({
             className="tukio-card-fallback-media"
             style={{ background: catStyle.gradient }}
           >
-            <span className="tukio-card-fallback-emoji" role="img" aria-label={event.category}>
-              {catStyle.emoji}
+            <span className="tukio-card-fallback-emoji" aria-hidden="true">
+              <CategoryIcon size={56} strokeWidth={1.5} />
             </span>
           </div>
         )}
@@ -285,32 +296,33 @@ export default function TukioCard({
             onClick={() => setShowWhyModal(true)}
             aria-label="Why this event is recommended"
           >
-            <span className="tukio-why-chip-icon">✨</span>
-            <span className="tukio-why-chip-badge">{whyBadge}</span>
+            <span className="tukio-why-chip-badge">
+              <WhyIcon size={14} aria-hidden="true" /> {whyLabel}
+            </span>
             {matchScore !== null && matchScore > 0 && (
               <span className="tukio-why-chip-score">{matchScore}%</span>
             )}
-            <span className="tukio-why-chip-info">ⓘ</span>
+            <span className="tukio-why-chip-info" aria-hidden="true"><Info size={14} /></span>
           </button>
         </div>
 
         {/* Date, Venue & Attendee Meta Box */}
         <div className="tukio-card-meta">
           <div className="tukio-meta-item">
-            <span className="tukio-meta-icon">📅</span>
+            <span className="tukio-meta-icon" aria-hidden="true"><CalendarDays size={16} /></span>
             <span className="tukio-meta-text">{formattedDate}</span>
           </div>
           {event.location && (
             <div className="tukio-meta-item">
-              <span className="tukio-meta-icon">📍</span>
+              <span className="tukio-meta-icon" aria-hidden="true"><MapPin size={16} /></span>
               <span className="tukio-meta-text">{event.location}</span>
             </div>
           )}
           <div className="tukio-meta-item">
-            <span className="tukio-meta-icon">👥</span>
+            <span className="tukio-meta-icon" aria-hidden="true"><Users size={16} /></span>
             <span className="tukio-meta-text">
               {attendeeCount} {attendeeCount === 1 ? 'attendee' : 'attendees'}
-              {event.max_attendees ? ` • limit ${event.max_attendees}` : ''}
+              {event.max_attendees ? ` · limit ${event.max_attendees}` : ''}
             </span>
           </div>
         </div>
@@ -348,7 +360,9 @@ export default function TukioCard({
                 aria-pressed={isInterested}
                 title={isInterested ? 'Remove from Interested' : 'Mark as Interested'}
               >
-                <span className="tukio-feedback-icon">{isInterested ? '⭐' : '👍'}</span>
+                <span className="tukio-feedback-icon" aria-hidden="true">
+                  {isInterested ? <Star size={16} fill="currentColor" /> : <ThumbsUp size={16} />}
+                </span>
                 <span>{isInterested ? 'Interested' : 'Interested'}</span>
               </button>
             )}
@@ -361,7 +375,7 @@ export default function TukioCard({
               title="Not for me (dismiss event)"
               aria-label="Not for me"
             >
-              <span className="tukio-feedback-icon">👎</span>
+              <span className="tukio-feedback-icon" aria-hidden="true"><ThumbsDown size={16} /></span>
               <span>Not for me</span>
             </button>
           </div>
@@ -379,7 +393,7 @@ export default function TukioCard({
             title="Share via WhatsApp"
             aria-label="Share via WhatsApp"
           >
-            <span className="tukio-utility-icon" role="img" aria-label="WhatsApp">💬</span>
+            <span className="tukio-utility-icon" aria-hidden="true"><MessageCircle size={16} /></span>
             <span>WhatsApp</span>
           </button>
 
@@ -393,7 +407,7 @@ export default function TukioCard({
             title="Add to Calendar (.ics)"
             aria-label="Add to Calendar"
           >
-            <span className="tukio-utility-icon" role="img" aria-label="Calendar">📅</span>
+            <span className="tukio-utility-icon" aria-hidden="true"><CalendarPlus size={16} /></span>
             <span>Calendar</span>
           </button>
         </div>
@@ -410,11 +424,11 @@ export default function TukioCard({
               <span className="tukio-micro-spinner" />
             ) : isAttending ? (
               <>
-                <span>✓</span> Attending
+                <Check size={18} aria-hidden="true" /> Attending
               </>
             ) : (
               <>
-                <span>✨</span> RSVP Now
+                <Sparkles size={18} aria-hidden="true" /> RSVP Now
               </>
             )}
           </button>
@@ -424,7 +438,7 @@ export default function TukioCard({
             className="tukio-details-link-btn"
             title="View Full Event Details"
           >
-            Details ↗
+            Details <ArrowUpRight size={16} aria-hidden="true" />
           </Link>
         </div>
       </div>
@@ -435,7 +449,7 @@ export default function TukioCard({
           <div className="tukio-why-sheet" onClick={(e) => e.stopPropagation()}>
             <div className="tukio-why-sheet-header">
               <span className="tukio-why-sheet-title">
-                <span>✨</span> Why Recommended
+                <Sparkles size={18} aria-hidden="true" /> Why Recommended
               </span>
               <button
                 type="button"
@@ -443,7 +457,7 @@ export default function TukioCard({
                 onClick={() => setShowWhyModal(false)}
                 aria-label="Close"
               >
-                ✕
+                <X size={18} aria-hidden="true" />
               </button>
             </div>
 
@@ -473,7 +487,7 @@ export default function TukioCard({
               <ul className="tukio-why-reasons-list">
                 {whyReasons.map((reason, idx) => (
                   <li key={idx} className="tukio-why-reason-item">
-                    <span className="tukio-why-reason-bullet">✓</span>
+                    <span className="tukio-why-reason-bullet" aria-hidden="true"><Check size={14} /></span>
                     <span>{reason}</span>
                   </li>
                 ))}

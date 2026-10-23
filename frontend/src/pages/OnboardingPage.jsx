@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getMyInterests, updateMyInterests } from '../api';
 import { useToast } from '../components/Toast';
+import { ArrowRight, Check } from 'lucide-react';
+import { categoryIcon } from '../utils/icons';
 import './OnboardingPage.css';
 
 /**
@@ -12,49 +14,42 @@ const ONBOARDING_CATEGORIES = [
   {
     id: 'Tech',
     name: 'Tech & Coding',
-    emoji: '💻',
     subtitle: 'Python, AI, Cloud, Cybersecurity',
     tags: ['tech', 'python', 'web development', 'ai', 'cloud', 'data science', 'iot', 'cybersecurity'],
   },
   {
     id: 'Academic',
     name: 'Academic & Research',
-    emoji: '📚',
     subtitle: 'Science, Research, Seminars, Thesis',
     tags: ['academic', 'science', 'research', 'seminar', 'lecture', 'mathematics', 'thesis'],
   },
   {
     id: 'Career',
     name: 'Career & Innovation',
-    emoji: '💼',
     subtitle: 'Startups, Internships, Mentorship',
     tags: ['career', 'interview', 'mentorship', 'leadership', 'startup', 'networking', 'skills', 'entrepreneurship', 'internship'],
   },
   {
     id: 'Social',
     name: 'Social & Campus Life',
-    emoji: '🎉',
     subtitle: 'Mixers, Games, Networking, Parties',
     tags: ['social', 'community', 'games', 'networking', 'mixer', 'party', 'picnic', 'karaoke'],
   },
   {
     id: 'Sports',
     name: 'Sports & Fitness',
-    emoji: '⚽',
     subtitle: 'Athletics, Fitness, Tournaments',
     tags: ['sports', 'fitness', 'athletics', 'marathon', 'swimming', 'football', 'basketball'],
   },
   {
     id: 'Workshop',
     name: 'Workshops & Practical',
-    emoji: '🔧',
     subtitle: 'Hands-on Training, Bootcamps',
     tags: ['workshop', 'hands-on', 'training', 'skills', 'bootcamp'],
   },
   {
     id: 'Cultural',
     name: 'Arts & Culture',
-    emoji: '🎭',
     subtitle: 'Music, Heritage, Film, Poetry',
     tags: ['cultural', 'art', 'heritage', 'music', 'community', 'dance', 'film', 'poetry', 'theatre'],
   },
@@ -165,7 +160,7 @@ export default function OnboardingPage() {
         {/* Live Requirement Tracker */}
         <div className={`tukio-onboarding-tracker ${isComplete ? 'complete' : 'incomplete'}`}>
           {isComplete
-            ? `✓ Ready to explore! (${selectedCount} selected)`
+            ? `Ready to explore (${selectedCount} selected)`
             : `Pick at least 3 categories (${remainingNeeded} more needed)`}
         </div>
 
@@ -174,6 +169,7 @@ export default function OnboardingPage() {
           <div className="tukio-onboarding-grid" role="group" aria-label="Campus event interest categories">
             {ONBOARDING_CATEGORIES.map((category) => {
               const isSelected = selectedCategoryIds.has(category.id);
+              const TileIcon = categoryIcon(category.id);
               return (
                 <button
                   key={category.id}
@@ -183,10 +179,10 @@ export default function OnboardingPage() {
                   aria-pressed={isSelected}
                 >
                   <div className="tukio-tile-top">
-                    <span className="tukio-tile-emoji" role="img" aria-label={category.name}>
-                      {category.emoji}
+                    <span className="tukio-tile-emoji" aria-hidden="true">
+                      <TileIcon size={32} strokeWidth={1.75} />
                     </span>
-                    <span className="tukio-tile-check">{isSelected ? '✓' : ''}</span>
+                    <span className="tukio-tile-check" aria-hidden="true">{isSelected ? <Check size={14} /> : null}</span>
                   </div>
                   <h3 className="tukio-tile-label">{category.name}</h3>
                   <span className="tukio-tile-sub">{category.subtitle}</span>
@@ -205,9 +201,9 @@ export default function OnboardingPage() {
               {loading ? (
                 <span className="tukio-micro-spinner" />
               ) : isEditing ? (
-                'Save & Update Feed →'
+                <>Save and update feed <ArrowRight size={16} aria-hidden="true" /></>
               ) : (
-                'Personalize My Tukio Feed →'
+                <>Personalize my feed <ArrowRight size={16} aria-hidden="true" /></>
               )}
             </button>
 
@@ -216,7 +212,7 @@ export default function OnboardingPage() {
               className="tukio-onboarding-skip-btn"
               onClick={() => navigate('/events')}
             >
-              Skip for now →
+              Skip for now <ArrowRight size={14} aria-hidden="true" />
             </button>
           </div>
         </form>

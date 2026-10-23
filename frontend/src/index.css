@@ -560,3 +560,47 @@ a:hover {
   }
 }
 
+
+/* ── Icons (lucide-react) ─────────────────────────────────────────────
+   Inline SVG icons replace emoji; keep them from shrinking and align
+   them with the text in elements that are not already flex rows.
+   ─────────────────────────────────────────────────────────────────── */
+svg.lucide {
+  flex-shrink: 0;
+}
+
+.tukio-why-chip-badge,
+.rec-highlight-badge,
+.tukio-why-sheet-title,
+.tukio-cold-start-text,
+.tukio-cold-start-link,
+.interests-saved,
+.toast-icon,
+.tukio-offline-icon,
+.tukio-section-tab-icon,
+.tukio-up-next-emoji,
+.tukio-card-fallback-emoji,
+.tukio-caught-up-icon,
+.tukio-error-icon,
+.tukio-tile-emoji,
+.tukio-meta-icon,
+.tukio-feedback-icon,
+.tukio-utility-icon,
+.tukio-why-chip-icon,
+.tukio-why-chip-info,
+.tukio-why-reason-bullet {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  line-height: 1;
+}
+
+.tukio-card-fallback-emoji {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.tukio-caught-up-icon,
+.tukio-error-icon {
+  color: var(--text-muted);
+}

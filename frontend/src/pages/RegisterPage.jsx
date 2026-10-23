@@ -1,3 +1,4 @@
+import { ArrowRight, Check, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -209,7 +210,7 @@ export default function RegisterPage() {
                     transition: 'all 0.15s ease'
                   }}
                 >
-                  {selectedInterests.has(tag) ? `✓ ${tag}` : `+ ${tag}`}
+                  {selectedInterests.has(tag) ? <Check size={14} aria-hidden="true" /> : <Plus size={14} aria-hidden="true" />} {tag}
                 </button>
               ))}
             </div>
@@ -221,7 +222,7 @@ export default function RegisterPage() {
             disabled={loading}
             style={{ width: '100%', marginTop: '12px' }}
           >
-            {loading ? <span className="spinner" /> : 'Create Account & Personalize Feed →'}
+            {loading ? <span className="spinner" /> : <>Create account <ArrowRight size={16} aria-hidden="true" /></>}
           </button>
         </form>
 
