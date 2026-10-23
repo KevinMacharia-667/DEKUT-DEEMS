@@ -182,8 +182,8 @@
 }
 
 .tukio-chip.active {
-  background: var(--primary, #34B233);
-  border-color: var(--primary, #34B233);
+  background: var(--primary-fill, #1E7A1E);
+  border-color: var(--primary-fill, #1E7A1E);
   color: #ffffff;
   box-shadow: 0 2px 8px rgba(52, 178, 51, 0.3);
 }
@@ -245,9 +245,9 @@
 }
 
 .tukio-nav-btn:hover:not(:disabled) {
-  background: var(--primary, #34B233);
+  background: var(--primary-fill, #1E7A1E);
   color: #ffffff;
-  border-color: var(--primary, #34B233);
+  border-color: var(--primary-fill, #1E7A1E);
   transform: scale(1.06);
 }
 

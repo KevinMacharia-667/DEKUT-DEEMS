@@ -387,6 +387,7 @@ export default function DashboardPage() {
                   className="form-input"
                   type="text"
                   placeholder="Add custom tag…"
+                  aria-label="Custom interest tag"
                   value={customTag}
                   onChange={(e) => setCustomTag(e.target.value)}
                   maxLength={50}

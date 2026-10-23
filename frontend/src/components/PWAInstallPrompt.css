@@ -114,7 +114,7 @@
 }
 
 .tukio-pwa-install-btn {
-  background: var(--primary, #34B233);
+  background: var(--primary-fill, #1E7A1E);
   color: #ffffff;
   border: none;
   font-family: var(--font-heading, system-ui, sans-serif);

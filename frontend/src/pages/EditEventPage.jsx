@@ -284,6 +284,7 @@ export default function EditEventPage() {
               <input
                 type="checkbox"
                 name="is_published"
+                aria-label="Publish event"
                 checked={form.is_published}
                 onChange={handleChange}
               />

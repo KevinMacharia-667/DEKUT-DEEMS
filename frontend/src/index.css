@@ -9,6 +9,8 @@
   --primary: #34B233;        /* vibrant green — fills, large elements */
   --primary-dark: #1E7A1E;   /* small-text buttons, green text links, hover */
   --primary-tint: #E9F9E7;   /* light green backgrounds, selected states */
+  --primary-fill: #1E7A1E;   /* green buttons with white text (5.4:1), both themes */
+  --primary-fill-hover: #17651A; /* hover/pressed (7.2:1) */
   --accent-gold: #EAB308;    /* highlights: score badges, "NEW", logo */
   --link-hover: #C8102E;     /* red hover for hyperlinks (university-style) */
   --bg: #FFFFFF;
@@ -16,6 +18,7 @@
   --text: #0F172A;
   --text-muted: #64748B;
   --border: #D8E5D8;
+  --focus-ring: #1E7A1E;     /* keyboard focus outline: 5.4:1 on white */
 
   /* Event categories: cover fills behind white text. Each base/deep pair
      keeps white text at WCAG AA or better (lowest: social base, 5.0:1). */
@@ -100,6 +103,7 @@
 
 /* ── Dark Theme Token Overrides ────────────────────────────────────── */
 :root[data-theme="dark"] {
+  --focus-ring: #4ADE80;     /* 10.9:1 on the dark background */
   --bg: #0B111A;
   --surface: #131D28;
   --text: #F8FAFC;
@@ -232,14 +236,14 @@ a:hover {
 }
 
 .btn-primary {
-  background: var(--primary);
-  color: var(--text);
-  border-color: var(--primary);
+  background: var(--primary-fill);
+  color: #FFFFFF;
+  border-color: var(--primary-fill);
   box-shadow: var(--shadow-sm);
 }
 .btn-primary:hover {
-  background: var(--primary-dark);
-  border-color: var(--primary-dark);
+  background: var(--primary-fill-hover);
+  border-color: var(--primary-fill-hover);
   transform: translateY(-1px);
   color: #FFFFFF;
 }
@@ -614,4 +618,62 @@ svg.lucide {
 .tukio-caught-up-icon,
 .tukio-error-icon {
   color: var(--text-muted);
+}
+
+/* ── Keyboard Focus ───────────────────────────────────────────────────
+   Every control gets a visible outline when reached by keyboard.
+   Contrast against the surface behind it is at least 5:1 in both themes.
+   ─────────────────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* The light-theme navbar is green, so its focus ring is white (5.4:1) */
+:root:not([data-theme="dark"]) .navbar :focus-visible {
+  outline-color: #FFFFFF;
+}
+
+.form-input:focus-visible,
+.form-select:focus-visible,
+.form-textarea:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
+/* Visually hidden checkbox inside the publish toggle */
+.toggle input:focus-visible + .toggle-slider {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* ── Touch Targets ────────────────────────────────────────────────────
+   On touch screens, small controls grow to at least 44 x 44px.
+   ─────────────────────────────────────────────────────────────────── */
+@media (pointer: coarse) {
+  .btn-sm,
+  .tukio-chip,
+  .tukio-section-tab,
+  .tukio-why-chip,
+  .tukio-feedback-btn,
+  .tukio-utility-btn,
+  .tukio-details-link-btn,
+  .tukio-nav-btn,
+  .tukio-expand-desc-btn,
+  .tukio-up-next-item,
+  .navbar-theme-toggle,
+  .navbar-toggle,
+  .navbar-user,
+  .navbar-dropdown-item,
+  .navbar-link,
+  .navbar-brand {
+    min-height: 44px;
+  }
+
+  .tukio-utility-btn,
+  .tukio-nav-btn,
+  .navbar-theme-toggle,
+  .navbar-toggle {
+    min-width: 44px;
+  }
 }
