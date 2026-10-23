@@ -9,3 +9,6 @@ dist/
 .coverage.*
 htmlcov/
 .vscode/
+
+# Kaggle competition data: licensed for private use only, never commit
+backend/data/kaggle/
