@@ -63,7 +63,8 @@
 * **UI pass:** event times shown in campus time (EAT); the edit form no longer shifts events; one lucide-react icon set; category date-block covers and "42 / 60 going" seat labels; keyboard focus, 44px touch targets and WCAG AA contrast in both themes; sticky RSVP bar on the event page; feed search and venue filter; one colour token set.
 * **Fixes:** service worker registers only in production builds; npm audit clean (Vite 8.3.5, react-router 7.18.4).
 * **Real-student data:** survey template (`docs/tukio_survey_form_template.pdf`) and importer (`backend/survey_import.py`, tested with Google-Forms-format CSVs). Waiting on responses.
-* **Next:** deployment (backend + PostgreSQL), then run the survey and the importer.
+* **Deployment prepared:** `render.yaml` (Render frontend + backend) and `docs/deployment.md` (Neon PostgreSQL); rehearsed locally with a production build calling a production-mode backend across origins.
+* **Next:** create the Neon and Render services, then run the survey and the importer.
 
 ---
 

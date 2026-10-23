@@ -7,6 +7,9 @@
 
 const CACHE_NAME = 'tukio-v1';
 
+// Origin of the backend when it is not this site (set by pwa.js: /sw.js?api=https://...)
+const API_ORIGIN = new URL(self.location.href).searchParams.get('api') || '';
+
 const STATIC_PRECACHE = [
   '/',
   '/index.html',
@@ -63,8 +66,16 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // In production the API lives on its own origin, passed in at registration (?api=)
+  const isApiOrigin = API_ORIGIN !== '' && url.origin === API_ORIGIN;
+
+  // Any other cross-origin request (fonts, share links): let the browser handle it
+  if (url.origin !== self.location.origin && !isApiOrigin) {
+    return;
+  }
+
   // 1. API Calls: Network-first for public events, NO-CACHE for authenticated/personalized endpoints
-  if (url.pathname.startsWith('/api') || url.port === '8000') {
+  if (isApiOrigin || url.pathname.startsWith('/api') || url.port === '8000') {
     const isAuthRequest =
       request.headers.has('Authorization') ||
       url.pathname.includes('/recommendations') ||

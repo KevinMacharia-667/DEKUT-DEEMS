@@ -73,6 +73,8 @@ Campus facilities are formalized in [`backend/app/venues.py`](file:///c:/Users/A
 
 ## 6. Running the Project (Windows Setup)
 
+> **Deploying:** see [`docs/deployment.md`](docs/deployment.md) (Render for the frontend and backend, Neon for PostgreSQL, all on free plans; blueprint in `render.yaml`).
+
 ### Prerequisites
 * Python 3.11+ (Python 3.13 recommended)
 * Node.js 20+ (Node.js 22 tested)

@@ -12,11 +12,13 @@ The GROUND_TRUTH dict at the bottom records which events each user
 """
 
 import json
+import os
 import random
 import uuid
 from datetime import datetime, timedelta, timezone
 
-from app.database import Base, engine, SessionLocal
+from app.config import get_settings
+from app.database import Base, engine, SessionLocal, normalise_database_url
 from app.models.user import User
 from app.models.event import Event
 from app.models.rsvp import RSVP
@@ -293,7 +295,28 @@ USER_PROFILES = [
     ("admin_dekut",   "Admin DEEMS",       "admin@dekut.ac.ke",     "admin",      "School of Computer Science & IT", ["academic", "career", "tech"]),
 ]
 
-DEFAULT_PASSWORD = "Password123"
+LOCAL_DEMO_PASSWORD = "Password123"
+DEFAULT_PASSWORD = os.environ.get("SEED_PASSWORD") or LOCAL_DEMO_PASSWORD
+
+
+def check_safe_to_seed(database_url: str) -> None:
+    """
+    Seeding drops every table. Against anything but a local SQLite file, require an
+    explicit confirmation and a non-default password: the demo accounts (including an
+    admin) would otherwise be publicly guessable on a deployed site.
+    """
+    if database_url.startswith("sqlite"):
+        return
+    if os.environ.get("SEED_CONFIRM_RESET") != "yes":
+        raise SystemExit(
+            "Refusing to seed a non-SQLite database: seeding DROPS ALL TABLES. "
+            "Set SEED_CONFIRM_RESET=yes if this database may be wiped."
+        )
+    if DEFAULT_PASSWORD == LOCAL_DEMO_PASSWORD or len(DEFAULT_PASSWORD) < 12:
+        raise SystemExit(
+            "Refusing to seed a non-SQLite database with the public demo password. "
+            "Set SEED_PASSWORD to a private password of at least 12 characters."
+        )
 
 
 def compute_relevance(user_tags: set, event_category: str, event_tags: set) -> bool:
@@ -310,6 +333,8 @@ def compute_relevance(user_tags: set, event_category: str, event_tags: set) -> b
 
 
 def main():
+    check_safe_to_seed(normalise_database_url(get_settings().DATABASE_URL))
+
     # Recreate all tables (dev-only — wipes existing data)
     print("Dropping and recreating all tables...")
     Base.metadata.drop_all(bind=engine)
@@ -474,8 +499,11 @@ def main():
         print(f"   Events:   {len(events)}")
         print(f"   RSVPs:    {rsvp_count}")
         print(f"   Ground truth saved to: {gt_path}")
-        print(f"\n   All users have password: {DEFAULT_PASSWORD}")
-        print(f"   Example login: alice@dekut.ac.ke / {DEFAULT_PASSWORD}")
+        if DEFAULT_PASSWORD == LOCAL_DEMO_PASSWORD:
+            print(f"\n   All users have password: {DEFAULT_PASSWORD}")
+            print(f"   Example login: alice@dekut.ac.ke / {DEFAULT_PASSWORD}")
+        else:
+            print("\n   All users have the password you set in SEED_PASSWORD (not printed).")
 
     except Exception as e:
         db.rollback()

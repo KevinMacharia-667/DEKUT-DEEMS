@@ -5,7 +5,11 @@
 
 import { describeApiError, describeNetworkFailure } from './utils/apiErrors';
 
-const API_BASE = '/api';
+/**
+ * Where the backend lives. In development the Vite proxy forwards /api to it.
+ * In production set VITE_API_BASE_URL at build time (e.g. https://tukio-api.onrender.com).
+ */
+export const API_BASE = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/+$/, '');
 
 /**
  * Get the stored JWT token.

@@ -20,9 +20,22 @@ export function registerServiceWorker() {
     return;
   }
 
+  // When the API is on another origin (production), tell the worker which one,
+  // so it treats those requests as API calls (never cached when personalised)
+  // and leaves every other cross-origin request alone.
+  let swUrl = '/sw.js';
+  const apiBase = import.meta.env.VITE_API_BASE_URL;
+  if (apiBase) {
+    try {
+      swUrl += `?api=${encodeURIComponent(new URL(apiBase).origin)}`;
+    } catch {
+      // Relative or malformed value: keep the same-origin /api behaviour
+    }
+  }
+
   window.addEventListener('load', () => {
     navigator.serviceWorker
-      .register('/sw.js')
+      .register(swUrl)
       .catch((err) => {
         console.warn('[Tukio PWA] Service Worker registration failed:', err);
       });

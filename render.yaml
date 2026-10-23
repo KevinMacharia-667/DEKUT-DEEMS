@@ -1,0 +1,43 @@
+# Render Blueprint for Tukio: FastAPI backend + React static site (both free plan).
+# The database is a free Neon Postgres project, connected through DATABASE_URL.
+# Step-by-step instructions: docs/deployment.md
+services:
+  # ── Backend: FastAPI + recommender ─────────────────────────────────
+  - type: web
+    name: tukio-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    # Tables are created from the models at startup (main.py: Base.metadata.create_all)
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.6
+      - key: APP_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true          # random secret created by Render
+      - key: AUTH_TRUST_PROXY
+        value: "true"                # Render sits behind a proxy: rate-limit by the real client IP
+      - key: DATABASE_URL
+        sync: false                  # paste the Neon connection string when creating the Blueprint
+      - key: CORS_ORIGINS
+        sync: false                  # the static site's URL, e.g. https://tukio-web.onrender.com
+
+  # ── Frontend: React app built by Vite ──────────────────────────────
+  - type: web
+    name: tukio-web
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        sync: false                  # the backend's URL, e.g. https://tukio-api.onrender.com
+    routes:
+      # Single-page app: unknown paths (e.g. /events/123) load index.html
+      - type: rewrite
+        source: /*
+        destination: /index.html
