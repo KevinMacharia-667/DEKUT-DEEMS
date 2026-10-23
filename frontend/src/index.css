@@ -1,22 +1,36 @@
 /* ═══════════════════════════════════════════════════════════════════
-   DeKUT Event Management System — Design System
-   Dark theme · Emerald/Gold accents · Glassmorphism · Micro-animations
+   Tukio (DeKUT campus events) — Design System
+   Light and dark themes · DeKUT green with a gold accent · neutral scale
+   Colour tokens are defined once here; components use only these names.
    ═══════════════════════════════════════════════════════════════════ */
 
-/* ── CSS Custom Properties ────────────────────────────────────────── */
+/* ── CSS Custom Properties (light theme) ──────────────────────────── */
 
 :root {
-  --primary: #34B233;        /* vibrant green — fills, large elements */
-  --primary-dark: #1E7A1E;   /* small-text buttons, green text links, hover */
+  /* Brand */
+  --primary: #34B233;        /* vibrant green: fills, large elements */
+  --primary-dark: #1E7A1E;   /* green text and links on light surfaces */
   --primary-tint: #E9F9E7;   /* light green backgrounds, selected states */
+  --primary-tint-hover: #D6F3D2;
   --primary-fill: #1E7A1E;   /* green buttons with white text (5.4:1), both themes */
   --primary-fill-hover: #17651A; /* hover/pressed (7.2:1) */
-  --accent-gold: #EAB308;    /* highlights: score badges, "NEW", logo */
+  --accent-gold: #EAB308;    /* gold fills only (badges, dots, logo), never body text */
+  --gold: #B8860B;           /* gold borders and icons */
+  --gold-light: #8A6508;     /* gold text on --gold-bg (5:1 or better) */
+  --gold-bg: #FDF6DC;
   --link-hover: #C8102E;     /* red hover for hyperlinks (university-style) */
+
+  /* Neutrals */
   --bg: #FFFFFF;
   --surface: #F7FAF7;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #F7FAF7;
+  --bg-glass: #FFFFFF;
+  --bg-input: #FFFFFF;
   --text: #0F172A;
+  --text-secondary: #3F5140;
   --text-muted: #64748B;
+  --text-inverse: #FFFFFF;
   --border: #D8E5D8;
   --focus-ring: #1E7A1E;     /* keyboard focus outline: 5.4:1 on white */
 
@@ -30,6 +44,16 @@
   --cat-cultural: #A21CAF;  --cat-cultural-deep: #701A75;
   --cat-career: #0F766E;    --cat-career-deep: #134E4A;
   --cat-default: #374151;   --cat-default-deep: #1F2937;
+
+  /* Loading skeleton */
+  --skeleton-bg: #E2E8F0;
+  --skeleton-highlight: #F8FAFC;
+
+  /* Elevation */
+  --shadow-sm: 0 1px 2px rgba(15, 42, 15, 0.06);
+  --shadow-md: 0 4px 10px rgba(15, 42, 15, 0.08);
+  --shadow-lg: 0 10px 24px rgba(15, 42, 15, 0.10);
+  --shadow-glow: 0 0 0 3px rgba(52, 178, 51, 0.15);
 
   /* Radii */
   --radius-sm: 6px;
@@ -58,94 +82,41 @@
   --transition-slow: 400ms ease;
 }
 
-/* ── Legacy alias layer ───────────────────────────────────────────────
-   The rebrand renamed the palette tokens, but component stylesheets
-   still reference the original names in 70+ places. These aliases map
-   the old names onto the current palette so every rule resolves.
-   ─────────────────────────────────────────────────────────────────── */
-:root {
-  /* text */
-  --text-primary: var(--text);
-  --text-secondary: #3F5140;
-  --text-inverse: #FFFFFF;
-
-  /* accents */
-  --accent: var(--primary);
-  --accent-dark: var(--primary-dark);
-  --accent-light: var(--primary-dark);
-  --accent-bg: var(--primary-tint);
-  --accent-bg-hover: #D6F3D2;
-  --accent-border: var(--primary);
-
-  /* gold */
-  --gold: #B8860B;
-  --gold-light: #8A6508;
-  --gold-bg: #FDF6DC;
-
-  /* surfaces */
-  --bg-secondary: var(--surface);
-  --bg-card: #FFFFFF;
-  --bg-card-hover: var(--surface);
-  --bg-glass: #FFFFFF;
-  --bg-input: #FFFFFF;
-  --border-light: var(--border);
-
-  /* Skeleton Shimmer */
-  --skeleton-bg: #E2E8F0;
-  --skeleton-highlight: #F8FAFC;
-
-  /* elevation */
-  --shadow-sm: 0 1px 2px rgba(15, 42, 15, 0.06);
-  --shadow-md: 0 4px 10px rgba(15, 42, 15, 0.08);
-  --shadow-lg: 0 10px 24px rgba(15, 42, 15, 0.10);
-  --shadow-glow: 0 0 0 3px rgba(52, 178, 51, 0.15);
-}
-
-/* ── Dark Theme Token Overrides ────────────────────────────────────── */
+/* ── Dark Theme Overrides ─────────────────────────────────────────── */
 :root[data-theme="dark"] {
-  --focus-ring: #4ADE80;     /* 10.9:1 on the dark background */
-  --bg: #0B111A;
-  --surface: #131D28;
-  --text: #F8FAFC;
-  --text-muted: #94A3B8;
-  --border: #243547;
-
-  /* legacy alias overrides for dark mode */
-  --text-primary: #F8FAFC;
-  --text-secondary: #CBD5E1;
-  --text-inverse: #0B111A;
-
-  --primary: #34B233;
-  --primary-dark: #4ADE80;   /* readable vibrant green on dark background */
+  /* Brand */
+  --primary-dark: #4ADE80;   /* readable green text on dark surfaces */
   --primary-tint: rgba(52, 178, 51, 0.18);
+  --primary-tint-hover: rgba(52, 178, 51, 0.28);
   --accent-gold: #FACC15;
-  --link-hover: #F87171;
-
-  --accent: #34B233;
-  --accent-dark: #4ADE80;
-  --accent-light: #4ADE80;
-  --accent-bg: rgba(52, 178, 51, 0.18);
-  --accent-bg-hover: rgba(52, 178, 51, 0.28);
-  --accent-border: #34B233;
-
   --gold: #EAB308;
   --gold-light: #FACC15;
   --gold-bg: rgba(234, 179, 8, 0.16);
+  --link-hover: #F87171;
 
-  --bg-secondary: #131D28;
+  /* Neutrals */
+  --bg: #0B111A;
+  --surface: #131D28;
   --bg-card: #182330;
   --bg-card-hover: #1E2C3D;
   --bg-glass: rgba(24, 35, 48, 0.85);
   --bg-input: #131D28;
-  --border-light: #243547;
+  --text: #F8FAFC;
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
+  --text-inverse: #0B111A;
+  --border: #243547;
+  --focus-ring: #4ADE80;     /* 10.9:1 on the dark background */
 
+  /* Loading skeleton */
+  --skeleton-bg: #1E293B;
+  --skeleton-highlight: #334155;
+
+  /* Elevation */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5);
   --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.65);
   --shadow-glow: 0 0 0 3px rgba(74, 222, 128, 0.25);
-
-  --skeleton-bg: #1E293B;
-  --skeleton-highlight: #334155;
 }
 
 
@@ -331,7 +302,7 @@ a:hover {
 .form-textarea:focus {
   background: var(--bg);
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  box-shadow: var(--shadow-glow);
 }
 
 .form-input::placeholder,

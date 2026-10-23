@@ -10,7 +10,7 @@
   min-height: 520px;
   background: var(--bg-card, #ffffff);
   border-radius: var(--radius-xl, 24px);
-  border: 1px solid var(--border-light, #d8e5d8);
+  border: 1px solid var(--border, #d8e5d8);
   box-shadow: 0 16px 36px rgba(15, 42, 15, 0.12), 0 2px 8px rgba(15, 42, 15, 0.04);
   overflow: hidden;
   display: flex;
@@ -124,13 +124,13 @@
 
 .tukio-seats-flag.few {
   background: rgba(234, 179, 8, 0.16);
-  color: var(--text-primary, #0f172a);
+  color: var(--text, #0f172a);
   border: 1px solid rgba(234, 179, 8, 0.55);
 }
 
 .tukio-seats-flag.full {
   background: rgba(200, 16, 46, 0.12);
-  color: var(--text-primary, #0f172a);
+  color: var(--text, #0f172a);
   border: 1px solid rgba(200, 16, 46, 0.45);
 }
 
@@ -214,7 +214,7 @@
   font-size: 1.35rem;
   font-weight: 700;
   line-height: 1.25;
-  color: var(--text-primary, #0f172a);
+  color: var(--text, #0f172a);
   margin: 0;
 }
 
@@ -234,7 +234,7 @@
   background: var(--surface, #f7faf7);
   padding: 10px 14px;
   border-radius: var(--radius-md, 10px);
-  border: 1px solid var(--border-light, #d8e5d8);
+  border: 1px solid var(--border, #d8e5d8);
 }
 
 .tukio-meta-item {
@@ -304,7 +304,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  border-top: 1px solid var(--border-light, #e2e8f0);
+  border-top: 1px solid var(--border, #e2e8f0);
   background: var(--bg-card, #ffffff);
 }
 
@@ -328,7 +328,7 @@
   font-family: var(--font-body, system-ui, sans-serif);
   font-size: 0.82rem;
   font-weight: 600;
-  border: 1px solid var(--border-light, #d8e5d8);
+  border: 1px solid var(--border, #d8e5d8);
   background: var(--surface, #f8faf8);
   color: var(--text-secondary, #475569);
   cursor: pointer;
@@ -339,7 +339,7 @@
 .tukio-feedback-btn:hover:not(:disabled) {
   background: var(--bg-card-hover, #f1f5f9);
   border-color: var(--border, #cbd5e1);
-  color: var(--text-primary, #0f172a);
+  color: var(--text, #0f172a);
 }
 
 .tukio-feedback-btn.interested:hover:not(:disabled) {
@@ -386,7 +386,7 @@
   font-family: var(--font-body, system-ui, sans-serif);
   font-size: 0.76rem;
   font-weight: 600;
-  border: 1px solid var(--border-light, #e2e8f0);
+  border: 1px solid var(--border, #e2e8f0);
   background: transparent;
   color: var(--text-muted, #64748b);
   cursor: pointer;
@@ -398,7 +398,7 @@
 .tukio-utility-btn:hover {
   background: var(--surface, #f8faf8);
   border-color: var(--border);
-  color: var(--text-primary, #0f172a);
+  color: var(--text, #0f172a);
 }
 
 .tukio-utility-btn.whatsapp:hover {
@@ -476,15 +476,15 @@
   font-weight: 600;
   color: var(--text-secondary, #3f5140);
   background: var(--surface, #f7faf7);
-  border: 1px solid var(--border-light, #d8e5d8);
+  border: 1px solid var(--border, #d8e5d8);
   text-decoration: none;
   white-space: nowrap;
   transition: all 0.15s ease;
 }
 
 .tukio-details-link-btn:hover {
-  background: var(--border-light, #e2e8f0);
-  color: var(--text-primary, #0f172a);
+  background: var(--border, #e2e8f0);
+  color: var(--text, #0f172a);
 }
 
 /* Micro spinner for RSVP button */
@@ -658,7 +658,7 @@
   font-family: var(--font-heading, system-ui, sans-serif);
   font-size: 1.05rem;
   font-weight: 700;
-  color: var(--text-primary, #0f172a);
+  color: var(--text, #0f172a);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -666,7 +666,7 @@
 
 .tukio-why-sheet-close {
   background: var(--surface, #f7faf7);
-  border: 1px solid var(--border-light, #d8e5d8);
+  border: 1px solid var(--border, #d8e5d8);
   width: 28px;
   height: 28px;
   border-radius: 50%;
@@ -681,7 +681,7 @@
 
 .tukio-why-sheet-close:hover {
   background: var(--bg-card-hover);
-  color: var(--text-primary, #0f172a);
+  color: var(--text, #0f172a);
 }
 
 .tukio-why-meter-row {
@@ -691,7 +691,7 @@
   background: var(--surface, #f7faf7);
   padding: 10px 14px;
   border-radius: var(--radius-md, 10px);
-  border: 1px solid var(--border-light, #d8e5d8);
+  border: 1px solid var(--border, #d8e5d8);
 }
 
 .tukio-why-meter-top {
@@ -712,7 +712,7 @@
 .tukio-why-bar-bg {
   width: 100%;
   height: 7px;
-  background: var(--border-light, #e2e8f0);
+  background: var(--border, #e2e8f0);
   border-radius: var(--radius-full, 9999px);
   overflow: hidden;
 }
@@ -930,7 +930,7 @@
 .tukio-up-next {
   width: 100%;
   background: var(--bg-card, #ffffff);
-  border: 1px solid var(--border-light, #d8e5d8);
+  border: 1px solid var(--border, #d8e5d8);
   border-radius: var(--radius-lg, 16px);
   padding: 16px;
   box-shadow: 0 8px 24px rgba(15, 42, 15, 0.08);
@@ -940,7 +940,7 @@
   font-family: var(--font-heading, system-ui, sans-serif);
   font-size: 0.95rem;
   font-weight: 700;
-  color: var(--text-primary, #0f172a);
+  color: var(--text, #0f172a);
   margin: 0 0 10px;
 }
 
@@ -970,7 +970,7 @@
 .tukio-up-next-item:hover,
 .tukio-up-next-item:focus-visible {
   background: var(--surface, #f7faf7);
-  border-color: var(--border-light, #d8e5d8);
+  border-color: var(--border, #d8e5d8);
 }
 
 .tukio-up-next-emoji {
@@ -987,7 +987,7 @@
 .tukio-up-next-name {
   font-size: 0.86rem;
   font-weight: 600;
-  color: var(--text-primary, #0f172a);
+  color: var(--text, #0f172a);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

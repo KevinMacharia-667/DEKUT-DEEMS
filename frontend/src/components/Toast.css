@@ -28,9 +28,9 @@
 }
 
 .toast-success {
-  background: rgba(16, 185, 129, 0.12);
-  color: var(--accent-light);
-  border-color: var(--accent-border);
+  background: var(--primary-tint);
+  color: var(--primary-dark);
+  border-color: var(--primary);
 }
 
 .toast-error {

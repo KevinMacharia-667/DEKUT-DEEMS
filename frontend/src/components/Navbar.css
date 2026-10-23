@@ -60,12 +60,12 @@
 
 .navbar-link:hover,
 .navbar-link.active {
-  color: var(--text-primary);
+  color: var(--text);
   background: var(--bg-glass);
 }
 
 .navbar-link.active {
-  color: var(--accent-light);
+  color: var(--primary-dark);
 }
 
 .navbar-actions {
@@ -87,15 +87,15 @@
 }
 
 .navbar-user:hover {
-  border-color: var(--border-light);
-  background: var(--accent-bg);
+  border-color: var(--border);
+  background: var(--primary-tint);
 }
 
 .navbar-avatar {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--gold));
+  background: linear-gradient(135deg, var(--primary), var(--gold));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -107,15 +107,15 @@
 .navbar-username {
   font-size: 0.85rem;
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--text);
 }
 
 .navbar-dropdown {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-light);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--radius-md);
   min-width: 180px;
   padding: var(--space-xs);
@@ -143,8 +143,8 @@
 }
 
 .navbar-dropdown-item:hover {
-  background: var(--accent-bg);
-  color: var(--accent-light);
+  background: var(--primary-tint);
+  color: var(--primary-dark);
 }
 
 .navbar-dropdown-divider {
@@ -178,7 +178,7 @@
     left: 0;
     right: 0;
     flex-direction: column;
-    background: var(--bg-secondary);
+    background: var(--surface);
     border-bottom: 1px solid var(--border);
     padding: var(--space-md);
     gap: var(--space-xs);
@@ -249,7 +249,7 @@
 }
 
 [data-theme="dark"] .navbar-toggle {
-  color: var(--text-primary);
+  color: var(--text);
   background: var(--surface);
   border-color: var(--border);
 }
@@ -294,7 +294,7 @@
 [data-theme="dark"] .navbar-theme-toggle {
   background: var(--surface);
   border: 1px solid var(--border);
-  color: var(--text-primary);
+  color: var(--text);
 }
 
 [data-theme="dark"] .navbar-theme-toggle:hover {

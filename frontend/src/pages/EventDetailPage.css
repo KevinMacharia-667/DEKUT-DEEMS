@@ -62,7 +62,7 @@
   width: 40px;
   height: 40px;
   border-radius: var(--radius-md);
-  background: var(--accent-bg);
+  background: var(--primary-tint);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -81,7 +81,7 @@
 
 .event-meta-info p {
   font-size: 0.9rem;
-  color: var(--text-primary);
+  color: var(--text);
   font-weight: 500;
 }
 
@@ -184,7 +184,7 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
   display: flex;
   align-items: center;
   justify-content: center;
