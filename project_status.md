@@ -2,7 +2,7 @@
 
 > **Date:** 22 October 2026  
 > **Status:** Stage 5: Pre-Defense Hardening & Polish (Feature Complete & Tested)  
-> **Test Suite Counts:** **66/66 passing backend tests** (`pytest`, **93% code coverage**, see `docs/coverage.md`) | **19/19 passing frontend tests** (`node --test`)
+> **Test Suite Counts:** **66/66 passing backend tests** (`pytest`, **93% code coverage**, see `docs/coverage.md`) | **31/31 passing frontend tests** (`node --test`)
 
 ---
 

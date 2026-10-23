@@ -2,7 +2,7 @@
 
 > **Current Date:** 22 October 2026  
 > **Status:** Stage 5: Pre-Defense Hardening & Polish  
-> **Test Suite:** **66/66 passing backend tests** (`pytest`, 93% coverage, see `docs/coverage.md`) | **19/19 passing frontend tests** (`node --test`)
+> **Test Suite:** **66/66 passing backend tests** (`pytest`, 93% coverage, see `docs/coverage.md`) | **31/31 passing frontend tests** (`node --test`)
 
 **Tukio** (*Swahili for "Event" / "Happening"*) is a mobile-first campus event recommendation application designed for Dedan Kimathi University of Technology (DeKUT). It pairs a swipeable, engagement-driven card feed with a multi-factor recommendation engine (TF-IDF content filtering, TruncatedSVD collaborative filtering, and contextual urgency) for frictionless campus discovery and one-tap RSVPs.
 
