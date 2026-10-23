@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import './EventCard.css';
+import { formatCampusDateTime } from '../utils/dates';
 
 const CATEGORY_EMOJI = {
   Academic: '📚',
@@ -12,14 +13,7 @@ const CATEGORY_EMOJI = {
 };
 
 function formatDate(dateStr) {
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+  return formatCampusDateTime(dateStr);
 }
 
 export default function EventCard({ event }) {

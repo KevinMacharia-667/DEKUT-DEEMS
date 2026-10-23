@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { createEvent, getVenues } from '../api';
 import { useToast } from '../components/Toast';
 import './CreateEventPage.css';
+import { campusInputToISO } from '../utils/dates';
 
 const CATEGORIES = ['Academic', 'Social', 'Sports', 'Workshop', 'Cultural', 'Tech', 'Career'];
 
@@ -65,8 +66,8 @@ export default function CreateEventPage() {
         department: form.department || null,
         tags: form.tags.trim() || null,
         location: form.location || null,
-        start_time: new Date(form.start_time).toISOString(),
-        end_time: form.end_time ? new Date(form.end_time).toISOString() : null,
+        start_time: campusInputToISO(form.start_time),
+        end_time: campusInputToISO(form.end_time),
         max_attendees: form.max_attendees ? parseInt(form.max_attendees, 10) : null,
         image_url: form.image_url || null,
       };

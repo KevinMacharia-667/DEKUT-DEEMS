@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getEvent, updateEvent, getVenues } from '../api';
 import { useToast } from '../components/Toast';
 import './CreateEventPage.css';
+import { toCampusInputValue, campusInputToISO } from '../utils/dates';
 
 const CATEGORIES = ['Academic', 'Social', 'Sports', 'Workshop', 'Cultural', 'Tech', 'Career'];
 
@@ -58,8 +59,8 @@ export default function EditEventPage() {
           department: event.department || '',
           tags: event.tags || '',
           location: event.location || '',
-          start_time: event.start_time ? new Date(event.start_time).toISOString().slice(0, 16) : '',
-          end_time: event.end_time ? new Date(event.end_time).toISOString().slice(0, 16) : '',
+          start_time: toCampusInputValue(event.start_time),
+          end_time: toCampusInputValue(event.end_time),
           max_attendees: event.max_attendees || '',
           image_url: event.image_url || '',
           is_published: event.is_published || false,
@@ -91,8 +92,8 @@ export default function EditEventPage() {
         department: form.department || null,
         tags: form.tags.trim() || null,
         location: form.location || null,
-        start_time: new Date(form.start_time).toISOString(),
-        end_time: form.end_time ? new Date(form.end_time).toISOString() : null,
+        start_time: campusInputToISO(form.start_time),
+        end_time: campusInputToISO(form.end_time),
         max_attendees: form.max_attendees ? parseInt(form.max_attendees, 10) : null,
         image_url: form.image_url || null,
         is_published: form.is_published,

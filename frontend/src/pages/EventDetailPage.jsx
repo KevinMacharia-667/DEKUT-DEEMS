@@ -6,6 +6,7 @@ import { useToast } from '../components/Toast';
 import { openWhatsAppShare } from '../utils/share';
 import { downloadEventICS } from '../utils/calendar';
 import './EventDetailPage.css';
+import { formatCampusDateTime } from '../utils/dates';
 
 const CATEGORY_EMOJI = {
   Academic: '📚', Social: '🎉', Sports: '⚽', Workshop: '🔧',
@@ -13,12 +14,7 @@ const CATEGORY_EMOJI = {
 };
 
 function formatDateTime(dateStr) {
-  if (!dateStr) return '—';
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('en-US', {
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-    hour: '2-digit', minute: '2-digit',
-  });
+  return formatCampusDateTime(dateStr, { fallback: '—', long: true, withYear: true });
 }
 
 export default function EventDetailPage() {

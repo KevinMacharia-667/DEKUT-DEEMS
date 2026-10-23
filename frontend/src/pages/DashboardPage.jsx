@@ -5,6 +5,7 @@ import { useToast } from '../components/Toast';
 import { getEvents, getMyRsvps, getEvent, getMyInterests, updateMyInterests, updateMe, cancelRsvp } from '../api';
 import RecommendedEvents from '../components/RecommendedEvents';
 import './DashboardPage.css';
+import { formatCampusDateTime } from '../utils/dates';
 
 const DEPARTMENTS = [
   'School of Computer Science & IT',
@@ -28,9 +29,7 @@ const INTEREST_OPTIONS = [
 ];
 
 function formatDate(dateStr) {
-  if (!dateStr) return '';
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  return formatCampusDateTime(dateStr, { fallback: '' });
 }
 
 export default function DashboardPage() {

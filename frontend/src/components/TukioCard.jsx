@@ -1,6 +1,13 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './TukioCard.css';
+import {
+  parseApiDate,
+  campusDayDiff,
+  campusWeekdayAndHour,
+  formatCampusTime,
+  formatCampusDate,
+} from '../utils/dates';
 
 const CATEGORY_STYLES = {
   Academic: {
@@ -34,38 +41,27 @@ const CATEGORY_STYLES = {
 };
 
 function formatEventTime(dateStr) {
-  if (!dateStr) return { formatted: 'Date TBA', statusBadge: null, deltaDays: null };
+  const eventDate = parseApiDate(dateStr);
+  if (!eventDate) return { formatted: 'Date TBA', statusBadge: null, deltaDays: null };
 
-  const eventDate = new Date(dateStr);
   const now = new Date();
-  
-  const isToday =
-    eventDate.getDate() === now.getDate() &&
-    eventDate.getMonth() === now.getMonth() &&
-    eventDate.getFullYear() === now.getFullYear();
+  // Calendar days in campus time (Africa/Nairobi), whatever the device timezone
+  const dayDiff = campusDayDiff(now, eventDate);
+  const isToday = dayDiff === 0;
+  const isTomorrow = dayDiff === 1;
 
-  const tomorrow = new Date(now);
-  tomorrow.setDate(now.getDate() + 1);
-  const isTomorrow =
-    eventDate.getDate() === tomorrow.getDate() &&
-    eventDate.getMonth() === tomorrow.getMonth() &&
-    eventDate.getFullYear() === tomorrow.getFullYear();
-
-  const timeString = eventDate.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+  const timeString = formatCampusTime(eventDate);
 
   const deltaDays = Math.ceil((eventDate - now) / (1000 * 60 * 60 * 24));
-  const dayOfWeek = eventDate.getDay(); // 0: Sun, 5: Fri, 6: Sat
+  const { weekday: dayOfWeek, hour } = campusWeekdayAndHour(eventDate); // 0: Sun, 5: Fri, 6: Sat
   const isWeekend =
-    (dayOfWeek === 6 || dayOfWeek === 0 || (dayOfWeek === 5 && eventDate.getHours() >= 17)) &&
+    (dayOfWeek === 6 || dayOfWeek === 0 || (dayOfWeek === 5 && hour >= 17)) &&
     deltaDays >= 0 &&
     deltaDays <= 6;
 
   if (isToday) {
     return {
-      formatted: `Today • ${timeString}`,
+      formatted: `Today · ${timeString}`,
       statusBadge: 'Today',
       isToday: true,
       isWeekend,
@@ -75,7 +71,7 @@ function formatEventTime(dateStr) {
 
   if (isTomorrow) {
     return {
-      formatted: `Tomorrow • ${timeString}`,
+      formatted: `Tomorrow · ${timeString}`,
       statusBadge: isWeekend ? 'Tomorrow (Weekend)' : 'Tomorrow',
       isToday: false,
       isWeekend,
@@ -84,9 +80,9 @@ function formatEventTime(dateStr) {
   }
 
   if (isWeekend) {
-    const dayName = eventDate.toLocaleDateString('en-US', { weekday: 'short' });
+    const dayName = formatCampusDate(eventDate).split(' ')[0];
     return {
-      formatted: `This Weekend (${dayName}) • ${timeString}`,
+      formatted: `This Weekend (${dayName}) · ${timeString}`,
       statusBadge: `🌴 Weekend • ${dayName}`,
       isToday: false,
       isWeekend: true,
@@ -94,14 +90,10 @@ function formatEventTime(dateStr) {
     };
   }
 
-  const dateString = eventDate.toLocaleDateString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-  });
+  const dateString = formatCampusDate(eventDate);
 
   return {
-    formatted: `${dateString} • ${timeString}`,
+    formatted: `${dateString} · ${timeString}`,
     statusBadge: dateString,
     isToday: false,
     isWeekend: false,

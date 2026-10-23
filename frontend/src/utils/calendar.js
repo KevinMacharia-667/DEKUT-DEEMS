@@ -8,13 +8,9 @@
  * - Default 2-hour duration if end_time is null/missing
  */
 
-export function parseEventDate(dateStr) {
-  if (!dateStr) return null;
-  if (dateStr instanceof Date) return dateStr;
-  const s = String(dateStr);
-  const hasTimezone = s.endsWith('Z') || /[+-]\d{2}(:?\d{2})?$/.test(s);
-  return new Date(hasTimezone ? s : `${s}Z`);
-}
+// Naive API datetimes are UTC; parsing lives in ./dates.js
+export { parseApiDate as parseEventDate } from './dates.js';
+import { parseApiDate as parseEventDate } from './dates.js';
 
 export function formatICSDateUTC(date) {
   const pad = (n) => String(n).padStart(2, '0');
