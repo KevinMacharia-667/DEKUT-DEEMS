@@ -12,3 +12,6 @@ htmlcov/
 
 # Kaggle competition data: licensed for private use only, never commit
 backend/data/kaggle/
+
+# Raw survey responses (anonymous, but keep raw data out of the repo)
+backend/data/survey/

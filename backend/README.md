@@ -65,3 +65,18 @@ Full method, results, and limitations: [`docs/evaluation.md`](../docs/evaluation
 - **Data Leakage Prevention**: Each user's interactions are partitioned into Train, Validation, and Test sets. Held-out test events never appear in the user's training profile, the SVD interaction matrix, or the popularity counts.
 - **Metrics Reported**: Precision@5, Precision@10, Recall@5, Recall@10, NDCG@10, MRR, and Catalog Coverage@10, as mean ± std over 10 seeds.
 - **Output Artifacts**: `results/evaluation.csv`, `results/evaluation.json`, `docs/evaluation_results.md` (tables), and `docs/evaluation_chart.png`.
+
+## Real-Student Survey (Google Form)
+
+The survey in `docs/tukio_survey_form_template.pdf` collects real DeKUT student preferences. Once responses are in:
+
+1. In Google Forms: **Responses → Link to Sheets**, then in Sheets **File → Download → CSV**.
+2. Save the file as `backend/data/survey/responses.csv` (this folder is git-ignored; keep raw responses out of the repo).
+3. Run:
+
+```powershell
+$env:APP_ENV = "development"
+python survey_import.py data/survey/responses.csv
+```
+
+It drops rows without consent, maps answers to the app's vocabulary, matches the 16 surveyed events to the seeded catalog, prints the assumption checks (popularity, department, timing), and ranks each respondent's held-out events with every model (P@3, NDCG@5, MRR over 10 random splits). Results are saved to `results/survey_evaluation.json`. Keep the event row titles in the form exactly as in the template, so they match the catalog. Report these results as *stated intention*, not observed attendance.

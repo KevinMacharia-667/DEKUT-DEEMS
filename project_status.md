@@ -2,7 +2,7 @@
 
 > **Date:** 22 October 2026  
 > **Status:** Stage 5: Pre-Defense Hardening & Polish (Feature Complete & Tested)  
-> **Test Suite Counts:** **66/66 passing backend tests** (`pytest`, **93% code coverage**, see `docs/coverage.md`) | **31/31 passing frontend tests** (`node --test`)
+> **Test Suite Counts:** **72/72 passing backend tests** (`pytest`, **93% code coverage**, see `docs/coverage.md`) | **31/31 passing frontend tests** (`node --test`)
 
 ---
 
@@ -55,6 +55,15 @@
    *Evidence:* `frontend/public/manifest.json`, `frontend/dist/sw.js`, `frontend/vite.config.js` (verified in `frontend/src/utils/pwa.test.js`; precaches hashed chunks, offline navigation fallback).
 9. ✅ **Offline evaluation benchmark (Precision@K, Recall@K, NDCG@K, MRR, Catalog Coverage)**  
    *Evidence:* `backend/evaluate.py`, `docs/evaluation.md`, `docs/evaluation_results.md`, `docs/evaluation_chart.png`, `docs/iterations.md` (rule-based → TF-IDF → hybrid history) (verified in `tests/test_tukio_evaluation.py`). On behaviour-based ground truth the hybrid leads (NDCG@10 0.187 vs 0.138 TF-IDF vs 0.119 rule-based); on tag-overlap ground truth the rule-based baseline wins (0.825 vs 0.722).
+
+---
+
+## 2b. Latest Work (23 Oct 2026)
+
+* **UI pass:** event times shown in campus time (EAT); the edit form no longer shifts events; one lucide-react icon set; category date-block covers and "42 / 60 going" seat labels; keyboard focus, 44px touch targets and WCAG AA contrast in both themes; sticky RSVP bar on the event page; feed search and venue filter; one colour token set.
+* **Fixes:** service worker registers only in production builds; npm audit clean (Vite 8.3.5, react-router 7.18.4).
+* **Real-student data:** survey template (`docs/tukio_survey_form_template.pdf`) and importer (`backend/survey_import.py`, tested with Google-Forms-format CSVs). Waiting on responses.
+* **Next:** deployment (backend + PostgreSQL), then run the survey and the importer.
 
 ---
 
