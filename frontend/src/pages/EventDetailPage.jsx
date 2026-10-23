@@ -8,7 +8,7 @@ import { downloadEventICS } from '../utils/calendar';
 import { CalendarDays, CalendarPlus, Check, Flag, MapPin, MessageCircle, Users } from 'lucide-react';
 import './EventDetailPage.css';
 import { formatCampusDateTime } from '../utils/dates';
-import { categoryIcon } from '../utils/icons';
+import { categoryCover, categoryIcon } from '../utils/icons';
 import { describeAttendance } from '../utils/attendance';
 
 function formatDateTime(dateStr) {
@@ -90,7 +90,20 @@ export default function EventDetailPage() {
   }
 
   if (loading) {
-    return <div className="page"><div className="loading-page"><div className="spinner" /></div></div>;
+    return (
+      <div className="page">
+        <div className="container event-detail" aria-busy="true" aria-label="Loading event">
+          <div className="event-skeleton event-skeleton-hero" />
+          <div className="event-skeleton event-skeleton-title" />
+          <div className="event-skeleton event-skeleton-line" />
+          <div className="event-detail-meta">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="event-skeleton event-skeleton-meta" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (!event) return null;
@@ -102,7 +115,10 @@ export default function EventDetailPage() {
     <div className="page">
       <div className="container event-detail">
         {/* Hero */}
-        <div className="event-detail-hero glass-card">
+        <div
+          className="event-detail-hero glass-card"
+          style={event.image_url ? undefined : { background: categoryCover(event.category) }}
+        >
           {event.image_url ? (
             <img src={event.image_url} alt={event.title} />
           ) : (
@@ -191,8 +207,10 @@ export default function EventDetailPage() {
               logEventInteraction(event.id, 'share').catch(() => {});
             }}
             title="Share via WhatsApp"
+            aria-label="Share via WhatsApp"
           >
-            <MessageCircle size={18} aria-hidden="true" /> Share
+            <MessageCircle size={18} aria-hidden="true" />
+            <span className="event-action-label">Share</span>
           </button>
           <button
             type="button"
@@ -203,23 +221,26 @@ export default function EventDetailPage() {
               logEventInteraction(event.id, 'add_to_calendar').catch(() => {});
             }}
             title="Add to Calendar (.ics)"
+            aria-label="Add to calendar"
           >
-            <CalendarPlus size={18} aria-hidden="true" /> Calendar
+            <CalendarPlus size={18} aria-hidden="true" />
+            <span className="event-action-label">Calendar</span>
           </button>
-          {(isOwner || isAdmin) && (
-            <>
-              <button 
-                className="btn btn-secondary" 
-                onClick={() => navigate(`/events/${id}/edit`)}
-              >
-                Edit Event
-              </button>
-              <button className="btn btn-danger" onClick={handleDelete}>
-                Delete Event
-              </button>
-            </>
-          )}
         </div>
+
+        {(isOwner || isAdmin) && (
+          <div className="event-detail-owner-actions">
+            <button
+              className="btn btn-secondary"
+              onClick={() => navigate(`/events/${id}/edit`)}
+            >
+              Edit Event
+            </button>
+            <button className="btn btn-danger" onClick={handleDelete}>
+              Delete Event
+            </button>
+          </div>
+        )}
 
         {/* Description */}
         {event.description && (

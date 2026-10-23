@@ -10,11 +10,11 @@
   overflow: hidden;
   margin-bottom: var(--space-xl);
   height: 300px;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(245, 158, 11, 0.08));
+  background: var(--surface);
+  color: #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 5rem;
 }
 
 .event-detail-hero img {
@@ -99,10 +99,62 @@
   white-space: pre-wrap;
 }
 
-.event-detail-actions {
+.event-detail-actions,
+.event-detail-owner-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.event-detail-owner-actions {
   margin-bottom: var(--space-2xl);
+}
+
+/* Loading skeleton */
+.event-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-bg) 0%,
+    var(--skeleton-highlight) 50%,
+    var(--skeleton-bg) 100%
+  );
+  background-size: 200% 100%;
+  animation: eventSkeletonShimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+
+.event-skeleton-hero {
+  height: 300px;
+  margin-bottom: var(--space-xl);
+  border-radius: var(--radius-lg);
+}
+
+.event-skeleton-title {
+  height: 32px;
+  width: 60%;
+  margin-bottom: var(--space-sm);
+}
+
+.event-skeleton-line {
+  height: 16px;
+  width: 35%;
+  margin-bottom: var(--space-xl);
+}
+
+.event-skeleton-meta {
+  height: 84px;
+}
+
+@keyframes eventSkeletonShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .event-skeleton {
+    animation: none;
+  }
 }
 
 .event-detail-attendees h2 {
@@ -155,7 +207,39 @@
     grid-template-columns: 1fr;
   }
 
+  .event-skeleton-hero {
+    height: 200px;
+  }
+
+  /* Phone action bar: stays on screen while the page scrolls */
   .event-detail-actions {
-    flex-direction: column;
+    position: sticky;
+    bottom: 0;
+    z-index: 50;
+    flex-wrap: nowrap;
+    gap: var(--space-sm);
+    margin: 0 calc(-1 * var(--space-md)) var(--space-lg);
+    padding: var(--space-sm) var(--space-md) calc(var(--space-sm) + env(safe-area-inset-bottom));
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -6px 16px rgba(15, 23, 42, 0.08);
+  }
+
+  .event-detail-actions > .btn:first-child {
+    flex: 1;
+    justify-content: center;
+  }
+
+  /* Share and calendar become icon buttons (aria-labels keep their names) */
+  .event-detail-actions .event-action-label {
+    display: none;
+  }
+
+  .event-detail-actions > .btn:not(:first-child) {
+    flex: 0 0 auto;
+    min-width: 44px;
+    padding-left: var(--space-sm);
+    padding-right: var(--space-sm);
+    justify-content: center;
   }
 }
