@@ -9,15 +9,20 @@ export function registerServiceWorker() {
     return;
   }
 
+  // The worker serves cached files first. On the Vite dev server that means
+  // stale, unhashed source modules, so only production builds register it,
+  // and dev removes any worker left over from testing a build on this origin.
+  if (import.meta.env.DEV) {
+    navigator.serviceWorker
+      .getRegistrations()
+      .then((registrations) => registrations.forEach((r) => r.unregister()))
+      .catch(() => {});
+    return;
+  }
+
   window.addEventListener('load', () => {
     navigator.serviceWorker
       .register('/sw.js')
-      .then((registration) => {
-        // Log clean registration in development
-        if (import.meta.env.DEV) {
-          console.log('[Tukio PWA] Service Worker registered:', registration.scope);
-        }
-      })
       .catch((err) => {
         console.warn('[Tukio PWA] Service Worker registration failed:', err);
       });
