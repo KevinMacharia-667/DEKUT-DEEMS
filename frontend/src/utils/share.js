@@ -1,6 +1,6 @@
 /**
  * WhatsApp share helper for Tukio events.
- * Constructs deep links targeting https://wa.me/?text=...
+ * Constructs share links targeting https://api.whatsapp.com/send?text=...
  * Uses window.location.origin to link to /events/:id
  */
 import { formatCampusDateTime } from './dates.js';
@@ -29,7 +29,9 @@ export function buildWhatsAppShareUrl(event, origin = '') {
   }
 
   const message = lines.join('\n');
-  return `https://wa.me/?text=${encodeURIComponent(message)}`;
+  // Not wa.me: its redirect replaces every emoji with "�" (U+FFFD).
+  // api.whatsapp.com/send keeps the UTF-8 text intact.
+  return `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
 }
 
 export function openWhatsAppShare(event, origin = '') {

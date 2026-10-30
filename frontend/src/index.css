@@ -646,3 +646,11 @@ svg.lucide {
   white-space: nowrap;
   border: 0;
 }
+
+/* WhatsApp brand glyph on share buttons (WhatsApp brand colours) */
+:root { --whatsapp: #128C7E; }
+:root[data-theme="dark"] { --whatsapp: #25D366; }
+.whatsapp-icon {
+  color: var(--whatsapp);
+  flex-shrink: 0;
+}

@@ -5,7 +5,8 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/Toast';
 import { openWhatsAppShare } from '../utils/share';
 import { downloadEventICS } from '../utils/calendar';
-import { CalendarDays, CalendarPlus, Check, Flag, MapPin, MessageCircle, Users } from 'lucide-react';
+import { CalendarDays, CalendarPlus, Check, Flag, MapPin, Users } from 'lucide-react';
+import WhatsAppIcon from '../components/WhatsAppIcon';
 import './EventDetailPage.css';
 import { formatCampusDateTime } from '../utils/dates';
 import { categoryCover, categoryIcon } from '../utils/icons';
@@ -209,7 +210,7 @@ export default function EventDetailPage() {
             title="Share via WhatsApp"
             aria-label="Share via WhatsApp"
           >
-            <MessageCircle size={18} aria-hidden="true" />
+            <WhatsAppIcon size={18} />
             <span className="event-action-label">Share</span>
           </button>
           <button

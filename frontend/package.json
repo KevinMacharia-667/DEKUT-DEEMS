@@ -7,14 +7,15 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
-    "test": "node --test src/utils/calendar.test.js src/utils/theme.test.js src/utils/pwa.test.js src/utils/apiErrors.test.js src/utils/dates.test.js src/utils/icons.test.js src/utils/attendance.test.js",
+    "test": "node --test src/utils/calendar.test.js src/utils/theme.test.js src/utils/pwa.test.js src/utils/apiErrors.test.js src/utils/dates.test.js src/utils/icons.test.js src/utils/attendance.test.js src/utils/share.test.js",
     "preview": "vite preview"
   },
   "dependencies": {
     "lucide-react": "^1.61.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
-    "react-router-dom": "^7.18.1"
+    "react-router-dom": "^7.18.1",
+    "simple-icons": "^16.36.0"
   },
   "devDependencies": {
     "@types/react": "^19.2.17",

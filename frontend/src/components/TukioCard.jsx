@@ -7,7 +7,6 @@ import {
   Check,
   Info,
   MapPin,
-  MessageCircle,
   Sparkles,
   Star,
   ThumbsDown,
@@ -15,6 +14,7 @@ import {
   Users,
   X,
 } from 'lucide-react';
+import WhatsAppIcon from './WhatsAppIcon';
 import './TukioCard.css';
 import {
   parseApiDate,
@@ -375,7 +375,7 @@ export default function TukioCard({
             title="Share via WhatsApp"
             aria-label="Share via WhatsApp"
           >
-            <span className="tukio-utility-icon" aria-hidden="true"><MessageCircle size={16} /></span>
+            <span className="tukio-utility-icon" aria-hidden="true"><WhatsAppIcon size={16} /></span>
             <span>WhatsApp</span>
           </button>
 
