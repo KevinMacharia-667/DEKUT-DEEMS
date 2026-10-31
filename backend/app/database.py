@@ -11,9 +11,14 @@ settings = get_settings()
 
 
 def normalise_database_url(url: str) -> str:
-    """Hosts often hand out 'postgres://' URLs; SQLAlchemy 2 only accepts 'postgresql://'."""
-    if url.startswith("postgres://"):
-        return "postgresql://" + url[len("postgres://"):]
+    """
+    Point Postgres URLs at the installed psycopg2 driver. Hosts hand out 'postgres://' or
+    'postgresql://' URLs; SQLAlchemy 2 rejects the first, and from 2.1 a bare 'postgresql://'
+    means psycopg 3, which is not installed.
+    """
+    for prefix in ("postgres://", "postgresql://"):
+        if url.startswith(prefix):
+            return "postgresql+psycopg2://" + url[len(prefix):]
     return url
 
 

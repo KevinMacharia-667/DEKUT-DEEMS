@@ -20,8 +20,9 @@ def test_cors_origins_accept_comma_separated_and_json(monkeypatch):
 
 
 def test_postgres_scheme_is_normalised():
-    assert normalise_database_url("postgres://u:p@host/db") == "postgresql://u:p@host/db"
-    assert normalise_database_url("postgresql://u:p@host/db?sslmode=require") == "postgresql://u:p@host/db?sslmode=require"
+    assert normalise_database_url("postgres://u:p@host/db") == "postgresql+psycopg2://u:p@host/db"
+    assert normalise_database_url("postgresql://u:p@host/db?sslmode=require") == "postgresql+psycopg2://u:p@host/db?sslmode=require"
+    assert normalise_database_url("postgresql+psycopg2://u:p@host/db") == "postgresql+psycopg2://u:p@host/db"
     assert normalise_database_url("sqlite:///./dekut_events.db") == "sqlite:///./dekut_events.db"
 
 
